@@ -29,7 +29,12 @@ public class ResourceAdaptorProducer implements ResourceAdapterSupport {
     //
     @Override
     public void configureResourceAdapter(ResourceAdapter resourceAdapter) {
-        ((ActiveMQResourceAdapter) resourceAdapter).setConnectorClassName(NettyConnectorFactory.class.getName());
+        ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
+        activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
+        activeMQResourceAdapter.setConnectionParameters("host=localhost;port=61616");
+        activeMQResourceAdapter.setUseJNDI(false);
+        activeMQResourceAdapter.setPassword("quarkus");
+        activeMQResourceAdapter.setUserName("quarkus");
     }
 
     @Override

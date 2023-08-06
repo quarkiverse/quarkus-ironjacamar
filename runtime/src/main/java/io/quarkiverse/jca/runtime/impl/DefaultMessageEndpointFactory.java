@@ -7,6 +7,7 @@ import javax.transaction.xa.XAResource;
 import jakarta.resource.spi.UnavailableException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
+import jakarta.transaction.Transactional;
 
 public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     private final Class<?> endpointClass;
@@ -27,7 +28,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     @Override
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
-        return false;
+        return method.getAnnotation(Transactional.class) != null;
     }
 
     @Override

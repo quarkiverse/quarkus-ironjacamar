@@ -72,7 +72,7 @@ class VertxWorkManager implements WorkManager {
 
     @Override
     public void scheduleWork(Work work) throws WorkException {
-        vertx.setTimer(1L, id -> {
+        vertx.runOnContext(id -> {
             work.run();
         });
     }
