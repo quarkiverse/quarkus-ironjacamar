@@ -1,6 +1,5 @@
 package io.quarkiverse.jca.deployment;
 
-import java.util.Collections;
 import java.util.List;
 
 import jakarta.resource.spi.ResourceAdapter;
@@ -40,11 +39,23 @@ class JCAProcessor {
     void findResourceAdapters(JCAConfig config,
             CombinedIndexBuildItem combinedIndexBuildItem,
             BuildProducer<ResourceAdapterBuildItem> resourceAdapterBuildItemBuildProducer,
-            BuildProducer<AdditionalBeanBuildItem> beansProducer) {
+            BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
         for (ClassInfo implementor : index.getAllKnownImplementors(ResourceAdapter.class)) {
             resourceAdapterBuildItemBuildProducer.produce(new ResourceAdapterBuildItem(implementor));
         }
+        // Register ManagedConnectionFactory as @Singleton beans
+        //        for (ClassInfo implementor : index.getAllKnownImplementors(ManagedConnectionFactory.class)) {
+        //            System.out.println("ClassInfo: " + implementor.name());
+        //            beansProducer.produce(SyntheticBeanBuildItem.configure(implementor.name())
+        //                    .defaultBean()
+        //                    .scope(Singleton.class)
+        //                    .done());
+        //
+        //        }
+
+        //        additionalBeans.produce(new AdditionalBeanBuildItem(ObjectMapperProducer.class));
+
     }
 
     @BuildStep
@@ -55,12 +66,14 @@ class JCAProcessor {
     @BuildStep
     @Record(value = ExecutionTime.RUNTIME_INIT)
     ServiceStartBuildItem startResourceAdapters(
+            JCAConfig config,
             List<ResourceAdapterBuildItem> resourceAdapterBuildItems,
             JCARecorder recorder,
             CoreVertxBuildItem vertxBuildItem) {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
             ClassInfo classInfo = resourceAdapterBuildItem.classInfo;
-            recorder.deployResourceAdapter(vertxBuildItem.getVertx(), classInfo.name().toString(), Collections.emptyMap());
+            recorder.deployResourceAdapter(vertxBuildItem.getVertx(), classInfo.name().toString(),
+                    config.resourceAdapterConfigs.get("artemis").configProperties);
         }
         return new ServiceStartBuildItem(FEATURE);
     }

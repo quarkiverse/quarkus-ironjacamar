@@ -15,6 +15,6 @@ public class JcaResourceTest {
 
     @Test
     public void testHelloEndpoint() {
-        System.out.println(config.namedResourceAdapters());
+        System.out.println(config.resourceAdapterConfigs.get("artemis").configProperties);
     }
 }
