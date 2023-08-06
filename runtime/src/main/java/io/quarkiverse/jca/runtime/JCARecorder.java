@@ -51,7 +51,8 @@ public class JCARecorder {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            MessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass);
+            MessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass,
+                    resourceAdapterSupport);
             ActivationSpec activationSpec = resourceAdapterSupport.createActivationSpec(endpointClass);
             try {
                 adapter.endpointActivation(messageEndpointFactory, activationSpec);

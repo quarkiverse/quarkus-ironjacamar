@@ -13,7 +13,7 @@ import org.jboss.jandex.IndexView;
 
 import io.quarkiverse.jca.runtime.JCAConfig;
 import io.quarkiverse.jca.runtime.JCARecorder;
-import io.quarkiverse.jca.runtime.api.MessageEndpoint;
+import io.quarkiverse.jca.runtime.api.ResourceEndpoint;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
@@ -48,7 +48,7 @@ class JCAProcessor {
             BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
         // TODO: Check if endpoint is supported by the resource adapter
-        Set<String> endpoints = index.getAnnotations(MessageEndpoint.class)
+        Set<String> endpoints = index.getAnnotations(ResourceEndpoint.class)
                 .stream()
                 .map(annotationInstance -> annotationInstance.target().asClass().name().toString())
                 .collect(Collectors.toSet());

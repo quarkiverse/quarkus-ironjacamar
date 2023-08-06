@@ -1,8 +1,14 @@
 package io.quarkiverse.jca.it;
 
+import java.lang.reflect.Method;
+
 import jakarta.inject.Singleton;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ResourceAdapter;
+import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
@@ -13,20 +19,6 @@ import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 @Singleton
 public class ResourceAdaptorProducer implements ResourceAdapterSupport {
 
-    //    @Produces
-    //    @Singleton
-    //    @Unremovable
-    //    public ActiveMQResourceAdapter resourceAdapter() {
-    //        ActiveMQResourceAdapter activeMQResourceAdapter = new ActiveMQResourceAdapter();
-    //        activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
-    //        return activeMQResourceAdapter;
-    //    }
-
-    //    public void customize(@Observes ActiveMQResourceAdapter activeMQResourceAdapter) {
-    //        activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
-    //    }
-    //
-    //
     @Override
     public void configureResourceAdapter(ResourceAdapter resourceAdapter) {
         ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
@@ -51,5 +43,41 @@ public class ResourceAdaptorProducer implements ResourceAdapterSupport {
         activationSpec.setRebalanceConnections(true);
         activationSpec.setUseJNDI(false);
         return activationSpec;
+    }
+
+    @Override
+    public MessageEndpoint wrap(Object resourceEndpoint, MessageEndpoint messageEndpoint) {
+        return new MessageEndpointWrapper((MessageListener) resourceEndpoint, messageEndpoint);
+    }
+
+    private static class MessageEndpointWrapper implements MessageEndpoint, MessageListener {
+
+        private final MessageEndpoint delegate;
+        private final MessageListener listener;
+
+        private MessageEndpointWrapper(MessageListener listener, MessageEndpoint delegate) {
+            this.listener = listener;
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void onMessage(Message message) {
+            listener.onMessage(message);
+        }
+
+        @Override
+        public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
+            delegate.beforeDelivery(method);
+        }
+
+        @Override
+        public void afterDelivery() throws ResourceException {
+            delegate.afterDelivery();
+        }
+
+        @Override
+        public void release() {
+            delegate.release();
+        }
     }
 }

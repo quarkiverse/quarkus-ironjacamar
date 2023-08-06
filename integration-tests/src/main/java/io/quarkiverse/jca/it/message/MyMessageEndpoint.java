@@ -1,12 +1,14 @@
 package io.quarkiverse.jca.it.message;
 
+import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 
 import io.quarkiverse.jca.runtime.api.ActivationConfigProperty;
-import io.quarkiverse.jca.runtime.api.MessageEndpoint;
+import io.quarkiverse.jca.runtime.api.ResourceEndpoint;
+import io.quarkus.logging.Log;
 
-@MessageEndpoint(activationConfig = {
+@ResourceEndpoint(activationConfig = {
         @ActivationConfigProperty(name = "destinationType", value = "jakarta.jms.Queue"),
         @ActivationConfigProperty(name = "maxSession", value = "3"),
         @ActivationConfigProperty(name = "destination", value = "MyQueue"),
@@ -15,6 +17,10 @@ import io.quarkiverse.jca.runtime.api.MessageEndpoint;
 public class MyMessageEndpoint implements MessageListener {
     @Override
     public void onMessage(Message message) {
-        System.out.println("Received message: " + message);
+        try {
+            Log.info("Received message: " + message.getBody(String.class));
+        } catch (JMSException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

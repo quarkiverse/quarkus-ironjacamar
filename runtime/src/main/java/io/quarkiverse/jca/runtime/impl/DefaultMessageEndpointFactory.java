@@ -9,21 +9,29 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.Transactional;
 
-public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
-    private final Class<?> endpointClass;
+import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkus.arc.Arc;
 
-    public DefaultMessageEndpointFactory(Class<?> endpointClass) {
+public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
+
+    private final Class<?> endpointClass;
+    private final ResourceAdapterSupport resourceAdapterSupport;
+
+    public DefaultMessageEndpointFactory(Class<?> endpointClass, ResourceAdapterSupport resourceAdapterSupport) {
         this.endpointClass = endpointClass;
+        this.resourceAdapterSupport = resourceAdapterSupport;
     }
 
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
-        return new DefaultMessageEndpoint();
+        Object endpointInstance = getEndpointInstance();
+        return resourceAdapterSupport.wrap(endpointInstance, new DefaultMessageEndpoint());
     }
 
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) throws UnavailableException {
-        return new DefaultMessageEndpoint();
+        Object endpointInstance = getEndpointInstance();
+        return resourceAdapterSupport.wrap(endpointInstance, new DefaultMessageEndpoint());
     }
 
     @Override
@@ -40,4 +48,9 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     public Class<?> getEndpointClass() {
         return endpointClass;
     }
+
+    private Object getEndpointInstance() {
+        return Arc.container().instance(endpointClass).get();
+    }
+
 }

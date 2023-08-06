@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target({ TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface MessageEndpoint {
+public @interface ResourceEndpoint {
     /**
      * Activation config properties.
      */
