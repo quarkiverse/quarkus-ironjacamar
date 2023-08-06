@@ -37,10 +37,6 @@ class JCAProcessor {
         return new FeatureBuildItem(FEATURE);
     }
 
-    //    void indexResourceAdapters(JCAConfig config, BuildProducer<IndexDependencyBuildItem> producer) {
-    //        producer.produce(new IndexDependencyBuildItem());
-    //    }
-
     @BuildStep
     void findResourceAdapters(JCAConfig config,
             CombinedIndexBuildItem combinedIndexBuildItem,
@@ -65,16 +61,6 @@ class JCAProcessor {
                     .setUnremovable()
                     .build());
         }
-        // Register ManagedConnectionFactory as @Singleton beans
-        //        for (ClassInfo implementor : index.getAllKnownImplementors(ManagedConnectionFactory.class)) {
-        //            System.out.println("ClassInfo: " + implementor.name());
-        //            beansProducer.produce(SyntheticBeanBuildItem.configure(implementor.name())
-        //                    .defaultBean()
-        //                    .scope(Singleton.class)
-        //                    .done());
-        //
-        //        }
-
     }
 
     @BuildStep
