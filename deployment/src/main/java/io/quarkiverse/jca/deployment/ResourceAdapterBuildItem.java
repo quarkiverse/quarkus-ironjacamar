@@ -1,7 +1,5 @@
 package io.quarkiverse.jca.deployment;
 
-import org.jboss.jandex.ClassInfo;
-
 import io.quarkus.builder.item.MultiBuildItem;
 
 /**
@@ -9,9 +7,9 @@ import io.quarkus.builder.item.MultiBuildItem;
  */
 public final class ResourceAdapterBuildItem extends MultiBuildItem {
 
-    public final ClassInfo classInfo;
+    public final String className;
 
-    public ResourceAdapterBuildItem(ClassInfo classInfo) {
-        this.classInfo = classInfo;
+    public ResourceAdapterBuildItem(String className) {
+        this.className = className;
     }
 }

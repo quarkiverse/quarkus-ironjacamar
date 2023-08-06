@@ -43,9 +43,11 @@ class JCAProcessor {
             BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
         for (ClassInfo implementor : index.getAllKnownImplementors(ResourceAdapter.class)) {
-            resourceAdapterBuildItemBuildProducer.produce(new ResourceAdapterBuildItem(implementor));
+            String resourceAdapterClassName = implementor.name().toString();
+            resourceAdapterBuildItemBuildProducer.produce(new ResourceAdapterBuildItem(resourceAdapterClassName));
+            // Register ResourceAdapter as @Singleton beans
             additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                    .addBeanClass(implementor.name().toString())
+                    .addBeanClass(resourceAdapterClassName)
                     .setDefaultScope(DotNames.SINGLETON)
                     .setUnremovable()
                     .build());
@@ -77,8 +79,7 @@ class JCAProcessor {
             JCARecorder recorder,
             CoreVertxBuildItem vertxBuildItem) {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
-            ClassInfo classInfo = resourceAdapterBuildItem.classInfo;
-            recorder.deployResourceAdapter(vertxBuildItem.getVertx(), classInfo.name().toString(),
+            recorder.deployResourceAdapter(vertxBuildItem.getVertx(), resourceAdapterBuildItem.className,
                     config.resourceAdapterConfigs.get("artemis").configProperties);
         }
         return new ServiceStartBuildItem(FEATURE);
