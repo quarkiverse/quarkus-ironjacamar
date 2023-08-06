@@ -13,6 +13,7 @@ import io.quarkiverse.jca.runtime.JCAConfig;
 import io.quarkiverse.jca.runtime.JCARecorder;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
+import io.quarkus.arc.processor.DotNames;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -43,6 +44,11 @@ class JCAProcessor {
         IndexView index = combinedIndexBuildItem.getIndex();
         for (ClassInfo implementor : index.getAllKnownImplementors(ResourceAdapter.class)) {
             resourceAdapterBuildItemBuildProducer.produce(new ResourceAdapterBuildItem(implementor));
+            additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                    .addBeanClass(implementor.name().toString())
+                    .setDefaultScope(DotNames.SINGLETON)
+                    .setUnremovable()
+                    .build());
         }
         // Register ManagedConnectionFactory as @Singleton beans
         //        for (ClassInfo implementor : index.getAllKnownImplementors(ManagedConnectionFactory.class)) {
