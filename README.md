@@ -10,8 +10,11 @@ the [Jakarta Connector Architecture](https://projects.eclipse.org/projects/ee4j.
 ## Features
 
 - Manages the resource adapter lifecycle using the Quarkus container
-- Integrates with the Quarkus transaction manager
 - Flexible configuration of resource adapters
+
+## Needs testing
+
+- Integrates with the Quarkus transaction manager
 
 ## Limitations
 
