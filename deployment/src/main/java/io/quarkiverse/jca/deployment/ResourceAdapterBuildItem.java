@@ -1,5 +1,7 @@
 package io.quarkiverse.jca.deployment;
 
+import java.util.Set;
+
 import io.quarkus.builder.item.MultiBuildItem;
 
 /**
@@ -9,7 +11,10 @@ public final class ResourceAdapterBuildItem extends MultiBuildItem {
 
     public final String className;
 
-    public ResourceAdapterBuildItem(String className) {
+    public final Set<String> endpointsClassNames;
+
+    public ResourceAdapterBuildItem(String className, Set<String> endpointsClassNames) {
         this.className = className;
+        this.endpointsClassNames = endpointsClassNames;
     }
 }

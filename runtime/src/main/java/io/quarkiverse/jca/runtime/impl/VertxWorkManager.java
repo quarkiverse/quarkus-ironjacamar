@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime.vertx;
+package io.quarkiverse.jca.runtime.impl;
 
 import jakarta.resource.spi.work.ExecutionContext;
 import jakarta.resource.spi.work.Work;
@@ -57,7 +57,7 @@ class VertxWorkManager implements WorkManager {
     @Override
     public long startWork(Work work, long startTimeout, ExecutionContext execContext, WorkListener workListener)
             throws WorkException {
-        vertx.setPeriodic(0L, startTimeout, id -> {
+        vertx.setPeriodic(1L, startTimeout, id -> {
             try {
                 workListener.workStarted(new WorkEvent(this, WorkEvent.WORK_STARTED, work, null));
                 work.run();
@@ -72,7 +72,7 @@ class VertxWorkManager implements WorkManager {
 
     @Override
     public void scheduleWork(Work work) throws WorkException {
-        vertx.setTimer(0L, id -> {
+        vertx.setTimer(1L, id -> {
             work.run();
         });
     }

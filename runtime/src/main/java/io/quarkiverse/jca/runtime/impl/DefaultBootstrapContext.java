@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime.vertx;
+package io.quarkiverse.jca.runtime.impl;
 
 import java.util.Timer;
 
