@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.it.message;
+package io.quarkiverse.jca.it;
 
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
