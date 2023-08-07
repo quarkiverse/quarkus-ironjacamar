@@ -11,7 +11,6 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
 
-import io.quarkiverse.jca.runtime.JCAConfig;
 import io.quarkiverse.jca.runtime.JCARecorder;
 import io.quarkiverse.jca.runtime.api.ResourceEndpoint;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
@@ -40,8 +39,7 @@ class JCAProcessor {
     }
 
     @BuildStep
-    void findResourceAdapters(JCAConfig config,
-            CombinedIndexBuildItem combinedIndexBuildItem,
+    void findResourceAdapters(CombinedIndexBuildItem combinedIndexBuildItem,
             BuildProducer<ResourceAdapterBuildItem> resourceAdapterBuildItemBuildProducer,
             BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
@@ -82,13 +80,13 @@ class JCAProcessor {
     @BuildStep
     @Record(value = ExecutionTime.RUNTIME_INIT)
     ServiceStartBuildItem startResourceAdapters(
-            JCAConfig config,
             List<ResourceAdapterBuildItem> resourceAdapterBuildItems,
             JCARecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
-            RuntimeValue<ResourceAdapter> resourceAdapter = recorder.deployResourceAdapter(vertxBuildItem.getVertx(),
+            RuntimeValue<ResourceAdapter> resourceAdapter = recorder.deployResourceAdapter(
+                    vertxBuildItem.getVertx(),
                     resourceAdapterBuildItem.className);
             ShutdownListener shutdownListener = recorder.activateEndpoints(resourceAdapter,
                     resourceAdapterBuildItem.endpointsClassNames);
