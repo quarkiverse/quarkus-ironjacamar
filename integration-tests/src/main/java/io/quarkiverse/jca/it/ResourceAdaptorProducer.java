@@ -2,7 +2,10 @@ package io.quarkiverse.jca.it;
 
 import java.lang.reflect.Method;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
+import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
@@ -18,6 +21,15 @@ import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 
 @Singleton
 public class ResourceAdaptorProducer implements ResourceAdapterSupport {
+
+    /**
+     * Required to @Inject ConnectionFactory in classes
+     */
+    @Produces
+    @ApplicationScoped
+    public ConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter) {
+        return adapter.getConnectionFactory(adapter.getProperties());
+    }
 
     @Override
     public void configureResourceAdapter(ResourceAdapter resourceAdapter) {
