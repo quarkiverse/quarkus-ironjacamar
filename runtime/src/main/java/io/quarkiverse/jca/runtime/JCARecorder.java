@@ -16,6 +16,7 @@ import io.quarkus.arc.InstanceHandle;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
+import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.vertx.core.Vertx;
 
 @Recorder
@@ -41,9 +42,11 @@ public class JCARecorder {
         return new RuntimeValue<>(resourceAdapter);
     }
 
-    public void activateEndpoints(RuntimeValue<ResourceAdapter> resourceAdapterRuntimeValue, Set<String> endpointClassNames) {
+    public ShutdownListener activateEndpoints(RuntimeValue<ResourceAdapter> resourceAdapterRuntimeValue,
+            Set<String> endpointClassNames) {
         ResourceAdapterSupport resourceAdapterSupport = resourceAdapterSupport();
         ResourceAdapter adapter = resourceAdapterRuntimeValue.getValue();
+        ResourceAdapterShutdownListener endpointRegistry = new ResourceAdapterShutdownListener(adapter);
         for (String endpointClassName : endpointClassNames) {
             Class<?> endpointClass = null;
             try {
@@ -56,10 +59,12 @@ public class JCARecorder {
             ActivationSpec activationSpec = resourceAdapterSupport.createActivationSpec(endpointClass);
             try {
                 adapter.endpointActivation(messageEndpointFactory, activationSpec);
+                endpointRegistry.registerEndpoint(messageEndpointFactory, activationSpec);
             } catch (ResourceException e) {
                 throw new RuntimeException(e);
             }
         }
+        return endpointRegistry;
     }
 
     private static ResourceAdapterSupport resourceAdapterSupport() {

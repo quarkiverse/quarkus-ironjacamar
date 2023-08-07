@@ -25,7 +25,9 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
+import io.quarkus.deployment.builditem.ShutdownListenerBuildItem;
 import io.quarkus.runtime.RuntimeValue;
+import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 
 class JCAProcessor {
@@ -83,11 +85,14 @@ class JCAProcessor {
             JCAConfig config,
             List<ResourceAdapterBuildItem> resourceAdapterBuildItems,
             JCARecorder recorder,
-            CoreVertxBuildItem vertxBuildItem) {
+            CoreVertxBuildItem vertxBuildItem,
+            BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
             RuntimeValue<ResourceAdapter> resourceAdapter = recorder.deployResourceAdapter(vertxBuildItem.getVertx(),
                     resourceAdapterBuildItem.className);
-            recorder.activateEndpoints(resourceAdapter, resourceAdapterBuildItem.endpointsClassNames);
+            ShutdownListener shutdownListener = recorder.activateEndpoints(resourceAdapter,
+                    resourceAdapterBuildItem.endpointsClassNames);
+            shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
         }
         return new ServiceStartBuildItem(FEATURE);
     }
