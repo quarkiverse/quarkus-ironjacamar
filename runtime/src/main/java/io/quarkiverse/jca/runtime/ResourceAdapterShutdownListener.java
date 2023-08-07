@@ -36,6 +36,12 @@ public class ResourceAdapterShutdownListener implements ShutdownListener {
         notification.done();
     }
 
+    @Override
+    public void shutdown(ShutdownNotification notification) {
+        resourceAdapter.stop();
+        notification.done();
+    }
+
     private static class EndpointRegistration {
 
         final MessageEndpointFactory messageEndpointFactory;
