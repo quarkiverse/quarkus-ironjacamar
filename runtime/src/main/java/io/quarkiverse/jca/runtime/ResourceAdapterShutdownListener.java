@@ -1,17 +1,16 @@
 package io.quarkiverse.jca.runtime;
 
-import java.util.Objects;
-import java.util.Set;
-
+import io.quarkus.runtime.shutdown.ShutdownListener;
+import io.vertx.core.impl.ConcurrentHashSet;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 
-import io.quarkus.runtime.shutdown.ShutdownListener;
-import io.vertx.core.impl.ConcurrentHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * TODO: This class is not used yet. It will be used to register the endpoints
+ * Invokes {@link ResourceAdapter#endpointDeactivation(MessageEndpointFactory, ActivationSpec)} on shutdown.
  */
 public class ResourceAdapterShutdownListener implements ShutdownListener {
 
@@ -23,7 +22,7 @@ public class ResourceAdapterShutdownListener implements ShutdownListener {
     }
 
     public void registerEndpoint(MessageEndpointFactory endpointFactory,
-            ActivationSpec spec) {
+                                 ActivationSpec spec) {
         registrations.add(new EndpointRegistration(endpointFactory, spec));
     }
 
@@ -42,7 +41,7 @@ public class ResourceAdapterShutdownListener implements ShutdownListener {
         final ActivationSpec activationSpec;
 
         public EndpointRegistration(MessageEndpointFactory messageEndpointFactory,
-                ActivationSpec activationSpec) {
+                                    ActivationSpec activationSpec) {
             this.messageEndpointFactory = messageEndpointFactory;
             this.activationSpec = activationSpec;
         }
