@@ -49,6 +49,13 @@ class JCAProcessor {
                 .map(annotationInstance -> annotationInstance.target().asClass().name().toString())
                 .collect(Collectors.toSet());
 
+        // Register message endpoints as @ApplicationScoped beans
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClasses(endpoints)
+                .setDefaultScope(DotNames.APPLICATION_SCOPED)
+                .setUnremovable()
+                .build());
+
         for (ClassInfo implementor : index.getAllKnownImplementors(ResourceAdapter.class)) {
             String resourceAdapterClassName = implementor.name().toString();
             resourceAdapterBuildItemBuildProducer
@@ -56,7 +63,6 @@ class JCAProcessor {
             // Register ResourceAdapter as @Singleton beans
             additionalBeans.produce(AdditionalBeanBuildItem.builder()
                     .addBeanClass(resourceAdapterClassName)
-                    .addBeanClasses(endpoints)
                     .setDefaultScope(DotNames.SINGLETON)
                     .setUnremovable()
                     .build());
