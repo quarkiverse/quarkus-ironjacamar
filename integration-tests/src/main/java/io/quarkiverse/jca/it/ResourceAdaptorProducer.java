@@ -14,6 +14,7 @@ import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
@@ -27,7 +28,7 @@ public class ResourceAdaptorProducer implements ResourceAdapterSupport {
      */
     @Produces
     @ApplicationScoped
-    public ConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter) {
+    public ActiveMQConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter) {
         return adapter.getConnectionFactory(adapter.getProperties());
     }
 

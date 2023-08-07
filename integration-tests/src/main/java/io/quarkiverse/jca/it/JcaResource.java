@@ -23,9 +23,15 @@ public class JcaResource {
     @GET
     public Uni<String> hello(@QueryParam("name") @DefaultValue("JCA") String name) {
         return Uni.createFrom().item(() -> {
-            try (JMSContext context = factory.createContext()) {
+            try (JMSContext context = factory.createContext(JMSContext.SESSION_TRANSACTED)) {
                 Queue myQueue = context.createQueue("MyQueue");
+                context.start();
                 context.createProducer().send(myQueue, "Hello " + name);
+                if ("rollback".equals(name))
+                    context.rollback();
+                else
+                    context.commit();
+                context.stop();
                 return "Hello " + name;
             }
         });

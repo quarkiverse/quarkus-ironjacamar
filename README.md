@@ -14,13 +14,14 @@ Important: This is still a work in progress and it is (definitely) not ready for
 - Manages the resource adapter lifecycle using the Quarkus container
 - Flexible configuration of resource adapters
 - WorkManager implementation uses Vert.x worker threads
- 
+
 ## Needs testing (should work but not tested yet)
 
 - Integrates with the Quarkus transaction manager
 
 ## Limitations
 
+- Native mode is not supported
 - Hot reloading of MessageListeners is not supported (yet)
 - JNDI is not supported
 - Security work context propagation is not supported
