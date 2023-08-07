@@ -34,11 +34,11 @@ public class ResourceAdaptorProducer implements ResourceAdapterSupport {
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         // TODO: Read from the config properties map
         //        @ActivationConfigProperty(name = "destinationType", value = "jakarta.jms.Queue"),
-        //        @ActivationConfigProperty(name = "maxSession", value = "3"),
+        //        @ActivationConfigProperty(name = "maxSession", value = "2"),
         //        @ActivationConfigProperty(name = "destination", value = "MyQueue"),
         //        @ActivationConfigProperty(name = "rebalanceConnections", value = "true")
         activationSpec.setDestinationType("jakarta.jms.Queue");
-        activationSpec.setMaxSession(3);
+        activationSpec.setMaxSession(2);
         activationSpec.setDestination("MyQueue");
         activationSpec.setRebalanceConnections(true);
         activationSpec.setUseJNDI(false);

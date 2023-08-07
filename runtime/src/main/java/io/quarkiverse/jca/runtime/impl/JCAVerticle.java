@@ -23,19 +23,14 @@ public final class JCAVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         Log.infof("Starting JCA Resource Adapter %s", ra);
-        WorkManager workManager = new VertxWorkManager(getVertx());
+        WorkManager workManager = new VertxWorkManager(vertx);
         // Lookup JTA resources
         ArcContainer container = Arc.container();
         TransactionSynchronizationRegistry registry = container.instance(TransactionSynchronizationRegistry.class).get();
         XATerminator xaTerminator = container.instance(XATerminator.class).get();
         // Create BootstrapContext
         BootstrapContext bootstrapContext = new DefaultBootstrapContext(workManager, registry, xaTerminator);
-        try {
-            ra.start(bootstrapContext);
-        } catch (Exception e) {
-            Log.error("ERROR while starting JCA Resource Adapter", e);
-            throw e;
-        }
+        ra.start(bootstrapContext);
     }
 
     @Override

@@ -7,29 +7,29 @@ import jakarta.resource.spi.work.WorkException;
 import jakarta.resource.spi.work.WorkListener;
 import jakarta.resource.spi.work.WorkManager;
 
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
+import io.quarkus.logging.Log;
 import io.vertx.core.Vertx;
+import io.vertx.core.WorkerExecutor;
 
 class VertxWorkManager implements WorkManager {
 
     private final Vertx vertx;
 
+    private final WorkerExecutor executor;
+
     public VertxWorkManager(Vertx vertx) {
         this.vertx = vertx;
+        // TODO: Make the pool size configurable? Or use the Vert.x default?
+        this.executor = vertx.createSharedWorkerExecutor("jca-work-manager", 5);
     }
 
     @Override
     public void doWork(Work work) throws WorkException {
-        vertx.executeBlocking(new Handler<Promise<Object>>() {
-            @Override
-            public void handle(Promise<Object> event) {
-                try {
-                    work.run();
-                    event.complete();
-                } catch (Throwable t) {
-                    event.fail(t);
-                }
+        executor.executeBlocking(event -> {
+            work.run();
+        }, result -> {
+            if (result.failed()) {
+                Log.error("Failed to execute work", result.cause());
             }
         });
     }
@@ -38,19 +38,25 @@ class VertxWorkManager implements WorkManager {
     public void doWork(Work work, long startTimeout, ExecutionContext execContext, WorkListener workListener)
             throws WorkException {
         vertx.setTimer(startTimeout, id -> {
-            try {
+            executor.executeBlocking(event -> {
                 workListener.workStarted(new WorkEvent(this, WorkEvent.WORK_STARTED, work, null));
                 work.run();
-                workListener.workCompleted(new WorkEvent(this, WorkEvent.WORK_COMPLETED, work, null));
-            } catch (Throwable t) {
-                workListener.workRejected(new WorkEvent(this, WorkEvent.WORK_REJECTED, work, new WorkException(t)));
-            }
+            }, result -> {
+                if (result.succeeded()) {
+                    workListener.workCompleted(new WorkEvent(this, WorkEvent.WORK_COMPLETED, work, null));
+                } else {
+                    Log.error("Failed to execute work", result.cause());
+                    workListener.workRejected(
+                            new WorkEvent(this, WorkEvent.WORK_REJECTED, work, new WorkException(result.cause())));
+                }
+            });
         });
         workListener.workAccepted(new WorkEvent(this, WorkEvent.WORK_ACCEPTED, work, null));
     }
 
     @Override
     public long startWork(Work work) throws WorkException {
+        doWork(work);
         return 0;
     }
 
@@ -58,13 +64,18 @@ class VertxWorkManager implements WorkManager {
     public long startWork(Work work, long startTimeout, ExecutionContext execContext, WorkListener workListener)
             throws WorkException {
         vertx.setPeriodic(1L, startTimeout, id -> {
-            try {
+            executor.executeBlocking(event -> {
                 workListener.workStarted(new WorkEvent(this, WorkEvent.WORK_STARTED, work, null));
                 work.run();
-                workListener.workCompleted(new WorkEvent(this, WorkEvent.WORK_COMPLETED, work, null));
-            } catch (Throwable t) {
-                workListener.workRejected(new WorkEvent(this, WorkEvent.WORK_REJECTED, work, new WorkException(t)));
-            }
+            }, result -> {
+                if (result.succeeded()) {
+                    workListener.workCompleted(new WorkEvent(this, WorkEvent.WORK_COMPLETED, work, null));
+                } else {
+                    Log.error("Failed to execute work", result.cause());
+                    workListener.workRejected(
+                            new WorkEvent(this, WorkEvent.WORK_REJECTED, work, new WorkException(result.cause())));
+                }
+            });
         });
         workListener.workAccepted(new WorkEvent(this, WorkEvent.WORK_ACCEPTED, work, null));
         return 0;
@@ -72,8 +83,12 @@ class VertxWorkManager implements WorkManager {
 
     @Override
     public void scheduleWork(Work work) throws WorkException {
-        vertx.runOnContext(id -> {
+        executor.executeBlocking(event -> {
             work.run();
+        }, result -> {
+            if (result.failed()) {
+                Log.error("Failed to execute work", result.cause());
+            }
         });
     }
 
@@ -83,13 +98,18 @@ class VertxWorkManager implements WorkManager {
             WorkListener workListener)
             throws WorkException {
         vertx.setPeriodic(startTimeout, id -> {
-            try {
+            executor.executeBlocking(event -> {
                 workListener.workStarted(new WorkEvent(this, WorkEvent.WORK_STARTED, work, null));
                 work.run();
-                workListener.workCompleted(new WorkEvent(this, WorkEvent.WORK_COMPLETED, work, null));
-            } catch (Throwable t) {
-                workListener.workRejected(new WorkEvent(this, WorkEvent.WORK_REJECTED, work, new WorkException(t)));
-            }
+            }, result -> {
+                if (result.succeeded()) {
+                    workListener.workCompleted(new WorkEvent(this, WorkEvent.WORK_COMPLETED, work, null));
+                } else {
+                    Log.error("Failed to execute work", result.cause());
+                    workListener.workRejected(
+                            new WorkEvent(this, WorkEvent.WORK_REJECTED, work, new WorkException(result.cause())));
+                }
+            });
         });
         workListener.workAccepted(new WorkEvent(this, WorkEvent.WORK_ACCEPTED, work, null));
     }

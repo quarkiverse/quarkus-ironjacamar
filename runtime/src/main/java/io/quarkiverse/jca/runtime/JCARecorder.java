@@ -17,6 +17,7 @@ import io.quarkus.logging.Log;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
 @Recorder
@@ -33,7 +34,11 @@ public class JCARecorder {
                 // Notify observers
                 resourceAdapterSupport().configureResourceAdapter(resourceAdapter);
                 Log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapter);
-                vertx.deployVerticle(new JCAVerticle(resourceAdapter));
+                JCAVerticle verticle = new JCAVerticle(resourceAdapter);
+                vertx.deployVerticle(verticle, new DeploymentOptions()
+                        .setWorkerPoolName("jca-worker-pool")
+                        .setWorkerPoolSize(1)
+                        .setWorker(true));
             }
         } catch (Exception e) {
             //FIXME: bubble up the exception
