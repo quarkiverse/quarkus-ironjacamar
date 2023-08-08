@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
@@ -21,7 +20,7 @@ import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 
 @Singleton
-public class ResourceAdaptorProducer implements ResourceAdapterSupport {
+public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
 
     /**
      * Required to @Inject ConnectionFactory in classes
@@ -38,6 +37,7 @@ public class ResourceAdaptorProducer implements ResourceAdapterSupport {
         activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
         activeMQResourceAdapter.setConnectionParameters("host=localhost;port=61616");
         activeMQResourceAdapter.setUseJNDI(false);
+        activeMQResourceAdapter.setIgnoreJTA(false);
         activeMQResourceAdapter.setPassword("quarkus");
         activeMQResourceAdapter.setUserName("quarkus");
     }

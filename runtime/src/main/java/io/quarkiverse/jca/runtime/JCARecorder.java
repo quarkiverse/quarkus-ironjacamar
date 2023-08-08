@@ -27,7 +27,7 @@ public class JCARecorder {
         Vertx vertx = vertxSupplier.get();
         try {
             Class<? extends ResourceAdapter> resourceAdapterClass = (Class<? extends ResourceAdapter>) Class
-                    .forName(resourceAdapterClassName);
+                    .forName(resourceAdapterClassName, true, Thread.currentThread().getContextClassLoader());
             // TODO: Check if class name matches
             try (InstanceHandle<? extends ResourceAdapter> instanceHandle = Arc.container().instance(resourceAdapterClass)) {
                 resourceAdapter = instanceHandle.get();
