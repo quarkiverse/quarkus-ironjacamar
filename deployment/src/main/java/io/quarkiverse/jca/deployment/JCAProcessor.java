@@ -12,8 +12,8 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
 
 import io.quarkiverse.jca.runtime.JCARecorder;
-import io.quarkiverse.jca.runtime.ResourceEndpoint;
-import io.quarkiverse.jca.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.runtime.endpoint.ResourceEndpoint;
+import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.arc.processor.DotNames;
@@ -87,9 +87,9 @@ class JCAProcessor {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
             RuntimeValue<ResourceAdapter> resourceAdapter = recorder.deployResourceAdapter(
                     vertxBuildItem.getVertx(),
-                    resourceAdapterBuildItem.className);
+                    resourceAdapterBuildItem.resourceAdapterClassName);
             ShutdownListener shutdownListener = recorder.activateEndpoints(resourceAdapter,
-                    resourceAdapterBuildItem.endpointsClassNames);
+                    resourceAdapterBuildItem.endpointClassnames);
             shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
         }
         return new ServiceStartBuildItem(FEATURE);

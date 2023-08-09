@@ -13,7 +13,8 @@ import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
-import io.quarkiverse.jca.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.runtime.endpoint.DefaultMessageEndpointFactory;
+import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.InstanceHandle;
@@ -38,7 +39,7 @@ public class JCARecorder {
                 resourceAdapter = instanceHandle.get();
                 // Notify observers
                 resourceAdapterSupport().configureResourceAdapter(resourceAdapter);
-                Log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapter);
+                Log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapterClassName);
                 JCAVerticle verticle = new JCAVerticle(resourceAdapter);
                 vertx.deployVerticle(verticle, new DeploymentOptions()
                         .setWorkerPoolName("jca-worker-pool")

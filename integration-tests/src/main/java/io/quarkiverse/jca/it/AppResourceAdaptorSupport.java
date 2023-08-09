@@ -17,7 +17,7 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
-import io.quarkiverse.jca.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 
 @Singleton
 public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
@@ -47,7 +47,7 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         // TODO: Read from the config properties map
         activationSpec.setDestinationType("jakarta.jms.Queue");
-        activationSpec.setMaxSession(2);
+        activationSpec.setMaxSession(10);
         activationSpec.setDestination("MyQueue");
         activationSpec.setRebalanceConnections(true);
         activationSpec.setUseJNDI(false);

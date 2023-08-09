@@ -9,12 +9,13 @@ import io.quarkus.builder.item.MultiBuildItem;
  */
 public final class ResourceAdapterBuildItem extends MultiBuildItem {
 
-    public final String className;
+    public final String resourceAdapterClassName;
 
-    public final Set<String> endpointsClassNames;
+    public final Set<String> endpointClassnames;
 
-    public ResourceAdapterBuildItem(String className, Set<String> endpointsClassNames) {
-        this.className = className;
-        this.endpointsClassNames = endpointsClassNames;
+    public ResourceAdapterBuildItem(String className, Set<String> endpointClasses) {
+        //TODO: Create a builder for this class
+        this.resourceAdapterClassName = className;
+        this.endpointClassnames = endpointClasses;
     }
 }

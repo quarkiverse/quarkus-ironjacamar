@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime;
+package io.quarkiverse.jca.runtime.endpoint;
 
 import java.lang.reflect.Method;
 
