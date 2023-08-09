@@ -58,8 +58,11 @@ class JCAProcessor {
 
         for (ClassInfo implementor : index.getAllKnownImplementors(ResourceAdapter.class)) {
             String resourceAdapterClassName = implementor.name().toString();
-            resourceAdapterBuildItemBuildProducer
-                    .produce(new ResourceAdapterBuildItem(resourceAdapterClassName, endpoints));
+            ResourceAdapterBuildItem resourceAdapterBuildItem = ResourceAdapterBuildItem
+                    .builder(resourceAdapterClassName)
+                    .addEndpoints(endpoints)
+                    .build();
+            resourceAdapterBuildItemBuildProducer.produce(resourceAdapterBuildItem);
             // Register ResourceAdapter as @Singleton beans
             additionalBeans.produce(AdditionalBeanBuildItem.builder()
                     .addBeanClass(resourceAdapterClassName)
