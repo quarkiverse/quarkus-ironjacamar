@@ -1,22 +1,27 @@
 package io.quarkiverse.jca.runtime;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
+import jakarta.resource.spi.BootstrapContext;
 import jakarta.resource.spi.ResourceAdapter;
+import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
+import jakarta.resource.spi.work.WorkManager;
+import jakarta.transaction.TransactionSynchronizationRegistry;
 
-import io.quarkiverse.jca.runtime.impl.DefaultMessageEndpointFactory;
-import io.quarkiverse.jca.runtime.impl.JCAVerticle;
-import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 import io.quarkus.arc.Arc;
+import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
@@ -74,5 +79,31 @@ public class JCARecorder {
 
     private static ResourceAdapterSupport resourceAdapterSupport() {
         return Arc.container().instance(ResourceAdapterSupport.class).get();
+    }
+
+    static final class JCAVerticle extends AbstractVerticle {
+        private final ResourceAdapter ra;
+
+        public JCAVerticle(ResourceAdapter resourceAdapter) {
+            ra = Objects.requireNonNull(resourceAdapter);
+        }
+
+        @Override
+        public void start() throws Exception {
+            Log.infof("Starting JCA Resource Adapter %s", ra);
+            WorkManager workManager = new VertxWorkManager(vertx);
+            // Lookup JTA resources
+            ArcContainer container = Arc.container();
+            TransactionSynchronizationRegistry registry = container.instance(TransactionSynchronizationRegistry.class).get();
+            XATerminator xaTerminator = container.instance(XATerminator.class).get();
+            // Create BootstrapContext
+            BootstrapContext bootstrapContext = new DefaultBootstrapContext(workManager, registry, xaTerminator);
+            ra.start(bootstrapContext);
+        }
+
+        @Override
+        public void stop() {
+            ra.stop();
+        }
     }
 }

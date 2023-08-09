@@ -17,7 +17,7 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
-import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 
 @Singleton
 public class AppResourceAdaptorSupport implements ResourceAdapterSupport {

@@ -12,8 +12,8 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
 
 import io.quarkiverse.jca.runtime.JCARecorder;
-import io.quarkiverse.jca.runtime.api.ResourceEndpoint;
-import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.runtime.ResourceEndpoint;
+import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.arc.processor.DotNames;
