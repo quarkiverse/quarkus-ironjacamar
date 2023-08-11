@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.BootstrapContext;
 import jakarta.resource.spi.ResourceAdapter;
@@ -13,12 +12,13 @@ import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
+import org.jboss.logging.Logger;
+
 import io.quarkiverse.jca.runtime.endpoint.DefaultMessageEndpointFactory;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.InstanceHandle;
-import io.quarkus.logging.Log;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
@@ -28,27 +28,26 @@ import io.vertx.core.Vertx;
 
 @Recorder
 public class JCARecorder {
-    public RuntimeValue<ResourceAdapter> deployResourceAdapter(Supplier<Vertx> vertxSupplier, String resourceAdapterClassName) {
+
+    private static final Logger log = Logger.getLogger(JCARecorder.class);
+
+    public RuntimeValue<ResourceAdapter> deployResourceAdapter(Supplier<Vertx> vertxSupplier, String resourceAdapterClassName)
+            throws Exception {
         ResourceAdapter resourceAdapter = null;
         Vertx vertx = vertxSupplier.get();
-        try {
-            Class<? extends ResourceAdapter> resourceAdapterClass = (Class<? extends ResourceAdapter>) Class
-                    .forName(resourceAdapterClassName, true, Thread.currentThread().getContextClassLoader());
-            // TODO: Check if class name matches
-            try (InstanceHandle<? extends ResourceAdapter> instanceHandle = Arc.container().instance(resourceAdapterClass)) {
-                resourceAdapter = instanceHandle.get();
-                // Notify observers
-                resourceAdapterSupport().configureResourceAdapter(resourceAdapter);
-                Log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapterClassName);
-                JCAVerticle verticle = new JCAVerticle(resourceAdapter);
-                vertx.deployVerticle(verticle, new DeploymentOptions()
-                        .setWorkerPoolName("jca-worker-pool")
-                        .setWorkerPoolSize(1)
-                        .setWorker(true));
-            }
-        } catch (Exception e) {
-            //FIXME: bubble up the exception
-            Log.error("Cannot deploy", e);
+        Class<? extends ResourceAdapter> resourceAdapterClass = (Class<? extends ResourceAdapter>) Class
+                .forName(resourceAdapterClassName, true, Thread.currentThread().getContextClassLoader());
+        // TODO: Check if class name matches
+        try (InstanceHandle<? extends ResourceAdapter> instanceHandle = Arc.container().instance(resourceAdapterClass)) {
+            resourceAdapter = instanceHandle.get();
+            // Notify observers
+            resourceAdapterSupport().configureResourceAdapter(resourceAdapter);
+            log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapterClassName);
+            JCAVerticle verticle = new JCAVerticle(resourceAdapter);
+            vertx.deployVerticle(verticle, new DeploymentOptions()
+                    .setWorkerPoolName("jca-worker-pool")
+                    .setWorkerPoolSize(1)
+                    .setWorker(true));
         }
         return new RuntimeValue<>(resourceAdapter);
     }
@@ -67,11 +66,11 @@ public class JCARecorder {
             }
             MessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass,
                     resourceAdapterSupport);
-            ActivationSpec activationSpec = resourceAdapterSupport.createActivationSpec(endpointClass);
             try {
+                ActivationSpec activationSpec = resourceAdapterSupport.createActivationSpec(adapter, endpointClass);
                 adapter.endpointActivation(messageEndpointFactory, activationSpec);
                 endpointRegistry.registerEndpoint(messageEndpointFactory, activationSpec);
-            } catch (ResourceException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -91,7 +90,7 @@ public class JCARecorder {
 
         @Override
         public void start() throws Exception {
-            Log.infof("Starting JCA Resource Adapter %s", ra);
+            log.infof("Starting JCA Resource Adapter %s", ra);
             WorkManager workManager = new VertxWorkManager(vertx);
             // Lookup JTA resources
             ArcContainer container = Arc.container();

@@ -86,7 +86,7 @@ class JCAProcessor {
             List<ResourceAdapterBuildItem> resourceAdapterBuildItems,
             JCARecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
-            BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) {
+            BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) throws Exception {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
             RuntimeValue<ResourceAdapter> resourceAdapter = recorder.deployResourceAdapter(
                     vertxBuildItem.getVertx(),

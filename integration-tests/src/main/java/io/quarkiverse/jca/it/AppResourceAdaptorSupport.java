@@ -35,7 +35,10 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
     public void configureResourceAdapter(ResourceAdapter resourceAdapter) {
         ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
         activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
-        activeMQResourceAdapter.setConnectionParameters("host=localhost;port=61616");
+        activeMQResourceAdapter
+                .setConnectionParameters("host=localhost;port=5445;protocols=HORNETQ");
+        activeMQResourceAdapter.setProtocolManagerFactoryStr(
+                "org.apache.activemq.artemis.core.protocol.hornetq.client.HornetQClientProtocolManagerFactory");
         activeMQResourceAdapter.setUseJNDI(false);
         activeMQResourceAdapter.setIgnoreJTA(false);
         activeMQResourceAdapter.setPassword("quarkus");
@@ -43,14 +46,17 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
     }
 
     @Override
-    public ActivationSpec createActivationSpec(Class<?> type) {
+    public ActivationSpec createActivationSpec(ResourceAdapter resourceAdapter, Class<?> type) throws Exception {
+        ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         // TODO: Read from the config properties map
         activationSpec.setDestinationType("jakarta.jms.Queue");
         activationSpec.setMaxSession(10);
-        activationSpec.setDestination("MyQueue");
+        activationSpec.setDestination("jms.queue.MyQueue");
         activationSpec.setRebalanceConnections(true);
         activationSpec.setUseJNDI(false);
+        activationSpec.setUserName(activeMQResourceAdapter.getUserName());
+        activationSpec.setPassword(activeMQResourceAdapter.getPassword());
         return activationSpec;
     }
 

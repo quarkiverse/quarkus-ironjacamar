@@ -24,7 +24,7 @@ public interface ResourceAdapterSupport {
      * @param type the type
      * @return the activation spec
      */
-    ActivationSpec createActivationSpec(Class<?> type);
+    ActivationSpec createActivationSpec(ResourceAdapter adapter, Class<?> type) throws Exception;
 
     /**
      * In some cases, the ResourceEndpoint requires a specific interface to be implemented
