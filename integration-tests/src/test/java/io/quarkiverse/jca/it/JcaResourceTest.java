@@ -16,6 +16,11 @@ public class JcaResourceTest {
     }
 
     @Test
+    public void testProducerRollback() {
+        given().when().get("/jca?name=rollback").then().statusCode(200).body(is("Hello rollback"));
+    }
+
+    @Test
     public void testTransacted() {
         given().when().get("/jca/transacted").then().statusCode(200).body(is("true"));
     }

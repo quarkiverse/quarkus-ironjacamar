@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
+import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
@@ -12,6 +13,7 @@ import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory;
@@ -29,11 +31,14 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
      */
     @Produces
     @ApplicationScoped
-    public ActiveMQRAConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter,
-            ConnectionManager connectionManager) throws Exception {
+    public ConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter,
+            ConnectionManager connectionManager,
+            TransactionManager transactionManager) throws Exception {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
-        return (ActiveMQRAConnectionFactory) factory.createConnectionFactory(connectionManager);
+        ActiveMQRAConnectionFactory activeMQRAConnectionFactory = (ActiveMQRAConnectionFactory) factory
+                .createConnectionFactory(connectionManager);
+        return new TransactionAwareConnectionFactory(activeMQRAConnectionFactory, transactionManager);
     }
 
     @Override
