@@ -28,7 +28,11 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
     @Produces
     @ApplicationScoped
     public ActiveMQConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter) {
-        return adapter.getConnectionFactory(adapter.getProperties());
+        ActiveMQConnectionFactory connectionFactory = adapter.getConnectionFactory(adapter.getProperties());
+        // Maybe not needed, but let's provide the username/password
+        connectionFactory.setUser(adapter.getUserName());
+        connectionFactory.setPassword(adapter.getPassword());
+        return connectionFactory;
     }
 
     @Override
@@ -41,8 +45,8 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
                 "org.apache.activemq.artemis.core.protocol.hornetq.client.HornetQClientProtocolManagerFactory");
         activeMQResourceAdapter.setUseJNDI(false);
         activeMQResourceAdapter.setIgnoreJTA(false);
-        activeMQResourceAdapter.setPassword("quarkus");
-        activeMQResourceAdapter.setUserName("quarkus");
+        activeMQResourceAdapter.setPassword("guest");
+        activeMQResourceAdapter.setUserName("guest");
     }
 
     @Override
