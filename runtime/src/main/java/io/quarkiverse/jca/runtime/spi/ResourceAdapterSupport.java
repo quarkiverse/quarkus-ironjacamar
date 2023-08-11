@@ -16,7 +16,7 @@ public interface ResourceAdapterSupport {
      *
      * @param resourceAdapter the resource adapter
      */
-    void configureResourceAdapter(ResourceAdapter resourceAdapter);
+    void configureResourceAdapter(ResourceAdapter resourceAdapter) throws Exception;
 
     /**
      * Create an activation spec for the given type.
