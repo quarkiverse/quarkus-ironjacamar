@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
+import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
@@ -53,14 +54,12 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
     public ActivationSpec createActivationSpec(ResourceAdapter resourceAdapter, Class<?> type) throws Exception {
         ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
-        // TODO: Read from the config properties map
+        activationSpec.setResourceAdapter(activeMQResourceAdapter);
         activationSpec.setDestinationType("jakarta.jms.Queue");
-        activationSpec.setMaxSession(10);
+        activationSpec.setMaxSession(2);
         activationSpec.setDestination("jms.queue.MyQueue");
         activationSpec.setRebalanceConnections(true);
         activationSpec.setUseJNDI(false);
-        activationSpec.setUserName(activeMQResourceAdapter.getUserName());
-        activationSpec.setPassword(activeMQResourceAdapter.getPassword());
         return activationSpec;
     }
 
