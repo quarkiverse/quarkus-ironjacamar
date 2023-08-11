@@ -5,16 +5,17 @@ import java.lang.reflect.Method;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
+import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory;
+import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
@@ -28,16 +29,15 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
      */
     @Produces
     @ApplicationScoped
-    public ActiveMQConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter) {
-        ActiveMQConnectionFactory connectionFactory = adapter.getConnectionFactory(adapter.getProperties());
-        // Maybe not needed, but let's provide the username/password
-        connectionFactory.setUser(adapter.getUserName());
-        connectionFactory.setPassword(adapter.getPassword());
-        return connectionFactory;
+    public ActiveMQRAConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter,
+            ConnectionManager connectionManager) throws Exception {
+        ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
+        factory.setResourceAdapter(adapter);
+        return (ActiveMQRAConnectionFactory) factory.createConnectionFactory(connectionManager);
     }
 
     @Override
-    public void configureResourceAdapter(ResourceAdapter resourceAdapter) {
+    public void configureResourceAdapter(ResourceAdapter resourceAdapter) throws Exception {
         ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
         activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
         activeMQResourceAdapter
@@ -45,7 +45,6 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
         activeMQResourceAdapter.setProtocolManagerFactoryStr(
                 "org.apache.activemq.artemis.core.protocol.hornetq.client.HornetQClientProtocolManagerFactory");
         activeMQResourceAdapter.setUseJNDI(false);
-        activeMQResourceAdapter.setIgnoreJTA(false);
         activeMQResourceAdapter.setPassword("guest");
         activeMQResourceAdapter.setUserName("guest");
     }

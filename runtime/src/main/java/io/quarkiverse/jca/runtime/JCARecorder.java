@@ -108,13 +108,13 @@ public class JCARecorder {
         @Override
         public void start() throws Exception {
             log.infof("Starting JCA Resource Adapter %s", ra);
-            WorkManager workManager = new VertxWorkManager(vertx);
+            WorkManager workManager = new QuarkusWorkManager(vertx);
             // Lookup JTA resources
             ArcContainer container = Arc.container();
             TransactionSynchronizationRegistry registry = container.instance(TransactionSynchronizationRegistry.class).get();
             XATerminator xaTerminator = container.instance(XATerminator.class).get();
             // Create BootstrapContext
-            BootstrapContext bootstrapContext = new DefaultBootstrapContext(workManager, registry, xaTerminator);
+            BootstrapContext bootstrapContext = new QuarkusBootstrapContext(workManager, registry, xaTerminator);
             ra.start(bootstrapContext);
         }
 

@@ -12,6 +12,7 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
 
 import io.quarkiverse.jca.runtime.JCARecorder;
+import io.quarkiverse.jca.runtime.QuarkusConnectionManager;
 import io.quarkiverse.jca.runtime.endpoint.ResourceEndpoint;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -69,6 +70,11 @@ class JCAProcessor {
                     .setUnremovable()
                     .build());
         }
+
+        // Register CDI managed beans
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClasses(QuarkusConnectionManager.class)
+                .build());
     }
 
     @BuildStep

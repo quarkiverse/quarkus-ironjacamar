@@ -11,13 +11,13 @@ import io.quarkus.logging.Log;
 import io.vertx.core.Vertx;
 import io.vertx.core.WorkerExecutor;
 
-class VertxWorkManager implements WorkManager {
+class QuarkusWorkManager implements WorkManager {
 
     private final Vertx vertx;
 
     private final WorkerExecutor executor;
 
-    public VertxWorkManager(Vertx vertx) {
+    public QuarkusWorkManager(Vertx vertx) {
         this.vertx = vertx;
         // TODO: Make the pool size configurable? Or use the Vert.x default?
         this.executor = vertx.createSharedWorkerExecutor("jca-work-manager", 5);

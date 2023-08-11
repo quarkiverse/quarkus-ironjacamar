@@ -9,13 +9,13 @@ import jakarta.resource.spi.work.WorkContext;
 import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
-class DefaultBootstrapContext implements BootstrapContext {
+class QuarkusBootstrapContext implements BootstrapContext {
 
     private final WorkManager workManager;
     private final TransactionSynchronizationRegistry transactionSynchronizationRegistry;
     private final XATerminator xaTerminator;
 
-    public DefaultBootstrapContext(WorkManager workManager,
+    public QuarkusBootstrapContext(WorkManager workManager,
             TransactionSynchronizationRegistry transactionSynchronizationRegistry,
             XATerminator xaTerminator) {
         this.workManager = workManager;

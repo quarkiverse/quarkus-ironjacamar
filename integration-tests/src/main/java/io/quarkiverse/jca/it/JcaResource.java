@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
+import jakarta.jms.JMSProducer;
 import jakarta.jms.Queue;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DefaultValue;
@@ -11,8 +12,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
-import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
+import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.smallrye.common.annotation.Blocking;
 
 @Path("/jca")
 @ApplicationScoped
@@ -23,25 +24,32 @@ public class JcaResource {
     ConnectionFactory factory;
 
     @GET
-    @Transactional
-    public Uni<String> hello(@QueryParam("name") @DefaultValue("JCA") String name) {
-        return Uni.createFrom().item(Unchecked.supplier(() -> {
-            try (JMSContext context = factory.createContext()) {
-                Queue myQueue = context.createQueue("MyQueue");
-                for (int i = 0; i < 10; i++) {
-                    context.createProducer().send(myQueue, "Hello " + name);
-                }
-                return "Hello " + name;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+    @Blocking
+    public String hello(@QueryParam("name") @DefaultValue("JCA") String name) {
+        try (JMSContext context = factory.createContext()) {
+            Queue myQueue = context.createQueue("MyQueue");
+            JMSProducer producer = context.createProducer();
+            for (int i = 0; i < 10; i++) {
+                producer.send(myQueue, "Hello " + name);
             }
-        }));
+            if (name.equals("rollback"))
+                QuarkusTransaction.setRollbackOnly();
+            return "Hello " + name;
+        }
     }
 
     @GET
     @Path("/transacted")
     @Transactional
     public boolean isTransacted() {
+        try (JMSContext context = factory.createContext()) {
+            return context.getTransacted();
+        }
+    }
+
+    @GET
+    @Path("/not-transacted")
+    public boolean isNotTransacted() {
         try (JMSContext context = factory.createContext()) {
             return context.getTransacted();
         }
