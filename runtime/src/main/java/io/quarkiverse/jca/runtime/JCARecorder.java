@@ -2,6 +2,8 @@ package io.quarkiverse.jca.runtime;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import jakarta.resource.spi.ActivationSpec;
@@ -19,11 +21,12 @@ import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.InstanceHandle;
-import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 
 @Recorder
@@ -31,31 +34,45 @@ public class JCARecorder {
 
     private static final Logger log = Logger.getLogger(JCARecorder.class);
 
-    public RuntimeValue<ResourceAdapter> deployResourceAdapter(Supplier<Vertx> vertxSupplier, String resourceAdapterClassName)
+    public ShutdownListener initResourceAdapter(Supplier<Vertx> vertxSupplier, String resourceAdapterClassName,
+            Set<String> endpointClassnames)
             throws Exception {
-        ResourceAdapter resourceAdapter = null;
         Vertx vertx = vertxSupplier.get();
         Class<? extends ResourceAdapter> resourceAdapterClass = (Class<? extends ResourceAdapter>) Class
                 .forName(resourceAdapterClassName, true, Thread.currentThread().getContextClassLoader());
-        // TODO: Check if class name matches
         try (InstanceHandle<? extends ResourceAdapter> instanceHandle = Arc.container().instance(resourceAdapterClass)) {
-            resourceAdapter = instanceHandle.get();
-            // Notify observers
+            final ResourceAdapter resourceAdapter = instanceHandle.get();
             resourceAdapterSupport().configureResourceAdapter(resourceAdapter);
             log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapterClassName);
             JCAVerticle verticle = new JCAVerticle(resourceAdapter);
+            //TODO: maybe there is a better way to do this
+            CountDownLatch latch = new CountDownLatch(1);
+            AtomicBoolean started = new AtomicBoolean();
             vertx.deployVerticle(verticle, new DeploymentOptions()
                     .setWorkerPoolName("jca-worker-pool")
                     .setWorkerPoolSize(1)
-                    .setWorker(true));
+                    .setWorker(true),
+                    new Handler<AsyncResult<String>>() {
+                        @Override
+                        public void handle(AsyncResult<String> event) {
+                            started.set(event.succeeded());
+                            if (event.failed()) {
+                                log.errorf(event.cause(), "Failed to deploy JCA Resource Adapter: %s ", event.result());
+                            }
+                            latch.countDown();
+                        }
+                    });
+            latch.await();
+            if (started.get()) {
+                return activateEndpoints(resourceAdapter, endpointClassnames);
+            }
+            return null;
         }
-        return new RuntimeValue<>(resourceAdapter);
     }
 
-    public ShutdownListener activateEndpoints(RuntimeValue<ResourceAdapter> resourceAdapterRuntimeValue,
+    private ShutdownListener activateEndpoints(ResourceAdapter adapter,
             Set<String> endpointClassNames) {
         ResourceAdapterSupport resourceAdapterSupport = resourceAdapterSupport();
-        ResourceAdapter adapter = resourceAdapterRuntimeValue.getValue();
         ResourceAdapterShutdownListener endpointRegistry = new ResourceAdapterShutdownListener(adapter);
         for (String endpointClassName : endpointClassNames) {
             Class<?> endpointClass = null;

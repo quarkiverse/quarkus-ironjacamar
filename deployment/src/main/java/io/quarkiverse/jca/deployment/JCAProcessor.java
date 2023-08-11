@@ -25,7 +25,6 @@ import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.ShutdownListenerBuildItem;
-import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 
@@ -88,12 +87,13 @@ class JCAProcessor {
             CoreVertxBuildItem vertxBuildItem,
             BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) throws Exception {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
-            RuntimeValue<ResourceAdapter> resourceAdapter = recorder.deployResourceAdapter(
+            ShutdownListener shutdownListener = recorder.initResourceAdapter(
                     vertxBuildItem.getVertx(),
-                    resourceAdapterBuildItem.resourceAdapterClassName);
-            ShutdownListener shutdownListener = recorder.activateEndpoints(resourceAdapter,
+                    resourceAdapterBuildItem.resourceAdapterClassName,
                     resourceAdapterBuildItem.endpointClassnames);
-            shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
+            if (shutdownListener != null) {
+                shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
+            }
         }
         return new ServiceStartBuildItem(FEATURE);
     }
