@@ -19,7 +19,7 @@ import io.quarkus.logging.Log;
 @ApplicationScoped
 public class QuarkusConnectionManager implements ConnectionManager {
 
-    ConcurrentHashMap<ManagedConnection, Long> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<ManagedConnection, Long> connections = new ConcurrentHashMap<>();
 
     @Override
     public Object allocateConnection(ManagedConnectionFactory mcf, ConnectionRequestInfo cxRequestInfo)

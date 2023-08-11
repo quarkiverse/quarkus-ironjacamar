@@ -13,7 +13,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
 import io.quarkus.narayana.jta.QuarkusTransaction;
-import io.smallrye.common.annotation.Blocking;
 
 @Path("/jca")
 @ApplicationScoped
@@ -24,12 +23,12 @@ public class JcaResource {
     ConnectionFactory factory;
 
     @GET
-    @Blocking
+    @Transactional
     public String hello(@QueryParam("name") @DefaultValue("JCA") String name) {
         try (JMSContext context = factory.createContext()) {
             Queue myQueue = context.createQueue("MyQueue");
             JMSProducer producer = context.createProducer();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 2; i++) {
                 producer.send(myQueue, "Hello " + name);
             }
             if (name.equals("rollback"))
