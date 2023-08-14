@@ -113,4 +113,8 @@ class QuarkusWorkManager implements WorkManager {
         });
         workListener.workAccepted(new WorkEvent(this, WorkEvent.WORK_ACCEPTED, work, null));
     }
+
+    public void close() {
+        executor.close();
+    }
 }

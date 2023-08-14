@@ -1,6 +1,8 @@
 package io.quarkiverse.jca.runtime;
 
-import io.vertx.core.impl.ConcurrentHashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.resource.ResourceException;
@@ -10,10 +12,10 @@ import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ConnectionRequestInfo;
 import jakarta.resource.spi.ManagedConnection;
 import jakarta.resource.spi.ManagedConnectionFactory;
+
 import org.jboss.logging.Logger;
 
-import java.util.Iterator;
-import java.util.Set;
+import io.vertx.core.impl.ConcurrentHashSet;
 
 /**
  * A {@link ConnectionManager} provides a hook for the resource adapter to pass a connection request to Quarkus

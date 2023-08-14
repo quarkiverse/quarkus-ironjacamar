@@ -11,7 +11,6 @@ import jakarta.resource.spi.BootstrapContext;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
-import jakarta.resource.spi.work.WorkManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.jboss.logging.Logger;
@@ -100,6 +99,7 @@ public class JCARecorder {
 
     static final class JCAVerticle extends AbstractVerticle {
         private final ResourceAdapter ra;
+        private QuarkusWorkManager workManager;
 
         public JCAVerticle(ResourceAdapter resourceAdapter) {
             ra = Objects.requireNonNull(resourceAdapter);
@@ -108,7 +108,7 @@ public class JCARecorder {
         @Override
         public void start() throws Exception {
             log.infof("Starting JCA Resource Adapter %s", ra);
-            WorkManager workManager = new QuarkusWorkManager(vertx);
+            workManager = new QuarkusWorkManager(vertx);
             // Lookup JTA resources
             ArcContainer container = Arc.container();
             TransactionSynchronizationRegistry registry = container.instance(TransactionSynchronizationRegistry.class).get();
@@ -120,6 +120,9 @@ public class JCARecorder {
 
         @Override
         public void stop() {
+            if (workManager != null) {
+                workManager.close();
+            }
             ra.stop();
         }
     }
