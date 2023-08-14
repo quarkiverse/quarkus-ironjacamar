@@ -38,6 +38,8 @@ public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
         factory.setResourceAdapter(adapter);
         ActiveMQRAConnectionFactory activeMQRAConnectionFactory = (ActiveMQRAConnectionFactory) factory
                 .createConnectionFactory(connectionManager);
+        //        return activeMQRAConnectionFactory;
+        //TODO: Manage the transaction using the ConnectionManager
         return new TransactionAwareConnectionFactory(activeMQRAConnectionFactory, transactionManager);
     }
 

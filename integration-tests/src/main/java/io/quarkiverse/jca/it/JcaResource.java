@@ -32,11 +32,6 @@ public class JcaResource {
                 producer.send(myQueue, "Hello " + name);
             }
             System.out.println("MESSAGES SENT");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
             if (name.equals("rollback"))
                 QuarkusTransaction.setRollbackOnly();
         }
