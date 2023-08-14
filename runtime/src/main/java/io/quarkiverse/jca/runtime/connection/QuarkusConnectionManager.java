@@ -1,7 +1,6 @@
 package io.quarkiverse.jca.runtime.connection;
 
 import jakarta.annotation.PreDestroy;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ConnectionRequestInfo;
@@ -13,7 +12,6 @@ import org.jboss.logging.Logger;
 /**
  * A {@link ConnectionManager} provides a hook for the resource adapter to pass a connection request to Quarkus
  */
-@ApplicationScoped
 public class QuarkusConnectionManager implements ConnectionManager {
 
     private final Logger log = Logger.getLogger(QuarkusConnectionManager.class);

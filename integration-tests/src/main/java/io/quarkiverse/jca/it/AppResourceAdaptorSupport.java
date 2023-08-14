@@ -13,7 +13,6 @@ import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
-import jakarta.transaction.TransactionManager;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory;
@@ -26,21 +25,22 @@ import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 @Singleton
 public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
 
+    @Produces
+    @Singleton
+    public ActiveMQRAManagedConnectionFactory getConnectionFactory(ActiveMQResourceAdapter adapter) throws Exception {
+        ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
+        factory.setResourceAdapter(adapter);
+        return factory;
+    }
+
     /**
      * Required to @Inject ConnectionFactory in classes
      */
     @Produces
     @ApplicationScoped
-    public ConnectionFactory createConnectionFactory(ActiveMQResourceAdapter adapter,
-            ConnectionManager connectionManager,
-            TransactionManager transactionManager) throws Exception {
-        ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
-        factory.setResourceAdapter(adapter);
-        ActiveMQRAConnectionFactory activeMQRAConnectionFactory = (ActiveMQRAConnectionFactory) factory
-                .createConnectionFactory(connectionManager);
-        //        return activeMQRAConnectionFactory;
-        //TODO: Manage the transaction using the ConnectionManager
-        return new TransactionAwareConnectionFactory(activeMQRAConnectionFactory, transactionManager);
+    public ConnectionFactory createConnectionFactory(ActiveMQRAManagedConnectionFactory mcf,
+            ConnectionManager connectionManager) throws Exception {
+        return (ActiveMQRAConnectionFactory) mcf.createConnectionFactory(connectionManager);
     }
 
     @Override

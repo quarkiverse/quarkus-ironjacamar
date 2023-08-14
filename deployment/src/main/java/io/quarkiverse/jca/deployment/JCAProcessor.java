@@ -10,9 +10,10 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
+import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 import io.quarkiverse.jca.runtime.JCARecorder;
-import io.quarkiverse.jca.runtime.connection.QuarkusConnectionManager;
+import io.quarkiverse.jca.runtime.connection.ConnectionManagerProducer;
 import io.quarkiverse.jca.runtime.endpoint.ResourceEndpoint;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -70,10 +71,10 @@ class JCAProcessor {
                     .setUnremovable()
                     .build());
         }
-
         // Register CDI managed beans
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                .addBeanClasses(QuarkusConnectionManager.class)
+                .addBeanClasses(ConnectionManagerProducer.class, TransactionIntegrationImpl.class)
+                .setDefaultScope(DotNames.SINGLETON)
                 .build());
     }
 
