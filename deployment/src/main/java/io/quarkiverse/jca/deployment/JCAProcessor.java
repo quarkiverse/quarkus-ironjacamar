@@ -13,7 +13,7 @@ import org.jboss.jandex.IndexView;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 import io.quarkiverse.jca.runtime.JCARecorder;
-import io.quarkiverse.jca.runtime.connection.ConnectionManagerProducer;
+import io.quarkiverse.jca.runtime.connectionmanager.ConnectionManagerProducer;
 import io.quarkiverse.jca.runtime.endpoint.ResourceEndpoint;
 import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
