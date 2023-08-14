@@ -48,11 +48,5 @@ public class ConnectionManagerProducer {
                         true,
                         true,
                         true);
-        //        TxConnectionManagerImpl manager = new TxConnectionManagerImpl(transactionIntegration, false);
-        //        OnePool onePool = new OnePool(mcf, new PoolConfiguration(), false, false,
-        //                ManagedConnectionPoolFactory.DEFAULT_IMPLEMENTATION);
-        //        manager.setPool(onePool);
-        //        onePool.setConnectionManager(manager);
-        //        return manager;
     }
 }
