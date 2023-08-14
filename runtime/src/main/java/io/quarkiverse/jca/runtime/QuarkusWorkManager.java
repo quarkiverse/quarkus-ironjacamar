@@ -11,6 +11,12 @@ import io.quarkus.logging.Log;
 import io.vertx.core.Vertx;
 import io.vertx.core.WorkerExecutor;
 
+/**
+ * Use Vert.x worker threads to execute JCA Work instances.
+ * <p>
+ * Note: The {@link WorkManager} provided in IronJacamar depends on JBoss Threads 2.4.0.Final,
+ * which is incompatible with Quarkus 3.x.
+ */
 class QuarkusWorkManager implements WorkManager {
 
     private final Vertx vertx;

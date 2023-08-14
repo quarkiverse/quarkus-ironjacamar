@@ -32,6 +32,10 @@
       <artifactId>ironjacamar-core-impl</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.jboss.threads</groupId>
           <artifactId>jboss-threads</artifactId>
         </exclusion>

@@ -33,11 +33,6 @@ public final class ResourceAdapterBuildItem extends MultiBuildItem {
             this.resourceAdapterClassName = Objects.requireNonNull(className, "className must not be null");
         }
 
-        public Builder addEndpoint(String endpointClassName) {
-            this.endpointClassnames.add(Objects.requireNonNull(endpointClassName, "endpointClassName must not be null"));
-            return this;
-        }
-
         public Builder addEndpoints(Set<String> endpointClassNames) {
             this.endpointClassnames.addAll(Objects.requireNonNull(endpointClassNames, "endpointClassNames must not be null"));
             return this;
