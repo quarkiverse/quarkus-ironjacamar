@@ -32,7 +32,7 @@ import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 
 class JCAProcessor {
 
-    private static final String FEATURE = "jca";
+    private static final String FEATURE = "ironjacamar";
 
     @BuildStep
     FeatureBuildItem feature() {

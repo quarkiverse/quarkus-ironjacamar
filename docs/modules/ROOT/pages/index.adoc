@@ -1,4 +1,4 @@
-= Quarkus Jca
+= Quarkus IronJacamar
 
 include::./includes/attributes.adoc[]
 
@@ -6,15 +6,15 @@ TIP: Describe what the extension does here.
 
 == Installation
 
-If you want to use this extension, you need to add the `io.quarkiverse.jca:quarkus-jca` extension first to your build file.
+If you want to use this extension, you need to add the `io.quarkiverse.ironjacamar:quarkus-ironjacamar` extension first to your build file.
 
 For instance, with Maven, add the following dependency to your POM file:
 
 [source,xml,subs=attributes+]
 ----
 <dependency>
-    <groupId>io.quarkiverse.jca</groupId>
-    <artifactId>quarkus-jca</artifactId>
+    <groupId>io.quarkiverse.ironjacamar</groupId>
+    <artifactId>quarkus-ironjacamar</artifactId>
     <version>{project-version}</version>
 </dependency>
 ----
@@ -24,4 +24,4 @@ For instance, with Maven, add the following dependency to your POM file:
 
 TIP: Remove this section if you don't have Quarkus configuration properties in your extension.
 
-include::includes/quarkus-jca.adoc[leveloffset=+1, opts=optional]
+include::includes/quarkus-ironjacamar.adoc[leveloffset=+1, opts=optional]

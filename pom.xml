@@ -7,27 +7,26 @@
     <artifactId>quarkiverse-parent</artifactId>
     <version>15</version>
   </parent>
-  <groupId>io.quarkiverse.jca</groupId>
-  <artifactId>quarkus-jca-parent</artifactId>
+  <groupId>io.quarkiverse.ironjacamar</groupId>
+  <artifactId>quarkus-ironjacamar-parent</artifactId>
   <version>999-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Quarkus Jca - Parent</name>
+  <name>Quarkus IronJacamar - Parent</name>
   <modules>
     <module>deployment</module>
     <module>runtime</module>
     <module>docs</module>
   </modules>
   <scm>
-    <connection>scm:git:git@github.com:quarkiverse/quarkus-jca.git</connection>
-    <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-jca.git</developerConnection>
-    <url>https://github.com/quarkiverse/quarkus-jca</url>
+    <connection>scm:git:git@github.com:quarkiverse/quarkus-ironjacamar.git</connection>
+    <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-ironjacamar.git</developerConnection>
+    <url>https://github.com/quarkiverse/quarkus-ironjacamar</url>
   </scm>
   <properties>
-    <compiler-plugin.version>3.11.0</compiler-plugin.version>
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus.version>3.2.3.Final</quarkus.version>
+    <quarkus.version>3.2.4.Final</quarkus.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -50,7 +49,6 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>${compiler-plugin.version}</version>
           <configuration>
             <compilerArgs>
               <arg>-parameters</arg>
