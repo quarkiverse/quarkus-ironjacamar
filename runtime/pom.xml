@@ -30,7 +30,20 @@
     <dependency>
       <groupId>org.jboss.ironjacamar</groupId>
       <artifactId>ironjacamar-core-impl</artifactId>
-      <version>3.0.4.Final</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.threads</groupId>
+          <artifactId>jboss-threads</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jgroups</groupId>
+          <artifactId>jgroups</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.picketbox</groupId>
+          <artifactId>picketbox</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
