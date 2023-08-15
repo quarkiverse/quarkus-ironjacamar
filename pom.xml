@@ -43,6 +43,12 @@
         <artifactId>ironjacamar-core-impl</artifactId>
         <version>${ironjacamar.version}</version>
       </dependency>
+      <!-- Remove the managed dependency below when upgrading to Quarkus 3.3.0 -->
+      <dependency>
+        <groupId>jakarta.resource</groupId>
+        <artifactId>jakarta.resource-api</artifactId>
+        <version>2.1.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
