@@ -10,6 +10,7 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
+import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 import io.quarkiverse.jca.runtime.JCARecorder;
@@ -27,6 +28,8 @@ import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.ShutdownListenerBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 
@@ -84,6 +87,18 @@ class JCAProcessor {
                 ResourceAdapterSupport.class,
                 TransactionSynchronizationRegistry.class,
                 XATerminator.class);
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem registerForReflection() {
+        return ReflectiveClassBuildItem.builder(
+                SemaphoreArrayListManagedConnectionPool.class)
+                .build();
+    }
+
+    @BuildStep
+    NativeImageResourceBuildItem registerNativeResources() {
+        return new NativeImageResourceBuildItem("poolstatistics.properties");
     }
 
     @BuildStep
