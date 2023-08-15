@@ -18,15 +18,18 @@ import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolStrategy;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
-import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
+
+import io.quarkus.arc.DefaultBean;
 
 @ApplicationScoped
 public class ConnectionManagerProducer {
 
     @Produces
     @ApplicationScoped
-    public TxConnectionManager createConnectionManager(Instance<ManagedConnectionFactory> factories,
-            TransactionIntegrationImpl transactionIntegration,
+    @DefaultBean
+    public TxConnectionManager createConnectionManager(
+            Instance<ManagedConnectionFactory> factories,
+            TransactionIntegration transactionIntegration,
             CachedConnectionManager ccm) {
         ManagedConnectionFactory mcf = factories.get();
         Pool pool = new PoolFactory().create(PoolStrategy.ONE_POOL, mcf, new PoolConfiguration(), false, false,
@@ -57,6 +60,7 @@ public class ConnectionManagerProducer {
 
     @Produces
     @ApplicationScoped
+    @DefaultBean
     public CachedConnectionManager createCachedConnectionManager(TransactionIntegration transactionIntegration) {
         CachedConnectionManager ccm = new CachedConnectionManagerImpl(transactionIntegration);
         ccm.start();
