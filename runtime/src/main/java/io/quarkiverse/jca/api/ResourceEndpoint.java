@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime.endpoint;
+package io.quarkiverse.jca.api;
 
 import static java.lang.annotation.ElementType.TYPE;
 

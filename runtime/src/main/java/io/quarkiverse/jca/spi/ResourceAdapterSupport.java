@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime.spi;
+package io.quarkiverse.jca.spi;
 
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ResourceAdapter;

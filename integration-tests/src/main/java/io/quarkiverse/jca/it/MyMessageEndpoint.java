@@ -3,7 +3,7 @@ package io.quarkiverse.jca.it;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 
-import io.quarkiverse.jca.runtime.endpoint.ResourceEndpoint;
+import io.quarkiverse.jca.api.ResourceEndpoint;
 import io.quarkus.logging.Log;
 
 @ResourceEndpoint

@@ -16,7 +16,7 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import org.jboss.logging.Logger;
 
 import io.quarkiverse.jca.runtime.endpoint.DefaultMessageEndpointFactory;
-import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.InstanceHandle;

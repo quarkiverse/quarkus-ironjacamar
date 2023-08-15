@@ -13,10 +13,10 @@ import org.jboss.jandex.IndexView;
 import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
+import io.quarkiverse.jca.api.ResourceEndpoint;
 import io.quarkiverse.jca.runtime.JCARecorder;
 import io.quarkiverse.jca.runtime.connectionmanager.ConnectionManagerProducer;
-import io.quarkiverse.jca.runtime.endpoint.ResourceEndpoint;
-import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.arc.processor.DotNames;

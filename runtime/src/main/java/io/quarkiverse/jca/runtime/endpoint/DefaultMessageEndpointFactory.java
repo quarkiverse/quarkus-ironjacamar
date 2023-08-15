@@ -9,7 +9,7 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.Transactional;
 
-import io.quarkiverse.jca.runtime.spi.ResourceAdapterSupport;
+import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 import io.quarkus.arc.Arc;
 
 public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
