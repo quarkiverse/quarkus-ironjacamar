@@ -2,7 +2,7 @@
 
 include::./includes/attributes.adoc[]
 
-TIP: Describe what the extension does here.
+This extension allows you to deploy JCA Resource Adapters in Quarkus. IronJacamar is a Java Connector Architecture (JCA) implementation.
 
 == Installation
 
@@ -24,4 +24,4 @@ For instance, with Maven, add the following dependency to your POM file:
 
 TIP: Remove this section if you don't have Quarkus configuration properties in your extension.
 
-include::includes/quarkus-ironjacamar.adoc[leveloffset=+1, opts=optional]
+include::includes/quarkus-jca.adoc[leveloffset=+1, opts=optional]
