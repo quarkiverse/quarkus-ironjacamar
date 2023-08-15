@@ -3,11 +3,13 @@ package io.quarkiverse.jca.it;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
+@Disabled("Disabled until an Artemis server starts up in the test")
 public class JcaResourceTest {
 
     @Test
