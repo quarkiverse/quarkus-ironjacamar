@@ -1,6 +1,6 @@
 # Quarkus Jakarta Connectors
 
-[![Version](https://img.shields.io/maven-central/v/io.quarkiverse.jca/quarkus-jca?logo=apache-maven&style=flat-square)](https://search.maven.org/artifact/io.quarkiverse.jca/quarkus-jca)
+[![Version](https://img.shields.io/maven-central/v/io.quarkiverse.ironjacamar/quarkus-ironjacamar?logo=apache-maven&style=for-the-badge)](https://search.maven.org/artifact/io.quarkiverse.ironjacamar/quarkus-ironjacamar)
 
 ## Overview
 
