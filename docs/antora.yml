@@ -1,5 +1,5 @@
-name: quarkus-jca
-title: Quarkus Jca
+name: quarkus-ironjacamar
+title: Quarkus IronJacamar
 version: dev
 nav:
   - modules/ROOT/nav.adoc
