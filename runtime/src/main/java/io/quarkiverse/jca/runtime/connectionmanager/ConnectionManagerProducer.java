@@ -8,13 +8,16 @@ import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.TransactionSupport;
 
 import org.jboss.jca.common.api.metadata.common.FlushStrategy;
+import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.api.connectionmanager.pool.PoolConfiguration;
 import org.jboss.jca.core.connectionmanager.ConnectionManagerFactory;
 import org.jboss.jca.core.connectionmanager.TxConnectionManager;
+import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolStrategy;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
+import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 @ApplicationScoped
@@ -23,7 +26,8 @@ public class ConnectionManagerProducer {
     @Produces
     @ApplicationScoped
     public TxConnectionManager createConnectionManager(Instance<ManagedConnectionFactory> factories,
-            TransactionIntegrationImpl transactionIntegration) {
+            TransactionIntegrationImpl transactionIntegration,
+            CachedConnectionManager ccm) {
         ManagedConnectionFactory mcf = factories.get();
         Pool pool = new PoolFactory().create(PoolStrategy.ONE_POOL, mcf, new PoolConfiguration(), false, false,
                 ManagedConnectionPoolFactory.DEFAULT_IMPLEMENTATION);
@@ -33,8 +37,8 @@ public class ConnectionManagerProducer {
                         pool,
                         null,
                         null,
-                        false,
-                        null,
+                        true,
+                        ccm,
                         false,
                         true,
                         true,
@@ -49,6 +53,18 @@ public class ConnectionManagerProducer {
                         true,
                         true,
                         true);
+    }
+
+    @Produces
+    @ApplicationScoped
+    public CachedConnectionManager createCachedConnectionManager(TransactionIntegration transactionIntegration) {
+        CachedConnectionManager ccm = new CachedConnectionManagerImpl(transactionIntegration);
+        ccm.start();
+        return ccm;
+    }
+
+    public void destroyCachedConnectionManager(@Disposes CachedConnectionManager ccm) {
+        ccm.stop();
     }
 
     public void destroyConnectionManager(@Disposes TxConnectionManager connectionManager) {
