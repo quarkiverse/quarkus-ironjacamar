@@ -33,7 +33,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 
-class JCAProcessor {
+class IronJacamarProcessor {
 
     private static final String FEATURE = "ironjacamar";
 
