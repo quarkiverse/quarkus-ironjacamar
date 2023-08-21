@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime;
+package io.quarkiverse.ironjacamar.runtime;
 
 import jakarta.resource.spi.work.ExecutionContext;
 import jakarta.resource.spi.work.Work;

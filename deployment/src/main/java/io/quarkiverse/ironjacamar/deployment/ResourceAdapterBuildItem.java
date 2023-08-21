@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.deployment;
+package io.quarkiverse.ironjacamar.deployment;
 
 import java.util.HashSet;
 import java.util.Objects;

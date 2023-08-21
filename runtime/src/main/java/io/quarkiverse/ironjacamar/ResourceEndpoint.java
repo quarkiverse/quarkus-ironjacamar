@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.api;
+package io.quarkiverse.ironjacamar;
 
 import static java.lang.annotation.ElementType.TYPE;
 

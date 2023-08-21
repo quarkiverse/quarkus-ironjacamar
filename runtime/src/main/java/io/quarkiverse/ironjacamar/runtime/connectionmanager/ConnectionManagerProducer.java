@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime.connectionmanager;
+package io.quarkiverse.ironjacamar.runtime.connectionmanager;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;

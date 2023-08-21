@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.it;
+package io.quarkiverse.ironjacamar;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

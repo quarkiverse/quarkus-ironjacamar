@@ -1,9 +1,8 @@
-package io.quarkiverse.jca.it;
+package io.quarkiverse.ironjacamar;
 
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 
-import io.quarkiverse.jca.api.ResourceEndpoint;
 import io.quarkus.logging.Log;
 
 @ResourceEndpoint

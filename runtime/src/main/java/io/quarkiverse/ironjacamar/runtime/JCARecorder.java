@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime;
+package io.quarkiverse.ironjacamar.runtime;
 
 import java.util.Objects;
 import java.util.Set;
@@ -15,8 +15,8 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.jboss.logging.Logger;
 
-import io.quarkiverse.jca.runtime.endpoint.DefaultMessageEndpointFactory;
-import io.quarkiverse.jca.spi.ResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.ResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.InstanceHandle;

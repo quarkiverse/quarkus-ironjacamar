@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.it;
+package io.quarkiverse.ironjacamar;
 
 import java.lang.reflect.Method;
 
@@ -19,8 +19,6 @@ import org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
-
-import io.quarkiverse.jca.spi.ResourceAdapterSupport;
 
 @Singleton
 public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
