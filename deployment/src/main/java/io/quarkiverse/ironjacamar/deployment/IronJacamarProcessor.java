@@ -15,7 +15,7 @@ import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterSupport;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
-import io.quarkiverse.ironjacamar.runtime.JCARecorder;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.connectionmanager.ConnectionManagerProducer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
@@ -105,7 +105,7 @@ class IronJacamarProcessor {
     @Record(value = ExecutionTime.RUNTIME_INIT)
     ServiceStartBuildItem startResourceAdapters(
             List<ResourceAdapterBuildItem> resourceAdapterBuildItems,
-            JCARecorder recorder,
+            IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) throws Exception {
         for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {

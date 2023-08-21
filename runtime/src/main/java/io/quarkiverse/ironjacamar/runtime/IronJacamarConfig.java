@@ -9,9 +9,9 @@ import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-@ConfigProperties(prefix = "quarkus.jca")
+@ConfigProperties(prefix = "quarkus.ironjacamar")
 @ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
-public class JCAConfig {
+public class IronJacamarConfig {
 
     /**
      * The resource adapters to deploy.

@@ -29,9 +29,9 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 
 @Recorder
-public class JCARecorder {
+public class IronJacamarRecorder {
 
-    private static final Logger log = Logger.getLogger(JCARecorder.class);
+    private static final Logger log = Logger.getLogger(IronJacamarRecorder.class);
 
     public ShutdownListener initResourceAdapter(Supplier<Vertx> vertxSupplier, String resourceAdapterClassName,
             Set<String> endpointClassnames)
