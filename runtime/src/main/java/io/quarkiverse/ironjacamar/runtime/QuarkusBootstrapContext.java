@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.runtime;
+package io.quarkiverse.ironjacamar.runtime;
 
 import java.util.Timer;
 

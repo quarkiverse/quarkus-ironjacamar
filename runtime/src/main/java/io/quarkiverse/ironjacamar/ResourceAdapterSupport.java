@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.spi;
+package io.quarkiverse.ironjacamar;
 
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ResourceAdapter;

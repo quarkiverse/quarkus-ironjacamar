@@ -1,4 +1,4 @@
-package io.quarkiverse.jca.it;
+package io.quarkiverse.ironjacamar.it;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
