@@ -1,62 +1,63 @@
 package io.quarkiverse.ironjacamar;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
-import jakarta.resource.spi.ConnectionManager;
-import jakarta.resource.spi.ResourceAdapter;
+import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
-import org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
+/**
+ * This would be in the artemis-jms extension
+ */
 @Singleton
-public class AppResourceAdaptorSupport implements ResourceAdapterSupport {
+@ResourceAdapterKind("artemis")
+public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory<ActiveMQResourceAdapter> {
 
-    @Produces
-    @Singleton
-    public ActiveMQRAManagedConnectionFactory getConnectionFactory(ActiveMQResourceAdapter adapter) throws Exception {
+    /**
+     * Required to @Inject ConnectionFactory in classes
+     */
+    //    @Produces
+    //    @ApplicationScoped
+    //    public ConnectionFactory createConnectionFactory(ActiveMQRAManagedConnectionFactory mcf,
+    //            ConnectionManager connectionManager) throws Exception {
+    //        return (ActiveMQRAConnectionFactory) mcf.createConnectionFactory(connectionManager);
+    //    }
+
+    @Override
+    public ActiveMQResourceAdapter createResourceAdapter(Map<String, String> config) {
+        ActiveMQResourceAdapter adapter = new ActiveMQResourceAdapter();
+        adapter.setConnectorClassName(NettyConnectorFactory.class.getName());
+        adapter.setConnectionParameters(config.get("connection-parameters"));
+        adapter.setProtocolManagerFactoryStr(config.get("protocol-manager-factory"));
+        adapter.setUseJNDI(false);
+        adapter.setUserName(config.get("user"));
+        adapter.setPassword(config.get("password"));
+        return adapter;
+    }
+
+    @Override
+    public ManagedConnectionFactory createManagedConnectionFactory(Map<String, String> config, ActiveMQResourceAdapter adapter)
+            throws ResourceException {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
         return factory;
     }
 
-    /**
-     * Required to @Inject ConnectionFactory in classes
-     */
-    @Produces
-    @ApplicationScoped
-    public ConnectionFactory createConnectionFactory(ActiveMQRAManagedConnectionFactory mcf,
-            ConnectionManager connectionManager) throws Exception {
-        return (ActiveMQRAConnectionFactory) mcf.createConnectionFactory(connectionManager);
-    }
-
     @Override
-    public void configureResourceAdapter(ResourceAdapter resourceAdapter) throws Exception {
-        ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
-        activeMQResourceAdapter.setConnectorClassName(NettyConnectorFactory.class.getName());
-        activeMQResourceAdapter
-                .setConnectionParameters("host=localhost;port=5445;protocols=HORNETQ");
-        activeMQResourceAdapter.setProtocolManagerFactoryStr(
-                "org.apache.activemq.artemis.core.protocol.hornetq.client.HornetQClientProtocolManagerFactory");
-        activeMQResourceAdapter.setUseJNDI(false);
-        activeMQResourceAdapter.setPassword("guest");
-        activeMQResourceAdapter.setUserName("guest");
-    }
-
-    @Override
-    public ActivationSpec createActivationSpec(ResourceAdapter resourceAdapter, Class<?> type) throws Exception {
-        ActiveMQResourceAdapter activeMQResourceAdapter = (ActiveMQResourceAdapter) resourceAdapter;
+    public ActivationSpec createActivationSpec(Map<String, String> config, ActiveMQResourceAdapter activeMQResourceAdapter,
+            Class<?> type) throws Exception {
+        //TODO: Use the config
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         activationSpec.setResourceAdapter(activeMQResourceAdapter);
         activationSpec.setDestinationType("jakarta.jms.Queue");

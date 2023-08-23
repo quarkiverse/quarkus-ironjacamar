@@ -1,62 +1,60 @@
 package io.quarkiverse.ironjacamar.runtime;
 
 import java.util.Map;
+import java.util.Optional;
 
-import org.eclipse.microprofile.config.inject.ConfigProperties;
-
+import io.quarkus.runtime.annotations.ConfigDocMapKey;
 import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithDefaults;
+import io.smallrye.config.WithParentName;
+import io.smallrye.config.WithUnnamedKey;
 
-@ConfigProperties(prefix = "quarkus.ironjacamar")
+@ConfigMapping(prefix = "quarkus.ironjacamar")
 @ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
-public class IronJacamarConfig {
+public interface IronJacamarConfig {
+
+    static final String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
 
     /**
-     * The resource adapters to deploy.
+     * Whether IronJacamar is enabled.
+     *
+     * @return {@code true} if IronJacamar is enabled, {@code false} otherwise
      */
-    @ConfigItem(name = ConfigItem.PARENT)
-    public Map<String, ResourceAdapterConfig> resourceAdapterConfigs;
+    @WithDefault("true")
+    boolean enabled();
+
+    /**
+     * Resource Adapters
+     */
+    @ConfigDocMapKey("resource-adapter-name")
+    @WithParentName
+    @WithDefaults
+    @WithUnnamedKey(DEFAULT_RESOURCE_ADAPTER_NAME)
+    Map<String, ResourceAdapterOuterNamedConfig> resourceAdapters();
 
     @ConfigGroup
-    public static class ResourceAdapterConfig {
+    interface ResourceAdapterOuterNamedConfig {
 
         /**
-         * The configuration properties for the resource adapter.
+         * The Resource adapter configuration.
          */
-        public Map<String, String> configProperties;
-
-        //        /**
-        //         * The connection definitions.
-        //         */
-        //        public Optional<List<ConnectionDefinitionConfig>> connectionDefinitions;
-        //
-        //        /**
-        //         * The admin objects.
-        //         */
-        //        public Optional<List<AdminObjectConfig>> adminObjects;
+        ResourceAdapterConfig ra();
     }
 
-    //
-    @ConfigGroup
-    public static class ConnectionDefinitionConfig {
+    interface ResourceAdapterConfig {
         /**
-         * The class name of the connection factory.
+         * The kind of resource adapter.
          */
-        public String className;
-    }
-
-    @ConfigGroup
-    public static class AdminObjectConfig {
-        /**
-         * The class name of the admin object.
-         */
-        public String className;
+        Optional<String> kind();
 
         /**
-         * The configuration properties for the admin object.
+         * The configuration for this resource adapter
          */
-        public Map<String, String> configProperties;
+        Map<String, String> config();
     }
+
 }

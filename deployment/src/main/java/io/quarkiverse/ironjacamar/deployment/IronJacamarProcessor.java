@@ -1,20 +1,18 @@
 package io.quarkiverse.ironjacamar.deployment;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.XATerminator;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
-import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
 import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
-import io.quarkiverse.ironjacamar.ResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.connectionmanager.ConnectionManagerProducer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -30,7 +28,6 @@ import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.ShutdownListenerBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
-import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 
 class IronJacamarProcessor {
@@ -47,7 +44,6 @@ class IronJacamarProcessor {
             BuildProducer<ResourceAdapterBuildItem> resourceAdapterBuildItemBuildProducer,
             BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
-        // TODO: Check if endpoint is supported by the resource adapter
         Set<String> endpoints = index.getAnnotations(ResourceEndpoint.class)
                 .stream()
                 .map(annotationInstance -> annotationInstance.target().asClass().name().toString())
@@ -59,22 +55,10 @@ class IronJacamarProcessor {
                 .setDefaultScope(DotNames.APPLICATION_SCOPED)
                 .setUnremovable()
                 .build());
+    }
 
-        for (ClassInfo implementor : index.getAllKnownImplementors(ResourceAdapter.class)) {
-            String resourceAdapterClassName = implementor.name().toString();
-            ResourceAdapterBuildItem resourceAdapterBuildItem = ResourceAdapterBuildItem
-                    .builder(resourceAdapterClassName)
-                    .addEndpoints(endpoints)
-                    .build();
-            resourceAdapterBuildItemBuildProducer.produce(resourceAdapterBuildItem);
-            // Register ResourceAdapter as @Singleton beans
-            additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                    .addBeanClass(resourceAdapterClassName)
-                    .setDefaultScope(DotNames.SINGLETON)
-                    .setUnremovable()
-                    .build());
-        }
-        // Register CDI managed beans
+    @BuildStep
+    void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(ConnectionManagerProducer.class, TransactionIntegrationImpl.class)
                 .setDefaultScope(DotNames.SINGLETON)
@@ -84,7 +68,7 @@ class IronJacamarProcessor {
     @BuildStep
     UnremovableBeanBuildItem unremovables() {
         return UnremovableBeanBuildItem.beanTypes(
-                ResourceAdapterSupport.class,
+                ResourceAdapterFactory.class,
                 TransactionSynchronizationRegistry.class,
                 XATerminator.class);
     }
@@ -104,19 +88,17 @@ class IronJacamarProcessor {
     @BuildStep
     @Record(value = ExecutionTime.RUNTIME_INIT)
     ServiceStartBuildItem startResourceAdapters(
-            List<ResourceAdapterBuildItem> resourceAdapterBuildItems,
+            IronJacamarConfig config,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) throws Exception {
-        for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
-            ShutdownListener shutdownListener = recorder.initResourceAdapter(
-                    vertxBuildItem.getVertx(),
-                    resourceAdapterBuildItem.resourceAdapterClassName,
-                    resourceAdapterBuildItem.endpointClassnames);
-            if (shutdownListener != null) {
-                shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
-            }
-        }
+        //        for (ResourceAdapterBuildItem resourceAdapterBuildItem : resourceAdapterBuildItems) {
+        //            ShutdownListener shutdownListener = recorder.initResourceAdapter(
+        //                    vertxBuildItem.getVertx(), null);
+        //            if (shutdownListener != null) {
+        //                shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
+        //            }
+        //        }
         return new ServiceStartBuildItem(FEATURE);
     }
 }

@@ -1,5 +1,6 @@
 package io.quarkiverse.ironjacamar.runtime;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -13,13 +14,13 @@ import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
+import org.eclipse.microprofile.config.Config;
 import org.jboss.logging.Logger;
 
-import io.quarkiverse.ironjacamar.ResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
-import io.quarkus.arc.InstanceHandle;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.vertx.core.AbstractVerticle;
@@ -33,45 +34,43 @@ public class IronJacamarRecorder {
 
     private static final Logger log = Logger.getLogger(IronJacamarRecorder.class);
 
-    public ShutdownListener initResourceAdapter(Supplier<Vertx> vertxSupplier, String resourceAdapterClassName,
-            Set<String> endpointClassnames)
+    public ShutdownListener initResourceAdapter(Supplier<Vertx> vertxSupplier, Supplier<ResourceAdapterFactory> factorySupplier,
+            Supplier<Config> configSupplier)
             throws Exception {
         Vertx vertx = vertxSupplier.get();
-        Class<? extends ResourceAdapter> resourceAdapterClass = (Class<? extends ResourceAdapter>) Class
-                .forName(resourceAdapterClassName, true, Thread.currentThread().getContextClassLoader());
-        try (InstanceHandle<? extends ResourceAdapter> instanceHandle = Arc.container().instance(resourceAdapterClass)) {
-            final ResourceAdapter resourceAdapter = instanceHandle.get();
-            resourceAdapterSupport().configureResourceAdapter(resourceAdapter);
-            log.tracef("Deploying JCA Resource Adapter: %s ", resourceAdapterClassName);
-            JCAVerticle verticle = new JCAVerticle(resourceAdapter);
-            //TODO: maybe there is a better way to do this
-            CountDownLatch latch = new CountDownLatch(1);
-            AtomicBoolean started = new AtomicBoolean();
-            vertx.deployVerticle(verticle, new DeploymentOptions()
-                    .setWorkerPoolName("jca-worker-pool")
-                    .setWorkerPoolSize(1)
-                    .setWorker(true),
-                    new Handler<AsyncResult<String>>() {
-                        @Override
-                        public void handle(AsyncResult<String> event) {
-                            started.set(event.succeeded());
-                            if (event.failed()) {
-                                log.errorf(event.cause(), "Failed to deploy JCA Resource Adapter: %s ", event.result());
-                            }
-                            latch.countDown();
+        ResourceAdapterFactory adapterFactory = factorySupplier.get();
+        Config config = configSupplier.get();
+        //TODO: Config
+        final ResourceAdapter resourceAdapter = adapterFactory.createResourceAdapter(null);
+        JCAVerticle verticle = new JCAVerticle(resourceAdapter);
+        //TODO: maybe there is a better way to do this
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicBoolean started = new AtomicBoolean();
+        vertx.deployVerticle(verticle, new DeploymentOptions()
+                .setWorkerPoolName("jca-worker-pool")
+                .setWorkerPoolSize(1)
+                .setWorker(true),
+                new Handler<AsyncResult<String>>() {
+                    @Override
+                    public void handle(AsyncResult<String> event) {
+                        started.set(event.succeeded());
+                        if (event.failed()) {
+                            log.errorf(event.cause(), "Failed to deploy JCA Resource Adapter: %s ", event.result());
                         }
-                    });
-            latch.await();
-            if (started.get()) {
-                return activateEndpoints(resourceAdapter, endpointClassnames);
-            }
-            return null;
+                        latch.countDown();
+                    }
+                });
+        latch.await();
+        if (started.get()) {
+            return activateEndpoints(resourceAdapter, adapterFactory);
         }
+        return null;
     }
 
     private ShutdownListener activateEndpoints(ResourceAdapter adapter,
-            Set<String> endpointClassNames) {
-        ResourceAdapterSupport resourceAdapterSupport = resourceAdapterSupport();
+            ResourceAdapterFactory resourceAdapterFactory) {
+        //TODO: Find the respective endpoints
+        Set<String> endpointClassNames = new HashSet<>();
         ResourceAdapterShutdownListener endpointRegistry = new ResourceAdapterShutdownListener(adapter);
         for (String endpointClassName : endpointClassNames) {
             Class<?> endpointClass = null;
@@ -81,9 +80,9 @@ public class IronJacamarRecorder {
                 throw new RuntimeException(e);
             }
             MessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass,
-                    resourceAdapterSupport);
+                    resourceAdapterFactory);
             try {
-                ActivationSpec activationSpec = resourceAdapterSupport.createActivationSpec(adapter, endpointClass);
+                ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(null, adapter, endpointClass);
                 adapter.endpointActivation(messageEndpointFactory, activationSpec);
                 endpointRegistry.registerEndpoint(messageEndpointFactory, activationSpec);
             } catch (Exception e) {
@@ -91,10 +90,6 @@ public class IronJacamarRecorder {
             }
         }
         return endpointRegistry;
-    }
-
-    private static ResourceAdapterSupport resourceAdapterSupport() {
-        return Arc.container().instance(ResourceAdapterSupport.class).get();
     }
 
     static final class JCAVerticle extends AbstractVerticle {

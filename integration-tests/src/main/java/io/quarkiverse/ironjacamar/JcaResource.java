@@ -1,7 +1,6 @@
 package io.quarkiverse.ironjacamar;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
 import jakarta.jms.JMSProducer;
@@ -19,7 +18,7 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 public class JcaResource {
     // add some rest methods here
 
-    @Inject
+    //    @Inject
     ConnectionFactory factory;
 
     @GET
