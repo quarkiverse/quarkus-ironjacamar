@@ -22,7 +22,7 @@ public class IronJacamarConfigTest {
                 ra -> {
                     assertThat(ra.kind()).contains("artemis");
                     assertThat(ra.config()).hasEntrySatisfying("connection-parameters", cp -> {
-                        assertThat(cp).isEqualTo("host=localhost;port=5445;protocols=HORNETQ");
+                        assertThat(cp).isEqualTo("host=localhost;port=61616;protocols=AMQP");
                     });
                 });
 
