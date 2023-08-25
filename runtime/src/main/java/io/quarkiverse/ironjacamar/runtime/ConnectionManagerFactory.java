@@ -59,10 +59,4 @@ public class ConnectionManagerFactory {
                         true,
                         true);
     }
-
-    //    public void destroyConnectionManager(TxConnectionManager connectionManager) {
-    //        connectionManager.prepareShutdown();
-    //        connectionManager.shutdown();
-    //    }
-
 }

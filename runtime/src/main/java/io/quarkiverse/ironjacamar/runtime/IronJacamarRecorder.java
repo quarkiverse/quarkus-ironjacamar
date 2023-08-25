@@ -1,5 +1,25 @@
 package io.quarkiverse.ironjacamar.runtime;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.ActivationSpec;
+import jakarta.resource.spi.ManagedConnectionFactory;
+import jakarta.resource.spi.ResourceAdapter;
+import jakarta.resource.spi.XATerminator;
+import jakarta.resource.spi.endpoint.MessageEndpointFactory;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+
+import org.jboss.jca.core.connectionmanager.TxConnectionManager;
+import org.jboss.logging.Logger;
+
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
@@ -13,24 +33,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import jakarta.enterprise.inject.spi.DeploymentException;
-import jakarta.resource.ResourceException;
-import jakarta.resource.spi.ActivationSpec;
-import jakarta.resource.spi.ConnectionManager;
-import jakarta.resource.spi.ManagedConnectionFactory;
-import jakarta.resource.spi.ResourceAdapter;
-import jakarta.resource.spi.XATerminator;
-import jakarta.resource.spi.endpoint.MessageEndpointFactory;
-import jakarta.transaction.TransactionSynchronizationRegistry;
-import org.jboss.logging.Logger;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Recorder
 public class IronJacamarRecorder {
@@ -38,7 +40,7 @@ public class IronJacamarRecorder {
     private static final Logger log = Logger.getLogger(IronJacamarRecorder.class);
 
     public Function<SyntheticCreationalContext<IronJacamarContainer>, IronJacamarContainer> createContainerFunction(String kind,
-                                                                                                                    Map<String, String> config) {
+            Map<String, String> config) {
         return new Function<>() {
             @Override
             public IronJacamarContainer apply(SyntheticCreationalContext<IronJacamarContainer> context) {
@@ -54,7 +56,7 @@ public class IronJacamarRecorder {
                 } catch (ResourceException re) {
                     throw new DeploymentException("Cannot deploy resource adapter", re);
                 }
-                ConnectionManager connectionManager = connectionManagerFactory
+                TxConnectionManager connectionManager = connectionManagerFactory
                         .createConnectionManager(managedConnectionFactory);
                 return new IronJacamarContainer(resourceAdapter, managedConnectionFactory, connectionManager);
             }
@@ -78,9 +80,9 @@ public class IronJacamarRecorder {
         CountDownLatch latch = new CountDownLatch(1);
         AtomicBoolean started = new AtomicBoolean();
         vertx.deployVerticle(verticle, new DeploymentOptions()
-                        .setWorkerPoolName("jca-worker-pool")
-                        .setWorkerPoolSize(1)
-                        .setWorker(true),
+                .setWorkerPoolName("jca-worker-pool")
+                .setWorkerPoolSize(1)
+                .setWorker(true),
                 new Handler<AsyncResult<String>>() {
                     @Override
                     public void handle(AsyncResult<String> event) {
@@ -100,7 +102,7 @@ public class IronJacamarRecorder {
     }
 
     private ShutdownListener activateEndpoints(ResourceAdapter adapter,
-                                               ResourceAdapterFactory resourceAdapterFactory) {
+            ResourceAdapterFactory resourceAdapterFactory) {
         //TODO: Find the respective endpoints
         Set<String> endpointClassNames = new HashSet<>();
         ResourceAdapterShutdownListener endpointRegistry = new ResourceAdapterShutdownListener(adapter);

@@ -1,5 +1,23 @@
 package io.quarkiverse.ironjacamar.deployment;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.inject.Singleton;
+import jakarta.resource.spi.XATerminator;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.IndexView;
+import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
+import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
+
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
@@ -8,6 +26,7 @@ import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
+import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeansRuntimeInitBuildItem;
@@ -29,22 +48,6 @@ import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
-import jakarta.enterprise.inject.spi.DeploymentException;
-import jakarta.inject.Singleton;
-import jakarta.resource.spi.XATerminator;
-import jakarta.transaction.TransactionSynchronizationRegistry;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.IndexView;
-import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
-import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 class IronJacamarProcessor {
 
@@ -53,6 +56,37 @@ class IronJacamarProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClasses(CachedConnectionManagerProducer.class,
+                        ConnectionManagerFactory.class,
+                        TransactionIntegrationImpl.class)
+                .setUnremovable()
+                .setDefaultScope(DotNames.SINGLETON)
+                .build());
+    }
+
+    @BuildStep
+    UnremovableBeanBuildItem unremovables() {
+        return UnremovableBeanBuildItem.beanTypes(
+                ResourceAdapterFactory.class,
+                TransactionSynchronizationRegistry.class,
+                XATerminator.class);
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem registerForReflection() {
+        return ReflectiveClassBuildItem.builder(
+                SemaphoreArrayListManagedConnectionPool.class)
+                .build();
+    }
+
+    @BuildStep
+    NativeImageResourceBuildItem registerNativeResources() {
+        return new NativeImageResourceBuildItem("poolstatistics.properties");
     }
 
     @BuildStep
@@ -83,7 +117,7 @@ class IronJacamarProcessor {
 
     @BuildStep
     void registerEndpointsAsApplicationScopedBeans(CombinedIndexBuildItem combinedIndexBuildItem,
-                                                   BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
+            BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
         Set<String> endpoints = index.getAnnotations(ResourceEndpoint.class)
                 .stream()
@@ -99,38 +133,7 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
-    void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
-        additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                .addBeanClasses(CachedConnectionManagerProducer.class,
-                        ConnectionManagerFactory.class,
-                        TransactionIntegrationImpl.class)
-                .setUnremovable()
-                .setDefaultScope(DotNames.SINGLETON)
-                .build());
-    }
-
-    @BuildStep
-    UnremovableBeanBuildItem unremovables() {
-        return UnremovableBeanBuildItem.beanTypes(
-                ResourceAdapterFactory.class,
-                TransactionSynchronizationRegistry.class,
-                XATerminator.class);
-    }
-
-    @BuildStep
-    ReflectiveClassBuildItem registerForReflection() {
-        return ReflectiveClassBuildItem.builder(
-                        SemaphoreArrayListManagedConnectionPool.class)
-                .build();
-    }
-
-    @BuildStep
-    NativeImageResourceBuildItem registerNativeResources() {
-        return new NativeImageResourceBuildItem("poolstatistics.properties");
-    }
-
-    @BuildStep
-    @Record(value = ExecutionTime.RUNTIME_INIT)
+    @Record(value = ExecutionTime.STATIC_INIT)
     void registerSyntheticBeans(
             IronJacamarConfig config,
             IronJacamarRecorder recorder,
@@ -152,6 +155,7 @@ class IronJacamarProcessor {
                     .addQualifier().annotation(Identifier.class).addValue("value", key).done()
                     .addQualifier().annotation(ResourceAdapterKind.class).addValue("value", raKind.kind).done()
                     .createWith(recorder.createContainerFunction(raKind.kind, ra.config()))
+                    .destroyer(BeanDestroyer.CloseableDestroyer.class)
                     .done());
             createdProducer.produce(new ContainerCreatedBuildItem(key, raKind.kind));
         }
@@ -165,10 +169,12 @@ class IronJacamarProcessor {
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) throws Exception {
+        Log.info("Starting IronJacamar resource adapters");
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Create the resource adapter
-            ShutdownListener shutdownListener = recorder.initResourceAdapter(container.key, container.kind, vertxBuildItem.getVertx());
+            ShutdownListener shutdownListener = recorder.initResourceAdapter(container.key, container.kind,
+                    vertxBuildItem.getVertx());
             if (shutdownListener != null) {
                 shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
             }
