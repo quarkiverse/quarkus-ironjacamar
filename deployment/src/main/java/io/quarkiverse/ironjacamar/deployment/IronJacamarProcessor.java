@@ -1,14 +1,14 @@
 package io.quarkiverse.ironjacamar.deployment;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.inject.spi.DeploymentException;
-import jakarta.inject.Singleton;
 import jakarta.resource.spi.XATerminator;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
@@ -34,6 +34,7 @@ import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeansRuntimeInitBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
+import io.quarkus.arc.processor.BuiltinScope;
 import io.quarkus.arc.processor.DotNames;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -43,19 +44,19 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
-import io.quarkus.deployment.builditem.ShutdownListenerBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.configuration.ConfigurationException;
-import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
+import io.vertx.core.Future;
 
 class IronJacamarProcessor {
 
     private static final String FEATURE = "ironjacamar";
-    private static AnnotationInstance DEFAULT_QUALIFIER = AnnotationInstance.builder(DotNames.DEFAULT).build();
+    private static final AnnotationInstance DEFAULT_QUALIFIER = AnnotationInstance.builder(DotNames.DEFAULT).build();
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -99,19 +100,24 @@ class IronJacamarProcessor {
             BuildProducer<ResourceAdapterKindBuildItem> kindProducer,
             BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
+
         var factories = index.getAllKnownImplementors(ResourceAdapterFactory.class);
         if (factories.isEmpty()) {
-            Log.warn("No default resource adapter kind found. Please add a dependency to the desired resource adapter");
-            //            throw new DeploymentException("No default resource adapter kind found");
+            Log.warn("No default resource adapter kind found. Ironjacamar is disabled");
+            return;
+            //throw new DeploymentException("No default resource adapter kind found");
         }
+        boolean single = (factories.size() == 1);
         for (ClassInfo factory : factories) {
             AnnotationInstance rak = factory.annotation(ResourceAdapterKind.class);
             if (rak == null) {
                 throw new DeploymentException(
                         "Resource adapter factory " + factory + " must be annotated with @ResourceAdapterKind");
             }
+
             kindProducer.produce(new ResourceAdapterKindBuildItem(rak.value().asString(), factory.name().toString()));
-            // Register the factory as an Singleton bean
+
+            // Register the factory as a Singleton bean
             additionalBeans.produce(AdditionalBeanBuildItem.builder()
                     .addBeanClasses(factory.name().toString())
                     .setDefaultScope(DotNames.SINGLETON)
@@ -147,12 +153,12 @@ class IronJacamarProcessor {
             BuildProducer<ContainerCreatedBuildItem> createdProducer) {
         IndexView index = combinedIndexBuildItem.getIndex();
         Type containerType = Type.create(DotName.createSimple(IronJacamarContainer.class), Type.Kind.CLASS);
-        var kindsMap = toMap(kinds);
+        var kindsMap = kinds.stream().collect(Collectors.toMap(ResourceAdapterKindBuildItem::getKind, Function.identity()));
         boolean single = kindsMap.size() == 1;
         for (var entry : config.resourceAdapters().entrySet()) {
             String key = entry.getKey();
             // Using @Identifier to avoid bean name collision
-            var raKind = findResourceAdapterKind(entry, kindsMap);
+            var raKind = resolveKind(entry, kindsMap);
             var ra = entry.getValue().ra();
 
             ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName);
@@ -164,7 +170,7 @@ class IronJacamarProcessor {
             // Register the IronJacamarContainer as a Synthetic bean
             SyntheticBeanBuildItem.ExtendedBeanConfigurator configurator = SyntheticBeanBuildItem
                     .configure(IronJacamarContainer.class)
-                    .scope(Singleton.class)
+                    .scope(BuiltinScope.SINGLETON.getInfo())
                     .setRuntimeInit()
                     .addQualifier(qualifier)
                     .unremovable()
@@ -178,7 +184,7 @@ class IronJacamarProcessor {
 
             // Connection Factory bean
             SyntheticBeanBuildItem.ExtendedBeanConfigurator cfConfigurator = SyntheticBeanBuildItem.configure(Object.class)
-                    .scope(Singleton.class)
+                    .scope(BuiltinScope.SINGLETON.getInfo())
                     .setRuntimeInit()
                     .addQualifier(qualifier)
                     .types(connectionFactoryProvides)
@@ -196,38 +202,67 @@ class IronJacamarProcessor {
     @BuildStep
     @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
-    ServiceStartBuildItem startResourceAdapters(
+    void startResourceAdapters(
             List<ContainerCreatedBuildItem> containers,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
-            BuildProducer<ShutdownListenerBuildItem> shutdownListenerBuildItems) throws Exception {
+            BuildProducer<ContainerStartedBuildItem> startedProducer) throws Exception {
         Log.info("Starting IronJacamar resource adapters");
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
-            // Create the resource adapter
-            ShutdownListener shutdownListener = recorder.initResourceAdapter(container.identifier, vertxBuildItem.getVertx());
-            if (shutdownListener != null) {
-                shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
+            // Start the resource adapter
+            RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(container.identifier,
+                    vertxBuildItem.getVertx());
+            startedProducer.produce(new ContainerStartedBuildItem(container.identifier, futureRuntimeValue));
+        }
+    }
+
+    /**
+     * Find all classes with @ResourceEndpoint and activate them for the respective {@link IronJacamarContainer}
+     */
+    @BuildStep
+    @Record(value = ExecutionTime.RUNTIME_INIT)
+    @Consume(SyntheticBeansRuntimeInitBuildItem.class)
+    ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
+            IronJacamarRecorder recorder,
+            List<ContainerStartedBuildItem> containers) {
+        IndexView index = combinedIndexBuildItem.getIndex();
+        boolean single = containers.size() == 1;
+        if (single) {
+            ContainerStartedBuildItem container = containers.get(0);
+            Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
+            for (AnnotationInstance instance : annotations) {
+                String resourceEndpoint = instance.target().asClass().name().toString();
+                // TODO: Extract config
+                Map<String, String> config = Map.of();
+                recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, resourceEndpoint, config);
+            }
+        } else {
+            // More than one ResourceAdapter found. Activate the endpoints for the respective container
+            for (ContainerStartedBuildItem container : containers) {
+                // Filter out the endpoints for the respective container
+                Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
+                for (AnnotationInstance instance : annotations) {
+                    AnnotationInstance annotation = instance.target().annotation(Identifier.class);
+                    if (annotation == null) {
+                        throw new DeploymentException(
+                                "Because there are more than one resource adapter configured, you need to explicitly use the @Identifier annotation on "
+                                        + instance.target());
+                    }
+                    // Test if the identifier matches the container
+                    if (container.identifier.equals(annotation.value().asString())) {
+                        String resourceEndpoint = instance.target().asClass().name().toString();
+                        // TODO: Extract config
+                        Map<String, String> config = Map.of();
+                        recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, resourceEndpoint, config);
+                    }
+                }
             }
         }
         return new ServiceStartBuildItem(FEATURE);
     }
 
-    private static Map<String, ResourceAdapterKindBuildItem> toMap(List<ResourceAdapterKindBuildItem> kinds) {
-        final Map<String, ResourceAdapterKindBuildItem> kindsMap;
-        // Convert list to Map
-        if (kinds.size() == 1) {
-            kindsMap = Map.of(kinds.get(0).kind, kinds.get(0));
-        } else {
-            kindsMap = new HashMap<>();
-            for (ResourceAdapterKindBuildItem kind : kinds) {
-                kindsMap.put(kind.kind, kind);
-            }
-        }
-        return kindsMap;
-    }
-
-    private ResourceAdapterKindBuildItem findResourceAdapterKind(
+    private static ResourceAdapterKindBuildItem resolveKind(
             Map.Entry<String, IronJacamarConfig.ResourceAdapterOuterNamedConfig> entry,
             Map<String, ResourceAdapterKindBuildItem> kinds) {
         Optional<String> kind = entry.getValue().ra().kind();

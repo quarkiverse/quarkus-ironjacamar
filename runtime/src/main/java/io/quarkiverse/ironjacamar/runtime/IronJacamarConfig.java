@@ -56,5 +56,4 @@ public interface IronJacamarConfig {
          */
         Map<String, String> config();
     }
-
 }

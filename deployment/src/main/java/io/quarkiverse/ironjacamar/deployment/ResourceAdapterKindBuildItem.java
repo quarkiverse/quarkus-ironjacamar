@@ -14,4 +14,8 @@ public final class ResourceAdapterKindBuildItem extends MultiBuildItem {
         this.kind = kind;
         this.resourceAdapterFactoryClassName = resourceAdapterFactoryClassName;
     }
+
+    public String getKind() {
+        return kind;
+    }
 }

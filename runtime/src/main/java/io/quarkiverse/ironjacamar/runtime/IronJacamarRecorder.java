@@ -3,8 +3,6 @@ package io.quarkiverse.ironjacamar.runtime;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -26,12 +24,12 @@ import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.SyntheticCreationalContext;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.smallrye.common.annotation.Identifier;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
 @Recorder
@@ -58,7 +56,8 @@ public class IronJacamarRecorder {
                 }
                 TxConnectionManager connectionManager = connectionManagerFactory
                         .createConnectionManager(managedConnectionFactory);
-                return new IronJacamarContainer(resourceAdapter, managedConnectionFactory, connectionManager);
+                return new IronJacamarContainer(resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
+                        connectionManager);
             }
         };
     }
@@ -78,40 +77,43 @@ public class IronJacamarRecorder {
         };
     }
 
-    public ShutdownListener initResourceAdapter(
+    public RuntimeValue<Future<String>> initResourceAdapter(
             String key,
             Supplier<Vertx> vertxSupplier)
             throws Exception {
         ArcContainer container = Arc.container();
         Vertx vertx = vertxSupplier.get();
-        IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class,
-                Identifier.Literal.of(key)).get();
+        IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class, Identifier.Literal.of(key)).get();
         // Lookup JTA beans
         TransactionSynchronizationRegistry tsr = container.instance(TransactionSynchronizationRegistry.class).get();
         XATerminator xaTerminator = container.instance(XATerminator.class).get();
         IronJacamarVerticle verticle = new IronJacamarVerticle(ijContainer.getResourceAdapter(), tsr, xaTerminator);
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicBoolean started = new AtomicBoolean();
-        vertx.deployVerticle(verticle, new DeploymentOptions()
+        Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool")
                 .setWorkerPoolSize(1)
-                .setWorker(true),
-                new Handler<AsyncResult<String>>() {
-                    @Override
-                    public void handle(AsyncResult<String> event) {
-                        started.set(event.succeeded());
-                        if (event.failed()) {
-                            log.errorf(event.cause(), "Failed to deploy JCA Resource Adapter: %s ", event.result());
-                        }
-                        latch.countDown();
-                    }
-                });
-        latch.await();
-        if (started.get()) {
-            return new ResourceAdapterShutdownListener(ijContainer.getResourceAdapter());
-            //            return activateEndpoints(resourceAdapter, adapterFactory);
-        }
-        return null;
+                .setWorker(true));
+        return new RuntimeValue<>(future);
+    }
+
+    public void activateEndpoint(RuntimeValue<Future<String>> futureRuntimeValue, String identifier, String endpointClassName,
+            Map<String, String> config) {
+        Future<String> future = futureRuntimeValue.getValue();
+        future.onSuccess(s -> {
+            ArcContainer container = Arc.container();
+            IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class, Identifier.Literal.of(identifier))
+                    .get();
+            Class<?> endpointClass = null;
+            try {
+                endpointClass = Class.forName(endpointClassName, true, Thread.currentThread().getContextClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                ijContainer.endpointActivation(endpointClass, config);
+            } catch (ResourceException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private ShutdownListener activateEndpoints(ResourceAdapter adapter,
@@ -138,4 +140,5 @@ public class IronJacamarRecorder {
         }
         return endpointRegistry;
     }
+
 }

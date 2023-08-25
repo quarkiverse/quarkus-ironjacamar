@@ -1,9 +1,10 @@
 package io.quarkiverse.ironjacamar.it;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import jakarta.inject.Inject;
 import jakarta.jms.ConnectionFactory;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
@@ -19,14 +20,13 @@ public class InjectionTest {
 
     @Test
     public void testProducer() {
-        Assertions.assertThat(Arc.container().listAll(IronJacamarContainer.class)).hasSize(2);
+        assertThat(Arc.container().listAll(IronJacamarContainer.class)).hasSize(1);
     }
 
     @Test
     public void shouldInjectConnectionFactory() {
-        Assertions.assertThat(Arc.container().listAll(ConnectionFactory.class)).hasSize(1);
-        System.out.println(connectionFactory);
-
+        assertThat(Arc.container().listAll(ConnectionFactory.class)).hasSize(1);
+        assertThat(connectionFactory).isNotNull();
     }
 
 }
