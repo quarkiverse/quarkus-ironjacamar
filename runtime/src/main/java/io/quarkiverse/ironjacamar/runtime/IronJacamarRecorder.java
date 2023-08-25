@@ -76,7 +76,6 @@ public class IronJacamarRecorder {
                 }
             }
         };
-
     }
 
     public ShutdownListener initResourceAdapter(

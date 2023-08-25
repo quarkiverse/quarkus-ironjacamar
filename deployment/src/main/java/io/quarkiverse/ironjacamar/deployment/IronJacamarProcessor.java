@@ -1,24 +1,5 @@
 package io.quarkiverse.ironjacamar.deployment;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import jakarta.enterprise.inject.spi.DeploymentException;
-import jakarta.inject.Singleton;
-import jakarta.resource.spi.XATerminator;
-import jakarta.transaction.TransactionSynchronizationRegistry;
-
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.IndexView;
-import org.jboss.jandex.Type;
-import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
-import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
-
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
@@ -50,10 +31,29 @@ import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.inject.Singleton;
+import jakarta.resource.spi.XATerminator;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Type;
+import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
+import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 class IronJacamarProcessor {
 
     private static final String FEATURE = "ironjacamar";
+    private static AnnotationInstance DEFAULT_QUALIFIER = AnnotationInstance.builder(DotNames.DEFAULT).build();
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -82,7 +82,7 @@ class IronJacamarProcessor {
     @BuildStep
     ReflectiveClassBuildItem registerForReflection() {
         return ReflectiveClassBuildItem.builder(
-                SemaphoreArrayListManagedConnectionPool.class)
+                        SemaphoreArrayListManagedConnectionPool.class)
                 .build();
     }
 
@@ -119,7 +119,7 @@ class IronJacamarProcessor {
 
     @BuildStep
     void registerEndpointsAsApplicationScopedBeans(CombinedIndexBuildItem combinedIndexBuildItem,
-            BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
+                                                   BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
         Set<String> endpoints = index.getAnnotations(ResourceEndpoint.class)
                 .stream()
@@ -144,7 +144,9 @@ class IronJacamarProcessor {
             BuildProducer<SyntheticBeanBuildItem> producer,
             BuildProducer<ContainerCreatedBuildItem> createdProducer) {
         IndexView index = combinedIndexBuildItem.getIndex();
+        Type containerType = Type.create(DotName.createSimple(IronJacamarContainer.class), Type.Kind.CLASS);
         var kindsMap = toMap(kinds);
+        boolean single = kindsMap.size() == 1;
         for (var entry : config.resourceAdapters().entrySet()) {
             String key = entry.getKey();
             // Using @Identifier to avoid bean name collision
@@ -155,27 +157,35 @@ class IronJacamarProcessor {
             Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
                     .asClassArray();
 
+            AnnotationInstance qualifier = AnnotationInstance.builder(Identifier.class).add("value", key).build();
+
             // Register the IronJacamarContainer as a Synthetic bean
-            producer.produce(SyntheticBeanBuildItem.configure(IronJacamarContainer.class)
+            SyntheticBeanBuildItem.ExtendedBeanConfigurator configurator = SyntheticBeanBuildItem.configure(IronJacamarContainer.class)
                     .scope(Singleton.class)
                     .setRuntimeInit()
+                    .addQualifier(qualifier)
                     .unremovable()
-                    .addQualifier().annotation(Identifier.class).addValue("value", key).done()
                     .createWith(recorder.createContainerFunction(raKind.kind, ra.config()))
-                    .destroyer(BeanDestroyer.CloseableDestroyer.class)
-                    .done());
+                    .destroyer(BeanDestroyer.CloseableDestroyer.class);
+            // Don't need to specify the identifier if a single Resource Adapter is deployed
+            if (single) {
+                configurator.addQualifier(DEFAULT_QUALIFIER);
+            }
+            producer.produce(configurator.done());
 
-            //            // Connection Factory bean
-            //            producer.produce(SyntheticBeanBuildItem.configure(Object.class)
-            //                    .scope(Singleton.class)
-            //                    .setRuntimeInit()
-            //                    .types(connectionFactoryProvides)
-            //                    .unremovable()
-            //                    .addQualifier().annotation(Identifier.class).addValue("value", key).done()
-            //                    .createWith(recorder.createConnectionFactory(key))
-            //                    .destroyer(BeanDestroyer.CloseableDestroyer.class)
-            //                    .done());
-
+            // Connection Factory bean
+            SyntheticBeanBuildItem.ExtendedBeanConfigurator cfConfigurator = SyntheticBeanBuildItem.configure(Object.class)
+                    .scope(Singleton.class)
+                    .setRuntimeInit()
+                    .addQualifier(qualifier)
+                    .types(connectionFactoryProvides)
+                    .addInjectionPoint(containerType, qualifier)
+                    .unremovable()
+                    .createWith(recorder.createConnectionFactory(key));
+            if (single) {
+                cfConfigurator.addQualifier(DEFAULT_QUALIFIER);
+            }
+            producer.produce(cfConfigurator.done());
             createdProducer.produce(new ContainerCreatedBuildItem(key));
         }
     }

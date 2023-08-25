@@ -1,8 +1,5 @@
 package io.quarkiverse.ironjacamar;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
@@ -10,26 +7,19 @@ import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
-
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+
 /**
  * This would be in the artemis-jms extension
  */
 @ResourceAdapterKind(value = ArtemisResourceAdapterFactory.KIND)
-@ResourceAdapterTypes(connectionFactoryTypes = {
-        org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory.class
-//        ,
-//        XAQueueConnectionFactory.class,
-//        XATopicConnectionFactory.class,
-//        XAConnectionFactory.class,
-//        QueueConnectionFactory.class,
-//        TopicConnectionFactory.class,
-//        ConnectionFactory.class
-})
+@ResourceAdapterTypes(connectionFactoryTypes = {jakarta.jms.ConnectionFactory.class})
 public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
     static final String KIND = "artemis";
