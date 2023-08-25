@@ -1,6 +1,5 @@
 package io.quarkiverse.ironjacamar;
 
-import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.jms.ConnectionFactory;
@@ -12,6 +11,8 @@ import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
+
+import io.quarkus.narayana.jta.QuarkusTransaction;
 
 @Path("/jca")
 @ApplicationScoped

@@ -1,18 +1,20 @@
 package io.quarkiverse.ironjacamar.it;
 
+import jakarta.inject.Inject;
+import jakarta.jms.ConnectionFactory;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkus.arc.Arc;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-import jakarta.jms.ConnectionFactory;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 public class InjectionTest {
 
     @Inject
-//    @Identifier("other")
+    //    @Identifier("other")
     ConnectionFactory connectionFactory;
 
     @Test

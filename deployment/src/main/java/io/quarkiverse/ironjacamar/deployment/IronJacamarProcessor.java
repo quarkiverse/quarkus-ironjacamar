@@ -1,5 +1,25 @@
 package io.quarkiverse.ironjacamar.deployment;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.inject.Singleton;
+import jakarta.resource.spi.XATerminator;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Type;
+import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
+import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
+
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
@@ -31,24 +51,6 @@ import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
-import jakarta.enterprise.inject.spi.DeploymentException;
-import jakarta.inject.Singleton;
-import jakarta.resource.spi.XATerminator;
-import jakarta.transaction.TransactionSynchronizationRegistry;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
-import org.jboss.jandex.Type;
-import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
-import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 class IronJacamarProcessor {
 
@@ -82,7 +84,7 @@ class IronJacamarProcessor {
     @BuildStep
     ReflectiveClassBuildItem registerForReflection() {
         return ReflectiveClassBuildItem.builder(
-                        SemaphoreArrayListManagedConnectionPool.class)
+                SemaphoreArrayListManagedConnectionPool.class)
                 .build();
     }
 
@@ -119,7 +121,7 @@ class IronJacamarProcessor {
 
     @BuildStep
     void registerEndpointsAsApplicationScopedBeans(CombinedIndexBuildItem combinedIndexBuildItem,
-                                                   BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
+            BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
         Set<String> endpoints = index.getAnnotations(ResourceEndpoint.class)
                 .stream()
@@ -160,7 +162,8 @@ class IronJacamarProcessor {
             AnnotationInstance qualifier = AnnotationInstance.builder(Identifier.class).add("value", key).build();
 
             // Register the IronJacamarContainer as a Synthetic bean
-            SyntheticBeanBuildItem.ExtendedBeanConfigurator configurator = SyntheticBeanBuildItem.configure(IronJacamarContainer.class)
+            SyntheticBeanBuildItem.ExtendedBeanConfigurator configurator = SyntheticBeanBuildItem
+                    .configure(IronJacamarContainer.class)
                     .scope(Singleton.class)
                     .setRuntimeInit()
                     .addQualifier(qualifier)
