@@ -19,7 +19,17 @@ import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 /**
  * This would be in the artemis-jms extension
  */
-@ResourceAdapterKind(ArtemisResourceAdapterFactory.KIND)
+@ResourceAdapterKind(value = ArtemisResourceAdapterFactory.KIND)
+@ResourceAdapterTypes(connectionFactoryTypes = {
+        org.apache.activemq.artemis.ra.ActiveMQRAConnectionFactory.class
+//        ,
+//        XAQueueConnectionFactory.class,
+//        XATopicConnectionFactory.class,
+//        XAConnectionFactory.class,
+//        QueueConnectionFactory.class,
+//        TopicConnectionFactory.class,
+//        ConnectionFactory.class
+})
 public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
     static final String KIND = "artemis";

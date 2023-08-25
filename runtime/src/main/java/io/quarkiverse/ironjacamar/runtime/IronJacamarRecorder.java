@@ -63,16 +63,30 @@ public class IronJacamarRecorder {
         };
     }
 
+    public Function<SyntheticCreationalContext<Object>, Object> createConnectionFactory(String id) {
+        return new Function<SyntheticCreationalContext<Object>, Object>() {
+            @Override
+            public Object apply(SyntheticCreationalContext<Object> context) {
+                IronJacamarContainer container = context.getInjectedReference(IronJacamarContainer.class,
+                        Identifier.Literal.of(id));
+                try {
+                    return container.createConnectionFactory();
+                } catch (ResourceException e) {
+                    throw new DeploymentException("Cannot create connection factory", e);
+                }
+            }
+        };
+
+    }
+
     public ShutdownListener initResourceAdapter(
             String key,
-            String kind,
             Supplier<Vertx> vertxSupplier)
             throws Exception {
         ArcContainer container = Arc.container();
         Vertx vertx = vertxSupplier.get();
-        System.out.println("TOTAL -> " + container.listAll(IronJacamarContainer.class).size());
         IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class,
-                Identifier.Literal.of(key), ResourceAdapterKind.Literal.of(kind)).get();
+                Identifier.Literal.of(key)).get();
         // Lookup JTA beans
         TransactionSynchronizationRegistry tsr = container.instance(TransactionSynchronizationRegistry.class).get();
         XATerminator xaTerminator = container.instance(XATerminator.class).get();

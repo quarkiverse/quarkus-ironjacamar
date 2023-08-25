@@ -15,11 +15,13 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Type;
 import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
+import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
 import io.quarkiverse.ironjacamar.runtime.CachedConnectionManagerProducer;
 import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
@@ -137,9 +139,11 @@ class IronJacamarProcessor {
     void registerSyntheticBeans(
             IronJacamarConfig config,
             IronJacamarRecorder recorder,
+            CombinedIndexBuildItem combinedIndexBuildItem,
             List<ResourceAdapterKindBuildItem> kinds,
             BuildProducer<SyntheticBeanBuildItem> producer,
             BuildProducer<ContainerCreatedBuildItem> createdProducer) {
+        IndexView index = combinedIndexBuildItem.getIndex();
         var kindsMap = toMap(kinds);
         for (var entry : config.resourceAdapters().entrySet()) {
             String key = entry.getKey();
@@ -147,17 +151,32 @@ class IronJacamarProcessor {
             var raKind = findResourceAdapterKind(entry, kindsMap);
             var ra = entry.getValue().ra();
 
+            ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName);
+            Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
+                    .asClassArray();
+
             // Register the IronJacamarContainer as a Synthetic bean
             producer.produce(SyntheticBeanBuildItem.configure(IronJacamarContainer.class)
                     .scope(Singleton.class)
                     .setRuntimeInit()
                     .unremovable()
                     .addQualifier().annotation(Identifier.class).addValue("value", key).done()
-                    .addQualifier().annotation(ResourceAdapterKind.class).addValue("value", raKind.kind).done()
                     .createWith(recorder.createContainerFunction(raKind.kind, ra.config()))
                     .destroyer(BeanDestroyer.CloseableDestroyer.class)
                     .done());
-            createdProducer.produce(new ContainerCreatedBuildItem(key, raKind.kind));
+
+            //            // Connection Factory bean
+            //            producer.produce(SyntheticBeanBuildItem.configure(Object.class)
+            //                    .scope(Singleton.class)
+            //                    .setRuntimeInit()
+            //                    .types(connectionFactoryProvides)
+            //                    .unremovable()
+            //                    .addQualifier().annotation(Identifier.class).addValue("value", key).done()
+            //                    .createWith(recorder.createConnectionFactory(key))
+            //                    .destroyer(BeanDestroyer.CloseableDestroyer.class)
+            //                    .done());
+
+            createdProducer.produce(new ContainerCreatedBuildItem(key));
         }
     }
 
@@ -173,8 +192,7 @@ class IronJacamarProcessor {
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Create the resource adapter
-            ShutdownListener shutdownListener = recorder.initResourceAdapter(container.key, container.kind,
-                    vertxBuildItem.getVertx());
+            ShutdownListener shutdownListener = recorder.initResourceAdapter(container.identifier, vertxBuildItem.getVertx());
             if (shutdownListener != null) {
                 shutdownListenerBuildItems.produce(new ShutdownListenerBuildItem(shutdownListener));
             }

@@ -10,15 +10,9 @@ final class ContainerCreatedBuildItem extends MultiBuildItem {
     /**
      * The key of the synthetic bean.
      */
-    public final String key;
+    public final String identifier;
 
-    /**
-     * The kind of the synthetic bean.
-     */
-    public final String kind;
-
-    public ContainerCreatedBuildItem(String key, String kind) {
-        this.key = key;
-        this.kind = kind;
+    public ContainerCreatedBuildItem(String identifier) {
+        this.identifier = identifier;
     }
 }
