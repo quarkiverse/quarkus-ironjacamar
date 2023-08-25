@@ -3,13 +3,12 @@ package io.quarkiverse.ironjacamar;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import jakarta.inject.Singleton;
-import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
+import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
@@ -20,19 +19,10 @@ import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 /**
  * This would be in the artemis-jms extension
  */
-@Singleton
-@ResourceAdapterKind("artemis")
-public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory<ActiveMQResourceAdapter> {
+@ResourceAdapterKind(ArtemisResourceAdapterFactory.KIND)
+public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
-    /**
-     * Required to @Inject ConnectionFactory in classes
-     */
-    //    @Produces
-    //    @ApplicationScoped
-    //    public ConnectionFactory createConnectionFactory(ActiveMQRAManagedConnectionFactory mcf,
-    //            ConnectionManager connectionManager) throws Exception {
-    //        return (ActiveMQRAConnectionFactory) mcf.createConnectionFactory(connectionManager);
-    //    }
+    static final String KIND = "artemis";
 
     @Override
     public ActiveMQResourceAdapter createResourceAdapter(Map<String, String> config) {
@@ -47,7 +37,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory<Act
     }
 
     @Override
-    public ManagedConnectionFactory createManagedConnectionFactory(Map<String, String> config, ActiveMQResourceAdapter adapter)
+    public ManagedConnectionFactory createManagedConnectionFactory(ResourceAdapter adapter)
             throws ResourceException {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
@@ -55,11 +45,11 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory<Act
     }
 
     @Override
-    public ActivationSpec createActivationSpec(Map<String, String> config, ActiveMQResourceAdapter activeMQResourceAdapter,
-            Class<?> type) throws Exception {
+    public ActivationSpec createActivationSpec(ResourceAdapter adapter, Class<?> type, Map<String, String> config)
+            throws ResourceException {
         //TODO: Use the config
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
-        activationSpec.setResourceAdapter(activeMQResourceAdapter);
+        activationSpec.setResourceAdapter(adapter);
         activationSpec.setDestinationType("jakarta.jms.Queue");
         activationSpec.setMaxSession(2);
         activationSpec.setDestination("jms.queue.MyQueue");

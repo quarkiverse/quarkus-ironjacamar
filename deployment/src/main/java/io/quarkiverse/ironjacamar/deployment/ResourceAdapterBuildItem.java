@@ -9,14 +9,15 @@ import io.quarkus.builder.item.MultiBuildItem;
 /**
  * A build item that represents a JCA resource adapter that should be deployed.
  */
+@Deprecated
 public final class ResourceAdapterBuildItem extends MultiBuildItem {
 
-    public final String resourceAdapterClassName;
+    public final String resourceAdapterKind;
 
     public final Set<String> endpointClassnames;
 
-    ResourceAdapterBuildItem(String className, Set<String> endpointClasses) {
-        this.resourceAdapterClassName = className;
+    ResourceAdapterBuildItem(String resourceAdapterKind, Set<String> endpointClasses) {
+        this.resourceAdapterKind = resourceAdapterKind;
         this.endpointClassnames = endpointClasses;
     }
 
@@ -25,12 +26,12 @@ public final class ResourceAdapterBuildItem extends MultiBuildItem {
     }
 
     public static class Builder {
-        private final String resourceAdapterClassName;
+        private final String resourceAdapterKind;
 
         private final Set<String> endpointClassnames = new HashSet<>();
 
-        public Builder(String className) {
-            this.resourceAdapterClassName = Objects.requireNonNull(className, "className must not be null");
+        public Builder(String kind) {
+            this.resourceAdapterKind = Objects.requireNonNull(kind, "kind must not be null");
         }
 
         public Builder addEndpoints(Set<String> endpointClassNames) {
@@ -39,7 +40,7 @@ public final class ResourceAdapterBuildItem extends MultiBuildItem {
         }
 
         public ResourceAdapterBuildItem build() {
-            return new ResourceAdapterBuildItem(resourceAdapterClassName, endpointClassnames);
+            return new ResourceAdapterBuildItem(resourceAdapterKind, endpointClassnames);
         }
 
     }

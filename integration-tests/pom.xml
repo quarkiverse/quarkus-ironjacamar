@@ -17,14 +17,12 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
         </dependency>
-        <!--    <dependency>-->
-        <!--      <groupId>io.quarkus</groupId>-->
-        <!--      <artifactId>quarkus-jdbc-postgresql</artifactId>-->
-        <!--    </dependency>-->
-        <!--    <dependency>-->
-        <!--      <groupId>io.quarkus</groupId>-->
-        <!--      <artifactId>quarkus-hibernate-orm</artifactId>-->
-        <!--    </dependency>-->
+        <!-- Add deployment to hint the IDE to build it too -->
+        <dependency>
+            <groupId>io.quarkiverse.ironjacamar</groupId>
+            <artifactId>quarkus-ironjacamar-deployment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkiverse.ironjacamar</groupId>
             <artifactId>quarkus-ironjacamar</artifactId>

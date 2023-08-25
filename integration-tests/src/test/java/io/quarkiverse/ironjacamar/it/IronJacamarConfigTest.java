@@ -1,11 +1,13 @@
 package io.quarkiverse.ironjacamar.it;
 
-import io.quarkiverse.ironjacamar.runtime.IronJacamarConfig;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import jakarta.inject.Inject;
+
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarConfig;
+import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 public class IronJacamarConfigTest {

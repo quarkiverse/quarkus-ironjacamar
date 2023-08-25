@@ -10,7 +10,7 @@ h|[[quarkus-ironjacamar_configuration]]link:#quarkus-ironjacamar_configuration[C
 h|Type
 h|Default
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.enabled[quarkus.ironjacamar.enabled]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.enabled[quarkus.ironjacamar.enabled]`
 
 
 [.description]
@@ -27,7 +27,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.resource-adapter.-resource-adapter-.kind]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.resource-adapter.-resource-adapter-.kind[quarkus.ironjacamar.resource-adapter."resource-adapter".kind]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.kind]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar.ra.kind]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar."resource-adapter-name".ra.kind]`
 
 
 [.description]
@@ -35,16 +37,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.resource-adapter.-resource-adapter-
 The kind of resource adapter.
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RESOURCE_ADAPTER__RESOURCE_ADAPTER__KIND+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_KIND+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RESOURCE_ADAPTER__RESOURCE_ADAPTER__KIND+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_KIND+++`
 endif::add-copy-button-to-env-var[]
 --|string 
-|required icon:exclamation-circle[title=Configuration property is required]
+|
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.resource-adapter.-resource-adapter-.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.resource-adapter.-resource-adapter-.config-config[quarkus.ironjacamar.resource-adapter."resource-adapter".config]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar.ra.config]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar."resource-adapter-name".ra.config]`
 
 
 [.description]
@@ -52,10 +56,10 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.resource-adapter.-resource-adapter-
 The configuration for this resource adapter
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RESOURCE_ADAPTER__RESOURCE_ADAPTER__CONFIG+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONFIG+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RESOURCE_ADAPTER__RESOURCE_ADAPTER__CONFIG+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONFIG+++`
 endif::add-copy-button-to-env-var[]
 --|`Map<String,String>` 
 |

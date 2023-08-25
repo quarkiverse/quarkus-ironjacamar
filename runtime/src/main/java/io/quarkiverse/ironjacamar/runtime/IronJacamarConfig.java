@@ -17,7 +17,7 @@ import io.smallrye.config.WithUnnamedKey;
 @ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
 public interface IronJacamarConfig {
 
-    static final String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
+    String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
 
     /**
      * Whether IronJacamar is enabled.

@@ -23,6 +23,10 @@ public @interface ResourceAdapterKind {
     class Literal extends AnnotationLiteral<ResourceAdapterKind> implements ResourceAdapterKind {
         private final String value;
 
+        public static Literal of(String value) {
+            return new Literal(value);
+        }
+
         public Literal(String value) {
             this.value = value;
         }

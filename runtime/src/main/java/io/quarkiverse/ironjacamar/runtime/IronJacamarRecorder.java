@@ -1,29 +1,35 @@
 package io.quarkiverse.ironjacamar.runtime;
 
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
-import jakarta.resource.spi.BootstrapContext;
+import jakarta.resource.spi.ConnectionManager;
+import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.XATerminator;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
-import org.eclipse.microprofile.config.Config;
 import org.jboss.logging.Logger;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
+import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
+import io.quarkus.arc.SyntheticCreationalContext;
+import io.quarkus.arc.runtime.ArcContainerSupplier;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.shutdown.ShutdownListener;
-import io.vertx.core.AbstractVerticle;
+import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
@@ -34,16 +40,45 @@ public class IronJacamarRecorder {
 
     private static final Logger log = Logger.getLogger(IronJacamarRecorder.class);
 
-    public ShutdownListener initResourceAdapter(Supplier<Vertx> vertxSupplier, Supplier<ResourceAdapterFactory> factorySupplier,
-            Supplier<Config> configSupplier)
+    public Function<SyntheticCreationalContext<IronJacamarContainer>, IronJacamarContainer> createContainerFunction(String kind,
+            Map<String, String> config) {
+        return new Function<>() {
+            @Override
+            public IronJacamarContainer apply(SyntheticCreationalContext<IronJacamarContainer> context) {
+                ArcContainer container = Arc.container();
+                ResourceAdapterFactory resourceAdapterFactory = container.select(ResourceAdapterFactory.class,
+                        ResourceAdapterKind.Literal.of(kind)).get();
+                ConnectionManagerFactory connectionManagerFactory = container.select(ConnectionManagerFactory.class).get();
+                ResourceAdapter resourceAdapter;
+                ManagedConnectionFactory managedConnectionFactory;
+                try {
+                    resourceAdapter = resourceAdapterFactory.createResourceAdapter(config);
+                    managedConnectionFactory = resourceAdapterFactory.createManagedConnectionFactory(resourceAdapter);
+                } catch (ResourceException re) {
+                    throw new DeploymentException("Cannot deploy resource adapter", re);
+                }
+                ConnectionManager connectionManager = connectionManagerFactory
+                        .createConnectionManager(managedConnectionFactory);
+                return new IronJacamarContainer(resourceAdapter, managedConnectionFactory, connectionManager);
+            }
+        };
+    }
+
+    public ShutdownListener initResourceAdapter(
+            String key,
+            String kind,
+            ArcContainerSupplier arcContainerSupplier,
+            Supplier<Vertx> vertxSupplier)
             throws Exception {
+        ArcContainer container = arcContainerSupplier.get();
         Vertx vertx = vertxSupplier.get();
-        ResourceAdapterFactory adapterFactory = factorySupplier.get();
-        Config config = configSupplier.get();
-        //TODO: Config
-        final ResourceAdapter resourceAdapter = adapterFactory.createResourceAdapter(null);
-        JCAVerticle verticle = new JCAVerticle(resourceAdapter);
-        //TODO: maybe there is a better way to do this
+        System.out.println("TOTAL -> " + container.listAll(IronJacamarContainer.class).size());
+        IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class,
+                Identifier.Literal.of(key), ResourceAdapterKind.Literal.of(kind)).get();
+        // Lookup JTA beans
+        TransactionSynchronizationRegistry tsr = container.instance(TransactionSynchronizationRegistry.class).get();
+        XATerminator xaTerminator = container.instance(XATerminator.class).get();
+        IronJacamarVerticle verticle = new IronJacamarVerticle(ijContainer.getResourceAdapter(), tsr, xaTerminator);
         CountDownLatch latch = new CountDownLatch(1);
         AtomicBoolean started = new AtomicBoolean();
         vertx.deployVerticle(verticle, new DeploymentOptions()
@@ -62,7 +97,8 @@ public class IronJacamarRecorder {
                 });
         latch.await();
         if (started.get()) {
-            return activateEndpoints(resourceAdapter, adapterFactory);
+            return new ResourceAdapterShutdownListener(ijContainer.getResourceAdapter());
+            //            return activateEndpoints(resourceAdapter, adapterFactory);
         }
         return null;
     }
@@ -82,7 +118,7 @@ public class IronJacamarRecorder {
             MessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass,
                     resourceAdapterFactory);
             try {
-                ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(null, adapter, endpointClass);
+                ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(adapter, endpointClass, null);
                 adapter.endpointActivation(messageEndpointFactory, activationSpec);
                 endpointRegistry.registerEndpoint(messageEndpointFactory, activationSpec);
             } catch (Exception e) {
@@ -90,35 +126,5 @@ public class IronJacamarRecorder {
             }
         }
         return endpointRegistry;
-    }
-
-    static final class JCAVerticle extends AbstractVerticle {
-        private final ResourceAdapter ra;
-        private QuarkusWorkManager workManager;
-
-        public JCAVerticle(ResourceAdapter resourceAdapter) {
-            ra = Objects.requireNonNull(resourceAdapter);
-        }
-
-        @Override
-        public void start() throws Exception {
-            log.infof("Starting JCA Resource Adapter %s", ra);
-            workManager = new QuarkusWorkManager(vertx);
-            // Lookup JTA resources
-            ArcContainer container = Arc.container();
-            TransactionSynchronizationRegistry registry = container.instance(TransactionSynchronizationRegistry.class).get();
-            XATerminator xaTerminator = container.instance(XATerminator.class).get();
-            // Create BootstrapContext
-            BootstrapContext bootstrapContext = new QuarkusBootstrapContext(workManager, registry, xaTerminator);
-            ra.start(bootstrapContext);
-        }
-
-        @Override
-        public void stop() {
-            if (workManager != null) {
-                workManager.close();
-            }
-            ra.stop();
-        }
     }
 }

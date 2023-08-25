@@ -4,6 +4,7 @@ import java.util.Map;
 
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
+import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
@@ -11,16 +12,16 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 /**
  * SPI for configuring the resource adapter.
  * <p>
- * Every Resource adapter must provide a {@link jakarta.inject.Singleton} CDI bean implementing this interface.
+ * Every Resource adapter must provide an implementation of this interface.
  */
-public interface ResourceAdapterFactory<RA extends ResourceAdapter> {
+public interface ResourceAdapterFactory {
 
     /**
      * Create and configure the resource adapter.
      *
      * @param config the configuration subset to be used in {@link ResourceAdapter}
      */
-    RA createResourceAdapter(Map<String, String> config);
+    ResourceAdapter createResourceAdapter(Map<String, String> config) throws ResourceException;
 
     /**
      * Create a managed connection factory for the given resource adapter.
@@ -29,7 +30,20 @@ public interface ResourceAdapterFactory<RA extends ResourceAdapter> {
      * @return a {@link ManagedConnectionFactory} instance bound to the given {@link ResourceAdapter}
      * @throws ResourceException if something goes wrong
      */
-    ManagedConnectionFactory createManagedConnectionFactory(Map<String, String> config, RA adapter) throws ResourceException;
+    ManagedConnectionFactory createManagedConnectionFactory(ResourceAdapter adapter)
+            throws ResourceException;
+
+    /**
+     * Create a connection factory for the given managed connection factory and connection manager.
+     *
+     * @param mcf the managed connection factory
+     * @param cm the connection manager
+     * @return a connection factory
+     * @throws ResourceException if something goes wrong
+     */
+    default Object createConnectionFactory(ManagedConnectionFactory mcf, ConnectionManager cm) throws ResourceException {
+        return mcf.createConnectionFactory(cm);
+    }
 
     /**
      * Create an activation spec for the given type.
@@ -37,7 +51,8 @@ public interface ResourceAdapterFactory<RA extends ResourceAdapter> {
      * @param type the type
      * @return the activation spec
      */
-    ActivationSpec createActivationSpec(Map<String, String> config, RA adapter, Class<?> type) throws Exception;
+    ActivationSpec createActivationSpec(ResourceAdapter adapter, Class<?> type, Map<String, String> config)
+            throws ResourceException;
 
     /**
      * In some cases, the ResourceEndpoint requires a specific interface to be implemented
