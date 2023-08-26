@@ -51,10 +51,10 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
         //TODO: Use the config
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         activationSpec.setResourceAdapter(adapter);
-        activationSpec.setDestinationType("jakarta.jms.Queue");
-        activationSpec.setMaxSession(2);
-        activationSpec.setDestination("jms.queue.MyQueue");
-        activationSpec.setRebalanceConnections(true);
+        activationSpec.setDestinationType(config.get("destination-type"));
+        activationSpec.setDestination(config.get("destination"));
+        activationSpec.setMaxSession(Integer.valueOf(config.getOrDefault("max-session", "2")));
+        activationSpec.setRebalanceConnections(Boolean.valueOf(config.getOrDefault("rebalance-connections", "true")));
         activationSpec.setUseJNDI(false);
         return activationSpec;
     }

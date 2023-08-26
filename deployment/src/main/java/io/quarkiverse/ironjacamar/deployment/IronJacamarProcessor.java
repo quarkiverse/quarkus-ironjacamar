@@ -1,6 +1,7 @@
 package io.quarkiverse.ironjacamar.deployment;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import jakarta.resource.spi.XATerminator;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
@@ -225,6 +227,7 @@ class IronJacamarProcessor {
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
     ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
             IronJacamarRecorder recorder,
+            IronJacamarConfig config,
             List<ContainerStartedBuildItem> containers) {
         IndexView index = combinedIndexBuildItem.getIndex();
         boolean single = containers.size() == 1;
@@ -232,10 +235,11 @@ class IronJacamarProcessor {
             ContainerStartedBuildItem container = containers.get(0);
             Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
             for (AnnotationInstance instance : annotations) {
-                String resourceEndpoint = instance.target().asClass().name().toString();
-                // TODO: Extract config
-                Map<String, String> config = Map.of();
-                recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, resourceEndpoint, config);
+                ClassInfo classInfo = instance.target().asClass();
+                String resourceEndpoint = classInfo.name().toString();
+                Map<String, String> activationSpecConfig = getActivationSpecConfig(config, instance);
+                recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, resourceEndpoint,
+                        activationSpecConfig);
             }
         } else {
             // More than one ResourceAdapter found. Activate the endpoints for the respective container
@@ -253,13 +257,31 @@ class IronJacamarProcessor {
                     if (container.identifier.equals(annotation.value().asString())) {
                         String resourceEndpoint = instance.target().asClass().name().toString();
                         // TODO: Extract config
-                        Map<String, String> config = Map.of();
-                        recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, resourceEndpoint, config);
+                        Map<String, String> activationSpecConfig = getActivationSpecConfig(config, instance);
+                        recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, resourceEndpoint,
+                                activationSpecConfig);
                     }
                 }
             }
         }
         return new ServiceStartBuildItem(FEATURE);
+    }
+
+    private static Map<String, String> getActivationSpecConfig(IronJacamarConfig config, AnnotationInstance instance) {
+        Map<String, String> activationSpecConfig = new HashMap<>();
+        AnnotationValue activationSpec = instance.value("activationSpec");
+        if (activationSpec != null) {
+            AnnotationValue configKey = activationSpec.asNested().value("configKey");
+            if (configKey != null) {
+                String activationSpecConfigKey = configKey.asString();
+                IronJacamarConfig.ActivationSpecConfig specConfig = config.activationSpecs().map().get(activationSpecConfigKey);
+                if (specConfig != null) {
+                    activationSpecConfig.putAll(specConfig.config());
+                }
+            }
+            // TODO: Add support for ActivationConfigProperty
+        }
+        return activationSpecConfig;
     }
 
     private static ResourceAdapterKindBuildItem resolveKind(

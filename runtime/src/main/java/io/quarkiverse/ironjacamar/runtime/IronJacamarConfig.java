@@ -10,6 +10,7 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithDefaults;
+import io.smallrye.config.WithName;
 import io.smallrye.config.WithParentName;
 import io.smallrye.config.WithUnnamedKey;
 
@@ -18,6 +19,8 @@ import io.smallrye.config.WithUnnamedKey;
 public interface IronJacamarConfig {
 
     String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
+
+    String DEFAULT_ACTIVATION_SPEC_NAME = "<default>";
 
     /**
      * Whether IronJacamar is enabled.
@@ -36,6 +39,12 @@ public interface IronJacamarConfig {
     @WithUnnamedKey(DEFAULT_RESOURCE_ADAPTER_NAME)
     Map<String, ResourceAdapterOuterNamedConfig> resourceAdapters();
 
+    /**
+     * Activation Specs
+     */
+    @WithName("activation-spec")
+    ActivationSpecOuterNamedConfig activationSpecs();
+
     @ConfigGroup
     interface ResourceAdapterOuterNamedConfig {
 
@@ -51,6 +60,26 @@ public interface IronJacamarConfig {
          */
         Optional<String> kind();
 
+        /**
+         * The configuration for this resource adapter
+         */
+        Map<String, String> config();
+    }
+
+    @ConfigGroup
+    interface ActivationSpecOuterNamedConfig {
+
+        /**
+         * The Activation Spec configuration.
+         */
+        @ConfigDocMapKey("activation-spec-name")
+        @WithParentName
+        @WithDefaults
+        @WithUnnamedKey(DEFAULT_RESOURCE_ADAPTER_NAME)
+        Map<String, ActivationSpecConfig> map();
+    }
+
+    interface ActivationSpecConfig {
         /**
          * The configuration for this resource adapter
          */

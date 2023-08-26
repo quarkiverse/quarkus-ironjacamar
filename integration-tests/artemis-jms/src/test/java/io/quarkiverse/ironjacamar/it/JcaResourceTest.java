@@ -10,7 +10,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-@QuarkusTestResource(ArtemisTestResource.class)
+@QuarkusTestResource(value = ArtemisTestResource.class, restrictToAnnotatedClass = true)
 public class JcaResourceTest {
 
     @Test

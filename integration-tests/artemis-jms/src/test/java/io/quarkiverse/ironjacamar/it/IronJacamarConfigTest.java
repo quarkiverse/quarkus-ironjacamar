@@ -25,6 +25,9 @@ public class IronJacamarConfigTest {
                         assertThat(cp).isEqualTo("host=localhost;port=61616;protocols=AMQP");
                     });
                 });
+        assertThat(config.activationSpecs().map().get("myqueue").config()).hasEntrySatisfying("destination", d -> {
+            assertThat(d).isEqualTo("jms.queue.MyQueue");
+        });
 
     }
 }
