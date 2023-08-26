@@ -1,18 +1,14 @@
 package io.quarkiverse.ironjacamar.runtime;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.resource.ResourceException;
-import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.XATerminator;
-import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.jboss.jca.core.connectionmanager.TxConnectionManager;
@@ -20,13 +16,11 @@ import org.jboss.logging.Logger;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
-import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
-import io.quarkus.runtime.shutdown.ShutdownListener;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -115,30 +109,4 @@ public class IronJacamarRecorder {
             }
         });
     }
-
-    private ShutdownListener activateEndpoints(ResourceAdapter adapter,
-            ResourceAdapterFactory resourceAdapterFactory) {
-        //TODO: Find the respective endpoints
-        Set<String> endpointClassNames = new HashSet<>();
-        ResourceAdapterShutdownListener endpointRegistry = new ResourceAdapterShutdownListener(adapter);
-        for (String endpointClassName : endpointClassNames) {
-            Class<?> endpointClass = null;
-            try {
-                endpointClass = Class.forName(endpointClassName, true, Thread.currentThread().getContextClassLoader());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            MessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass,
-                    resourceAdapterFactory);
-            try {
-                ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(adapter, endpointClass, null);
-                adapter.endpointActivation(messageEndpointFactory, activationSpec);
-                endpointRegistry.registerEndpoint(messageEndpointFactory, activationSpec);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return endpointRegistry;
-    }
-
 }
