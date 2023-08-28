@@ -75,7 +75,7 @@ public interface IronJacamarConfig {
         @ConfigDocMapKey("activation-spec-name")
         @WithParentName
         @WithDefaults
-        @WithUnnamedKey(DEFAULT_RESOURCE_ADAPTER_NAME)
+        @WithUnnamedKey(DEFAULT_ACTIVATION_SPEC_NAME)
         Map<String, ActivationSpecConfig> map();
     }
 
