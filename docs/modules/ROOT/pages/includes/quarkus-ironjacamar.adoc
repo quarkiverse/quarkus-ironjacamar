@@ -64,4 +64,23 @@ endif::add-copy-button-to-env-var[]
 --|`Map<String,String>` 
 |
 
+
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec.config]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec."activation-spec-name".config]`
+
+
+[.description]
+--
+The configuration for this resource adapter
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_ACTIVATION_SPEC_CONFIG+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_ACTIVATION_SPEC_CONFIG+++`
+endif::add-copy-button-to-env-var[]
+--|`Map<String,String>` 
+|
+
 |===

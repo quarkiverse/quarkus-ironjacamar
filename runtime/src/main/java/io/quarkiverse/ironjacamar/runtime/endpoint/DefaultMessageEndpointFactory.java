@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import javax.transaction.xa.XAResource;
 
-import jakarta.resource.spi.UnavailableException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.Transactional;
@@ -23,19 +22,19 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     }
 
     @Override
-    public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
+    public MessageEndpoint createEndpoint(XAResource xaResource) {
         Object endpointInstance = getEndpointInstance();
         return resourceAdapterSupport.wrap(endpointInstance, new DefaultMessageEndpoint());
     }
 
     @Override
-    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) throws UnavailableException {
+    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) {
         Object endpointInstance = getEndpointInstance();
         return resourceAdapterSupport.wrap(endpointInstance, new DefaultMessageEndpoint());
     }
 
     @Override
-    public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
+    public boolean isDeliveryTransacted(Method method) {
         return method.getAnnotation(Transactional.class) != null;
     }
 
