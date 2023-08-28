@@ -46,7 +46,7 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar.ra.config]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar.ra.config]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar."resource-adapter-name".ra.config]`
 
@@ -65,7 +65,7 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec.config]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec.config]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec."activation-spec-name".config]`
 
