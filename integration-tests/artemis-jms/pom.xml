@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>quarkus-ironjacamar-integration-tests-artemis-jms</artifactId>
+    <name>Quarkus IronJacamar - Integration Tests - Artemis JMS</name>
 
     <dependencies>
         <dependency>
