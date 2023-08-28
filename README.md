@@ -7,7 +7,7 @@
 
 ## Overview
 
-This extension provides very limited support for Jakarta Connectors in Quarkus. It is based on
+This extension provides support for Jakarta Connectors in Quarkus. It is based on
 the [Jakarta Connector Architecture](https://projects.eclipse.org/projects/ee4j.jca) 2.1.0 specification.
 
 ## Features
@@ -22,7 +22,7 @@ the [Jakarta Connector Architecture](https://projects.eclipse.org/projects/ee4j.
 
 - JNDI is not supported
 - Security work context propagation is not supported
-- Tested with the Artemis JCA resource adapter only
+- Tested with the Artemis JCA resource adapter only (see [quarkus-integration-test-artemis-jms](integration-tests/artemis-jms))
 
 ## Documentation
 

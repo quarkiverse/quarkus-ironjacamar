@@ -1,9 +1,10 @@
-name: Java Connector Architecture (JCA)
+name: IronJacamar (JCA)
 description: Java Connector Architecture (JCA) support for Quarkus
 metadata:
   keywords:
     - jca
-  guide: https://docs.quarkiverse.io/quarkus-jca/dev/
+    - ironjacamar
+  guide: https://docs.quarkiverse.io/quarkus-ironjacamar/dev/
   categories:
     - "miscellaneous"
   status: "preview"
