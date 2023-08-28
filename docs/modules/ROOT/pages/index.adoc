@@ -2,7 +2,8 @@
 
 include::./includes/attributes.adoc[]
 
-This extension allows you to deploy JCA Resource Adapters in Quarkus. IronJacamar is a Java Connector Architecture (JCA) implementation.
+This extension allows you to deploy JCA Resource Adapters in Quarkus.
+IronJacamar is a Java Connector Architecture (JCA) implementation.
 
 == Installation
 
@@ -19,9 +20,127 @@ For instance, with Maven, add the following dependency to your POM file:
 </dependency>
 ----
 
+== Integration
+
+We recommend you to create a Quarkus extension dedicated for your Resource Adapter.
+This will allow you to build your Resource Adapter to native and perform the optimizations needed to run in Quarkus.
+If you don't want to create a Quarkus extension for your Resource Adapter, just implement the `ResourceAdapterFactory` in your application code and you'll be fine.
+
+== Implementing a `ResourceAdapterFactory`
+
+A `ResourceAdapterFactory` is an SPI that the IronJacamar extension introduces to create `ResourceAdapter`, `ManagedConnectionFactory` and `ActivationSpec` instances.
+You must use the `@ResourceAdapterKind` annotation on it to specify the resource adapter kind that will be used to identify the factory in the application code.
+
+
+[source,java,subs=attributes+]
+----
+@ResourceAdapterKind(value = "artemis") <1>
+@ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class }) <2>
+public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {...} <3>
+----
+
+<1> The value is the name of the resource adapter kind.
+Because a Quarkus application can manage multiple resource adapters, this is used in the configuration to select the proper resource adapter to be configured and started.
+<2> The connection factory types that this resource adapter supports.
+This must be the types that the object returned in the `jakarta.resource.spi.ManagedConnectionFactory.createConnectionFactory(jakarta.resource.spi.ConnectionManager)` has.
+That will allow you to `@Inject` this object in your application code (eg. `@Inject ConnectionFactory` in this example).
+<3> The implementation of the `ResourceAdapterFactory` interface.
+This is the class that will be instantiated by the IronJacamar extension to create the resource adapter instance.
+
+== Using a `ResourceEndpoint`
+
+Resource endpoints are activated in the ResourceAdapter (think EJB's `@MessageDriven` annotation) and are declared using the `@ResourceEndpoint` annotation.
+
+[source,java,subs=attributes+]
+----
+import io.quarkiverse.ironjacamar.ResourceEndpoint;
+import io.quarkiverse.ironjacamar.ResourceEndpoint.ActivationSpec;
+
+import jakarta.jms.MessageListener;
+
+@ResourceEndpoint(activationSpec = @ActivationSpec(configKey = "myqueue")) <1>
+public class MyResourceEndpoint implements MessageListener {...} <2>
+
+----
+
+<1> An optional activation spec configuration key. The `configKey` is the key that will be consumed from the configuration (see the `application.properties` example below)
+<2> The resource endpoint implementation.
+Because the Artemis ResourceAdapter implementation expects a `jakarta.jms.MessageListener` instance, you must implement this interface.
+
+The configuration may vary according to what the chosen `ResourceAdapterFactory` implementation expects.
+
+Important:: The required interface may vary according to the resource adapter used.
+If you are unsure of what to use, look at your resource adapter documentation.
+
+== Configuration
+
+=== In your application
+
+[source,properties,subs=attributes+]
+----
+quarkus.ironjacamar.ra.kind=artemis <1>
+
+quarkus.ironjacamar.ra.config.connection-parameters=host=localhost;port=5445;protocols=HORNETQ <2>
+quarkus.ironjacamar.ra.config.protocol-manager-factory=org.apache.activemq.artemis.core.protocol.hornetq.client.HornetQClientProtocolManagerFactory
+quarkus.ironjacamar.ra.config.user=guest
+quarkus.ironjacamar.ra.config.password=guest
+
+quarkus.ironjacamar.activation-spec.myqueue.config.destination-type=jakarta.jms.Queue <3>
+quarkus.ironjacamar.activation-spec.myqueue.config.destination=jms.queue.MyQueue
+quarkus.ironjacamar.activation-spec.myqueue.config.max-session=2
+quarkus.ironjacamar.activation-spec.myqueue.config.rebalance-connections=true
+
+----
+
+<1> This is the resource adapter kind.
+It must match the value of the `@ResourceAdapterKind` annotation in the `ResourceAdapterFactory` implementation.
+<2> (Optional) You can specify the resource adapter configuration that will be passed to your `ResourceAdapterFactory#createResourceAdapter` implementation method.
+<3> (Optional) You can specify optional activation spec configuration `ResourceAdapterFactory#createActivationSpec` implementation method.
+
+== Multiple Providers
+
+You can configure more than one `ResourceAdapter` instance in your application.
+Just name the resource adapter in the configuration:
+
+[source,properties,subs=attributes+]
+----
+quarkus.ironjacamar.main.ra.kind=artemis <1>
+quarkus.ironjacamar.other.ra.kind=artemis
+----
+
+To reference in the code, you must use the `@io.smallrye.common.annotation.Identifier` annotation:
+
+[source,java,subs=attributes+]
+----
+
+import io.quarkiverse.ironjacamar.ResourceEndpoint;
+import io.smallrye.common.annotation.Identifier;
+
+import jakarta.inject.Inject;
+
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.MessageListener;
+
+@ResourceEndpoint
+@Identifier("other") <1>
+public class MyResourceEndpoint implements MessageListener {
+
+    @Inject
+    @Identifier("main")
+    ConnectionFactory connectionFactory; <2>
+
+    @Override
+    public void onMessage(Message message) {
+        //...
+    }
+}
+----
+
+<1> This MessageListener will be activated by the `other` resource adapter configured above.
+<2> This `ConnectionFactory` will be the one configured in the `main` resource adapter.
+
+
 [[extension-configuration-reference]]
-== Extension Configuration Reference
+=== Extension Configuration Reference
 
-TIP: Remove this section if you don't have Quarkus configuration properties in your extension.
-
-include::includes/quarkus-jca.adoc[leveloffset=+1, opts=optional]
+include::includes/quarkus-ironjacamar.adoc[leveloffset=+1,opts=optional]
