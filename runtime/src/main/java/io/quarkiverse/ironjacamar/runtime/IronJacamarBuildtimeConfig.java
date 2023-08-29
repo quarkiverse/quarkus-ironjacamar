@@ -8,7 +8,6 @@ import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithDefaults;
 import io.smallrye.config.WithParentName;
 import io.smallrye.config.WithUnnamedKey;
@@ -18,14 +17,6 @@ import io.smallrye.config.WithUnnamedKey;
 public interface IronJacamarBuildtimeConfig {
 
     String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
-
-    /**
-     * Whether IronJacamar is enabled.
-     *
-     * @return {@code true} if IronJacamar is enabled, {@code false} otherwise
-     */
-    @WithDefault("true")
-    boolean enabled();
 
     /**
      * Resource Adapters

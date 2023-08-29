@@ -10,23 +10,6 @@ h|[[quarkus-ironjacamar_configuration]]link:#quarkus-ironjacamar_configuration[C
 h|Type
 h|Default
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.enabled[quarkus.ironjacamar.enabled]`
-
-
-[.description]
---
-Whether IronJacamar is enabled.
-
-ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_ENABLED+++[]
-endif::add-copy-button-to-env-var[]
-ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_ENABLED+++`
-endif::add-copy-button-to-env-var[]
---|boolean 
-|`true`
-
-
 a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.kind]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar.ra.kind]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar."resource-adapter-name".ra.kind]`
