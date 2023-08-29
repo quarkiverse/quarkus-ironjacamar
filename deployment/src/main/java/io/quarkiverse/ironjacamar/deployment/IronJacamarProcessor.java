@@ -218,7 +218,6 @@ class IronJacamarProcessor {
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BuildProducer<ContainerStartedBuildItem> startedProducer) throws Exception {
-        Log.info("Starting IronJacamar resource adapters");
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
