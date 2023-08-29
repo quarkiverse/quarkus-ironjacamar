@@ -97,7 +97,7 @@ It must match the value of the `@ResourceAdapterKind` annotation in the `Resourc
 <2> (Optional) You can specify the resource adapter configuration that will be passed to your `ResourceAdapterFactory#createResourceAdapter` implementation method.
 <3> (Optional) You can specify optional activation spec configuration `ResourceAdapterFactory#createActivationSpec` implementation method.
 
-== Multiple Providers
+== Multiple Resource Adapters
 
 You can configure more than one `ResourceAdapter` instance in your application.
 Just name the resource adapter in the configuration:
