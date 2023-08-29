@@ -119,6 +119,7 @@ import io.smallrye.common.annotation.Identifier;
 import jakarta.inject.Inject;
 
 import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 
 @ResourceEndpoint
