@@ -1,5 +1,4 @@
 name: IronJacamar (JCA)
-description: Java Connector Architecture (JCA) support for Quarkus
 metadata:
   keywords:
     - jca
