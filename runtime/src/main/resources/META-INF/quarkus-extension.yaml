@@ -3,7 +3,8 @@ metadata:
   keywords:
     - jca
     - ironjacamar
-  guide: https://docs.quarkiverse.io/quarkus-ironjacamar/dev/
+  guide: "https://docs.quarkiverse.io/quarkus-ironjacamar/dev/"
+  icon-url: "https://design.jboss.org/ironjacamar/logo/finals/ironjacamar_icon_256px.png"
   categories:
-    - "miscellaneous"
+    - "integration"
   status: "preview"
