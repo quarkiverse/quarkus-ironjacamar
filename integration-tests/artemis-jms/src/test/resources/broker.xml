@@ -4,7 +4,7 @@
         <bindings-directory>./target/artemis/default/bindings</bindings-directory>
         <journal-directory>./target/artemis/default/journal</journal-directory>
         <large-messages-directory>./target/artemis/default/large-messages</large-messages-directory>
-
+        <suppress-session-notifications>true</suppress-session-notifications>
         <connectors>
             <connector name="activemq">tcp://localhost:61616</connector>
         </connectors>
