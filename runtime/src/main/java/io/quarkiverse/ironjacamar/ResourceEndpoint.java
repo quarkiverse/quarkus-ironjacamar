@@ -20,15 +20,6 @@ public @interface ResourceEndpoint {
     @Target(ElementType.ANNOTATION_TYPE)
     @interface ActivationSpec {
         String configKey() default "<default>";
-
-        ActivationConfigProperty[] properties() default {};
-
-        @Target(ElementType.ANNOTATION_TYPE)
-        @interface ActivationConfigProperty {
-            String propertyName();
-
-            String propertyValue();
-        }
     }
 
 }
