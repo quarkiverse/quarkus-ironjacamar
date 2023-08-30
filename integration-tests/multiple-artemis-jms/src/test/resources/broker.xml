@@ -14,13 +14,5 @@
 
         <max-disk-usage>-1</max-disk-usage>
         <security-enabled>false</security-enabled>
-
-        <addresses>
-            <address name="test-jms-default">
-                <anycast>
-                    <queue name="test-jms-default"/>
-                </anycast>
-            </address>
-        </addresses>
     </core>
 </configuration>
