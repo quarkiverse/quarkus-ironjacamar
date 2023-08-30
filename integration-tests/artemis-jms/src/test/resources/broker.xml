@@ -14,5 +14,18 @@
 
         <max-disk-usage>-1</max-disk-usage>
         <security-enabled>false</security-enabled>
+        <addresses>
+            <address name="MyQueue">
+                <anycast>
+                    <queue name="MyQueue"/>
+                </anycast>
+            </address>
+        </addresses>
+        <address-settings>
+            <address-setting match="MyQueue">
+                <dead-letter-address>MyQueueDLQ</dead-letter-address>
+                <expiry-address>MyQueueExpiry</expiry-address>
+            </address-setting>
+        </address-settings>
     </core>
 </configuration>

@@ -46,14 +46,14 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     @Override
     public ActivationSpec createActivationSpec(ResourceAdapter adapter, Class<?> type, Map<String, String> config)
             throws ResourceException {
-        //TODO: Use the config
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         activationSpec.setResourceAdapter(adapter);
         activationSpec.setDestinationType(config.get("destination-type"));
         activationSpec.setDestination(config.get("destination"));
-        activationSpec.setMaxSession(Integer.valueOf(config.getOrDefault("max-session", "2")));
+        activationSpec.setMaxSession(Integer.valueOf(config.getOrDefault("max-session", "5")));
         activationSpec.setRebalanceConnections(Boolean.valueOf(config.getOrDefault("rebalance-connections", "true")));
         activationSpec.setUseJNDI(false);
+        activationSpec.setUseLocalTx(false);
         return activationSpec;
     }
 

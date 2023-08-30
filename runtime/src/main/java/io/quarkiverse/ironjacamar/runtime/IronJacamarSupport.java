@@ -60,8 +60,10 @@ public class IronJacamarSupport {
             throw new RuntimeException(e);
         }
         Map<String, String> config = new HashMap<>(buildTimeConfig);
-        // TODO: May throw NPE?
-        config.putAll(this.runtimeConfig.activationSpecs().map().get(activationSpecConfigId).config());
+        var activationSpecConfig = runtimeConfig.activationSpecs().map().get(activationSpecConfigId);
+        if (activationSpecConfig != null) {
+            config.putAll(activationSpecConfig.config());
+        }
         try {
             ijContainer.endpointActivation(endpointClass, containerId, config);
         } catch (ResourceException e) {

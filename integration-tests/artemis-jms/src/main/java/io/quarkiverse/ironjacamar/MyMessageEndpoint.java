@@ -14,6 +14,7 @@ public class MyMessageEndpoint implements MessageListener {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onMessage(Message message) {
         try {
+            Log.infof("Redelivered: %s",message.getJMSRedelivered());
             Log.infof("Transaction is Active? %s", QuarkusTransaction.isActive());
             String body = message.getBody(String.class);
             Log.infof("Received message: %s", body);
