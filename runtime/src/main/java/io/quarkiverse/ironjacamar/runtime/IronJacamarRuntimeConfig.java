@@ -2,6 +2,7 @@ package io.quarkiverse.ironjacamar.runtime;
 
 import java.util.Map;
 
+import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkus.runtime.annotations.ConfigDocMapKey;
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigPhase;
@@ -16,17 +17,13 @@ import io.smallrye.config.WithUnnamedKey;
 @ConfigRoot(phase = ConfigPhase.RUN_TIME)
 public interface IronJacamarRuntimeConfig {
 
-    String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
-
-    String DEFAULT_ACTIVATION_SPEC_NAME = "<default>";
-
     /**
      * Resource Adapters
      */
     @ConfigDocMapKey("resource-adapter-name")
     @WithParentName
     @WithDefaults
-    @WithUnnamedKey(DEFAULT_RESOURCE_ADAPTER_NAME)
+    @WithUnnamedKey(Defaults.DEFAULT_RESOURCE_ADAPTER_NAME)
     Map<String, ResourceAdapterOuterNamedConfig> resourceAdapters();
 
     /**
@@ -60,7 +57,7 @@ public interface IronJacamarRuntimeConfig {
         @ConfigDocMapKey("activation-spec-name")
         @WithParentName
         @WithDefaults
-        @WithUnnamedKey(DEFAULT_ACTIVATION_SPEC_NAME)
+        @WithUnnamedKey(Defaults.DEFAULT_ACTIVATION_SPEC_NAME)
         Map<String, ActivationSpecConfig> map();
     }
 

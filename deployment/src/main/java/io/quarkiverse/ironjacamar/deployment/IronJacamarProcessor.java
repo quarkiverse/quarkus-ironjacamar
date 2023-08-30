@@ -108,9 +108,7 @@ class IronJacamarProcessor {
         if (factories.isEmpty()) {
             Log.warn("No default resource adapter kind found. Ironjacamar is disabled");
             return;
-            //throw new DeploymentException("No default resource adapter kind found");
         }
-        boolean single = (factories.size() == 1);
         for (ClassInfo factory : factories) {
             AnnotationInstance rak = factory.annotation(ResourceAdapterKind.class);
             if (rak == null) {
@@ -257,7 +255,7 @@ class IronJacamarProcessor {
                 // Filter out the endpoints for the respective container
                 Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
                 for (AnnotationInstance instance : annotations) {
-                    AnnotationInstance annotation = instance.target().annotation(Identifier.class);
+                    AnnotationInstance annotation = instance.target().declaredAnnotation(Identifier.class);
                     if (annotation == null) {
                         throw new DeploymentException(
                                 "Because there are more than one resource adapter configured, you need to explicitly use the @Identifier annotation on "

@@ -14,6 +14,7 @@ import jakarta.ws.rs.QueryParam;
 
 import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.smallrye.common.annotation.Identifier;
 
 @Path("/jca")
 @ApplicationScoped
@@ -21,12 +22,13 @@ public class JcaResource {
     // add some rest methods here
 
     @Inject
-    ConnectionFactory factory;
+    @Identifier("other")
+    ConnectionFactory otherFactory;
 
     @GET
     @Transactional
-    public String hello(@QueryParam("name") @DefaultValue("JCA") String name) {
-        try (JMSContext context = factory.createContext()) {
+    public void hello(@QueryParam("name") @DefaultValue("JCA") String name) {
+        try (JMSContext context = otherFactory.createContext()) {
             Queue myQueue = context.createQueue("MyQueue");
             JMSProducer producer = context.createProducer();
             producer.send(myQueue, "Hello " + name);
@@ -34,24 +36,5 @@ public class JcaResource {
             if (name.equals("rollback"))
                 QuarkusTransaction.setRollbackOnly();
         }
-        return "Hello " + name;
     }
-
-    @GET
-    @Path("/transacted")
-    @Transactional
-    public boolean isTransacted() {
-        try (JMSContext context = factory.createContext()) {
-            return context.getTransacted();
-        }
-    }
-
-    @GET
-    @Path("/not-transacted")
-    public boolean isNotTransacted() {
-        try (JMSContext context = factory.createContext()) {
-            return context.getTransacted();
-        }
-    }
-
 }

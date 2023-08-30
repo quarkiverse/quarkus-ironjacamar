@@ -63,7 +63,7 @@ public class IronJacamarSupport {
         // TODO: May throw NPE?
         config.putAll(this.runtimeConfig.activationSpecs().map().get(activationSpecConfigId).config());
         try {
-            ijContainer.endpointActivation(endpointClass, config);
+            ijContainer.endpointActivation(endpointClass, containerId, config);
         } catch (ResourceException e) {
             throw new RuntimeException(e);
         }
