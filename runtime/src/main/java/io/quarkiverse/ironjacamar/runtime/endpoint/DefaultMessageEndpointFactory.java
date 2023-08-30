@@ -32,13 +32,13 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource) {
         Object endpointInstance = getEndpointInstance();
-        return resourceAdapterSupport.wrap(endpointInstance, new DefaultMessageEndpoint());
+        return resourceAdapterSupport.createMessageEndpoint(endpointInstance, xaResource, 0L);
     }
 
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) {
         Object endpointInstance = getEndpointInstance();
-        return resourceAdapterSupport.wrap(endpointInstance, new DefaultMessageEndpoint());
+        return resourceAdapterSupport.createMessageEndpoint(endpointInstance, xaResource, timeout);
     }
 
     @Override

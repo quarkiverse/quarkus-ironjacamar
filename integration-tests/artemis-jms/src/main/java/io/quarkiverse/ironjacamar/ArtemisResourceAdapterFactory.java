@@ -3,6 +3,8 @@ package io.quarkiverse.ironjacamar;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import javax.transaction.xa.XAResource;
+
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.resource.ResourceException;
@@ -58,18 +60,16 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     }
 
     @Override
-    public MessageEndpoint wrap(Object resourceEndpoint, MessageEndpoint messageEndpoint) {
-        return new MessageEndpointWrapper((MessageListener) resourceEndpoint, messageEndpoint);
+    public MessageEndpoint createMessageEndpoint(Object resourceEndpoint, XAResource resource, long timeout) {
+        return new JMSMessageEndpoint((MessageListener) resourceEndpoint);
     }
 
-    private static class MessageEndpointWrapper implements MessageEndpoint, MessageListener {
+    private static class JMSMessageEndpoint implements MessageEndpoint, MessageListener {
 
-        private final MessageEndpoint delegate;
         private final MessageListener listener;
 
-        private MessageEndpointWrapper(MessageListener listener, MessageEndpoint delegate) {
+        private JMSMessageEndpoint(MessageListener listener) {
             this.listener = listener;
-            this.delegate = delegate;
         }
 
         @Override
@@ -78,18 +78,16 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
         }
 
         @Override
-        public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
-            delegate.beforeDelivery(method);
+        public void beforeDelivery(Method method) {
         }
 
         @Override
-        public void afterDelivery() throws ResourceException {
-            delegate.afterDelivery();
+        public void afterDelivery() {
         }
 
         @Override
         public void release() {
-            delegate.release();
+
         }
     }
 }

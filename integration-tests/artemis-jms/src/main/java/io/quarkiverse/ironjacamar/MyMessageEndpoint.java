@@ -14,12 +14,12 @@ public class MyMessageEndpoint implements MessageListener {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onMessage(Message message) {
         try {
-            Log.infof("Redelivered: %s",message.getJMSRedelivered());
             Log.infof("Transaction is Active? %s", QuarkusTransaction.isActive());
             String body = message.getBody(String.class);
             Log.infof("Received message: %s", body);
             if (body.contains("George")) {
-                QuarkusTransaction.setRollbackOnly();
+                //                QuarkusTransaction.setRollbackOnly();
+                System.out.println("ROLLBACK");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
