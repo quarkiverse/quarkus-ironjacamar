@@ -11,7 +11,7 @@
         <acceptors>
             <acceptor name="activemq">tcp://localhost:61616</acceptor>
         </acceptors>
-
+        <journal-pool-files>10</journal-pool-files>
         <max-disk-usage>-1</max-disk-usage>
         <security-enabled>false</security-enabled>
         <addresses>
