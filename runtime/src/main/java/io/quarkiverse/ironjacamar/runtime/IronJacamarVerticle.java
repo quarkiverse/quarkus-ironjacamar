@@ -43,7 +43,7 @@ final class IronJacamarVerticle extends AbstractVerticle {
     @Override
     public void stop() {
         if (workManager != null) {
-            workManager.close();
+            workManager.close().result();
         }
         ra.stop();
     }

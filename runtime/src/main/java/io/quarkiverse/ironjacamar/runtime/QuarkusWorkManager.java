@@ -8,6 +8,7 @@ import jakarta.resource.spi.work.WorkListener;
 import jakarta.resource.spi.work.WorkManager;
 
 import io.quarkus.logging.Log;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.WorkerExecutor;
 
@@ -120,7 +121,7 @@ class QuarkusWorkManager implements WorkManager {
         workListener.workAccepted(new WorkEvent(this, WorkEvent.WORK_ACCEPTED, work, null));
     }
 
-    public void close() {
-        executor.close();
+    public Future<Void> close() {
+        return executor.close();
     }
 }
