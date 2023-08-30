@@ -8,8 +8,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig;
-
 /**
  * Annotation to mark a class as a resource endpoint.
  */
@@ -21,7 +19,7 @@ public @interface ResourceEndpoint {
 
     @Target(ElementType.ANNOTATION_TYPE)
     @interface ActivationSpec {
-        String configKey() default IronJacamarRuntimeConfig.DEFAULT_ACTIVATION_SPEC_NAME;
+        String configKey() default Defaults.DEFAULT_ACTIVATION_SPEC_NAME;
     }
 
 }
