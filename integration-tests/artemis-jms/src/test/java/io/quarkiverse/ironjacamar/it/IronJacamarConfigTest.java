@@ -24,7 +24,7 @@ public class IronJacamarConfigTest {
                     });
                 });
         assertThat(runtimeConfig.activationSpecs().map().get("myqueue").config()).hasEntrySatisfying("destination", d -> {
-            assertThat(d).isEqualTo("jms.queue.MyQueue");
+            assertThat(d).isEqualTo("MyQueue");
         });
 
     }

@@ -42,8 +42,9 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     }
 
     @Override
-    public boolean isDeliveryTransacted(Method method) {
-        return method.getAnnotation(Transactional.class) != null;
+    public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
+        Method endpointClassMethod = endpointClass.getMethod(method.getName(), method.getParameterTypes());
+        return endpointClassMethod.getAnnotation(Transactional.class) != null;
     }
 
     @Override
