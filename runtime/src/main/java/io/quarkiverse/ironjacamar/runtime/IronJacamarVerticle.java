@@ -10,6 +10,7 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import org.jboss.logging.Logger;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Promise;
 
 /**
  * A Vert.x {@link io.vertx.core.Verticle} that starts and stops a JCA {@link ResourceAdapter}.
@@ -41,10 +42,12 @@ final class IronJacamarVerticle extends AbstractVerticle {
     }
 
     @Override
-    public void stop() {
+    public void stop(Promise<Void> stopPromise) {
         if (workManager != null) {
-            workManager.close().result();
+            workManager.close().andThen((v) -> ra.stop()).andThen(stopPromise);
+        } else {
+            ra.stop();
+            stopPromise.complete();
         }
-        ra.stop();
     }
 }
