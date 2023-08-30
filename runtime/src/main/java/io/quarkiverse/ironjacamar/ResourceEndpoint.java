@@ -3,7 +3,6 @@ package io.quarkiverse.ironjacamar;
 import static java.lang.annotation.ElementType.TYPE;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -15,11 +14,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ResourceEndpoint {
-    ActivationSpec activationSpec() default @ActivationSpec();
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @interface ActivationSpec {
-        String configKey() default Defaults.DEFAULT_ACTIVATION_SPEC_NAME;
-    }
+    /**
+     * @return The ActivationSpec config key
+     */
+    String activationSpecConfigKey() default Defaults.DEFAULT_ACTIVATION_SPEC_NAME;
 
 }

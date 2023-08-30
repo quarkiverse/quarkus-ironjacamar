@@ -3,10 +3,9 @@ package io.quarkiverse.ironjacamar;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 
-import io.quarkiverse.ironjacamar.ResourceEndpoint.ActivationSpec;
 import io.quarkus.logging.Log;
 
-@ResourceEndpoint(activationSpec = @ActivationSpec(configKey = "myqueue"))
+@ResourceEndpoint(activationSpecConfigKey = "myqueue")
 public class MyMessageEndpoint implements MessageListener {
     @Override
     public void onMessage(Message message) {

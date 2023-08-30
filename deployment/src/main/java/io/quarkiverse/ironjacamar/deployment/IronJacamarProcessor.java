@@ -278,12 +278,9 @@ class IronJacamarProcessor {
     }
 
     private static String getActivationSpecId(AnnotationInstance instance) {
-        AnnotationValue activationSpec = instance.value("activationSpec");
+        AnnotationValue activationSpec = instance.value("activationSpecConfigKey");
         if (activationSpec != null) {
-            AnnotationValue configKey = activationSpec.asNested().value("configKey");
-            if (configKey != null) {
-                return configKey.asString();
-            }
+            return activationSpec.asString();
         }
         return null;
     }

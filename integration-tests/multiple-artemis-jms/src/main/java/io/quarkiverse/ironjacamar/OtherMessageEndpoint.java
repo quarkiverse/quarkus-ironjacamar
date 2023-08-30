@@ -8,11 +8,10 @@ import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.jms.Queue;
 
-import io.quarkiverse.ironjacamar.ResourceEndpoint.ActivationSpec;
 import io.quarkus.logging.Log;
 import io.smallrye.common.annotation.Identifier;
 
-@ResourceEndpoint(activationSpec = @ActivationSpec(configKey = "myqueue"))
+@ResourceEndpoint(activationSpecConfigKey = "myqueue")
 @Identifier("other")
 public class OtherMessageEndpoint implements MessageListener {
 
