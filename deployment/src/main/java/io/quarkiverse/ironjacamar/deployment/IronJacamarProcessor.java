@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,9 @@ class IronJacamarProcessor {
     @BuildStep
     void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                .addBeanClasses(CachedConnectionManagerProducer.class,
+                .addBeanClasses(
+                        IronJacamarSupport.class,
+                        CachedConnectionManagerProducer.class,
                         ConnectionManagerFactory.class,
                         TransactionIntegrationImpl.class)
                 .setUnremovable()
@@ -127,13 +128,14 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
-    void registerApplicationScopedBeans(CombinedIndexBuildItem combinedIndexBuildItem,
-            BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
+    void registerResourceEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
+            BuildProducer<AdditionalBeanBuildItem> additionalBeans,
+            BuildProducer<ReflectiveClassBuildItem> reflectiveClasses) {
         IndexView index = combinedIndexBuildItem.getIndex();
-        Set<String> endpoints = index.getAnnotations(ResourceEndpoint.class)
+        String[] endpoints = index.getAnnotations(ResourceEndpoint.class)
                 .stream()
                 .map(annotationInstance -> annotationInstance.target().asClass().name().toString())
-                .collect(Collectors.toSet());
+                .toArray(String[]::new);
 
         // Register message endpoints as @ApplicationScoped beans
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
@@ -142,12 +144,8 @@ class IronJacamarProcessor {
                 .setUnremovable()
                 .build());
 
-        // Add IronJacamarSupport bean
-        additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                .addBeanClasses(IronJacamarSupport.class)
-                .setDefaultScope(DotNames.SINGLETON)
-                .setUnremovable()
-                .build());
+        // Add reflective access to message endpoints (needed for io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory#isDeliveryTransacted)
+        reflectiveClasses.produce(ReflectiveClassBuildItem.builder(endpoints).methods().build());
     }
 
     @BuildStep
