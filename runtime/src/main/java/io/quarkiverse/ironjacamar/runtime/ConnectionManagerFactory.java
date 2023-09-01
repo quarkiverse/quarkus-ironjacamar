@@ -28,7 +28,7 @@ public class ConnectionManagerFactory {
         this.ccm = ccm;
     }
 
-    public TxConnectionManager createConnectionManager(ManagedConnectionFactory mcf) {
+    public TxConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf) {
         Pool pool = new PoolFactory()
                 .create(PoolStrategy.POOL_BY_CRI,
                         mcf,
@@ -36,6 +36,7 @@ public class ConnectionManagerFactory {
                         false,
                         false,
                         ManagedConnectionPoolFactory.DEFAULT_IMPLEMENTATION);
+        pool.setName("pool-" + id);
         return new org.jboss.jca.core.connectionmanager.ConnectionManagerFactory()
                 .createTransactional(
                         TransactionSupport.TransactionSupportLevel.XATransaction,
