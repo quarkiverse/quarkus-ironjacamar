@@ -8,7 +8,7 @@ import jakarta.resource.spi.TransactionSupport;
 import org.jboss.jca.common.api.metadata.common.FlushStrategy;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.api.connectionmanager.pool.PoolConfiguration;
-import org.jboss.jca.core.connectionmanager.TxConnectionManager;
+import org.jboss.jca.core.connectionmanager.ConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolStrategy;
@@ -28,7 +28,7 @@ public class ConnectionManagerFactory {
         this.ccm = ccm;
     }
 
-    public TxConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf) {
+    public ConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf) {
         Pool pool = new PoolFactory()
                 .create(PoolStrategy.POOL_BY_CRI,
                         mcf,

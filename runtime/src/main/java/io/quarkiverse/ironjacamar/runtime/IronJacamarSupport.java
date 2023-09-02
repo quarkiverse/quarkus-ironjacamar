@@ -10,7 +10,7 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 
-import org.jboss.jca.core.connectionmanager.TxConnectionManager;
+import org.jboss.jca.core.connectionmanager.ConnectionManager;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
@@ -43,7 +43,7 @@ public class IronJacamarSupport {
         } catch (ResourceException re) {
             throw new DeploymentException("Cannot deploy resource adapter", re);
         }
-        TxConnectionManager connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory);
+        ConnectionManager connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory);
         return new IronJacamarContainer(resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
                 connectionManager);
     }

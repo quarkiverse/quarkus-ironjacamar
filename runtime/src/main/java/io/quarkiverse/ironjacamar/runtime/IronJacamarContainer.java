@@ -9,7 +9,7 @@ import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 
-import org.jboss.jca.core.connectionmanager.TxConnectionManager;
+import org.jboss.jca.core.connectionmanager.ConnectionManager;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
@@ -23,12 +23,12 @@ public class IronJacamarContainer implements Closeable {
 
     private final ResourceAdapter resourceAdapter;
     private final ManagedConnectionFactory managedConnectionFactory;
-    private final TxConnectionManager connectionManager;
+    private final ConnectionManager connectionManager;
 
     public IronJacamarContainer(ResourceAdapterFactory resourceAdapterFactory,
             ResourceAdapter resourceAdapter,
             ManagedConnectionFactory managedConnectionFactory,
-            TxConnectionManager connectionManager) {
+            ConnectionManager connectionManager) {
         this.resourceAdapterFactory = resourceAdapterFactory;
         this.resourceAdapter = resourceAdapter;
         this.managedConnectionFactory = managedConnectionFactory;
