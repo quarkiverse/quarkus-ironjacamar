@@ -9,6 +9,9 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.spi.XATerminator;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
+import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
+import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
+import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.logging.Logger;
 
 import io.quarkus.arc.Arc;
@@ -49,6 +52,18 @@ public class IronJacamarRecorder {
                 } catch (ResourceException e) {
                     throw new DeploymentException("Cannot create connection factory", e);
                 }
+            }
+        };
+    }
+
+    public Function<SyntheticCreationalContext<CachedConnectionManager>, CachedConnectionManager> createCachedConnectionManager() {
+        return new Function<SyntheticCreationalContext<CachedConnectionManager>, CachedConnectionManager>() {
+            @Override
+            public CachedConnectionManager apply(SyntheticCreationalContext<CachedConnectionManager> context) {
+                TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
+                CachedConnectionManagerImpl cachedConnectionManager = new CachedConnectionManagerImpl(ti);
+                cachedConnectionManager.start();
+                return cachedConnectionManager;
             }
         };
     }
