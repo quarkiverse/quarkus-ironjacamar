@@ -18,14 +18,15 @@ import org.jboss.jandex.ClassType;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
+import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
+import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
-import io.quarkiverse.ironjacamar.runtime.CachedConnectionManagerProducer;
 import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
@@ -48,6 +49,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.configuration.ConfigurationException;
@@ -70,7 +72,6 @@ class IronJacamarProcessor {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(
                         IronJacamarSupport.class,
-                        CachedConnectionManagerProducer.class,
                         ConnectionManagerFactory.class,
                         TransactionIntegrationImpl.class)
                 .setUnremovable()
@@ -146,6 +147,27 @@ class IronJacamarProcessor {
 
         // Add reflective access to message endpoints (needed for io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory#isDeliveryTransacted)
         reflectiveClasses.produce(ReflectiveClassBuildItem.builder(endpoints).methods().build());
+    }
+
+    @BuildStep
+    @Record(value = ExecutionTime.STATIC_INIT)
+    void registerSingletonSyntheticBeans(BuildProducer<SyntheticBeanBuildItem> producer,
+            IronJacamarRecorder recorder) {
+        // Register the CachedConnectionManager as a Singleton bean
+        producer.produce(SyntheticBeanBuildItem.configure(CachedConnectionManager.class)
+                .scope(BuiltinScope.SINGLETON.getInfo())
+                .setRuntimeInit()
+                .unremovable()
+                .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
+                .createWith(recorder.createCachedConnectionManager())
+                .destroyer(mc -> {
+                    // Invoke CachedConnectionManager#stop()
+                    mc.invokeInterfaceMethod(MethodDescriptor.ofMethod(CachedConnectionManager.class, "stop", void.class),
+                            mc.getMethodParam(0));
+                    // return is void
+                    mc.returnValue(null);
+                })
+                .done());
     }
 
     @BuildStep
