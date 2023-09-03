@@ -6,9 +6,12 @@ import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
 import jakarta.jms.JMSProducer;
 import jakarta.jms.Queue;
+import jakarta.jms.TextMessage;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
@@ -35,6 +38,18 @@ public class JcaResource {
                 QuarkusTransaction.setRollbackOnly();
         }
         return "Hello " + name;
+    }
+
+    @POST
+    @Transactional
+    @Path("/sales")
+    public void sendToSalesQueue(@FormParam("name") String name) throws Exception {
+        try (JMSContext context = factory.createContext()) {
+            JMSProducer producer = context.createProducer();
+            TextMessage msg = context.createTextMessage(name);
+            msg.setJMSReplyTo(context.createQueue("inventory"));
+            producer.send(context.createQueue("sales"), msg);
+        }
     }
 
     @GET

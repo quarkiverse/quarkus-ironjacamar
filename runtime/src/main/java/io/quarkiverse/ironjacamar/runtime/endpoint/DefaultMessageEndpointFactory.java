@@ -5,9 +5,9 @@ import java.util.Objects;
 
 import javax.transaction.xa.XAResource;
 
+import jakarta.resource.spi.UnavailableException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
-import jakarta.transaction.Transactional;
 
 import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
@@ -18,9 +18,7 @@ import io.smallrye.common.annotation.Identifier;
 public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     private final Class<?> endpointClass;
-
     private final String identifier;
-
     private final ResourceAdapterFactory resourceAdapterSupport;
 
     public DefaultMessageEndpointFactory(Class<?> endpointClass, String identifier, ResourceAdapterFactory adapterFactory) {
@@ -30,21 +28,21 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     }
 
     @Override
-    public MessageEndpoint createEndpoint(XAResource xaResource) {
-        Object endpointInstance = getEndpointInstance();
-        return resourceAdapterSupport.createMessageEndpoint(endpointInstance, xaResource, 0L);
-    }
-
-    @Override
-    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) {
-        Object endpointInstance = getEndpointInstance();
-        return resourceAdapterSupport.createMessageEndpoint(endpointInstance, xaResource, timeout);
-    }
-
-    @Override
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
-        Method endpointClassMethod = endpointClass.getMethod(method.getName(), method.getParameterTypes());
-        return endpointClassMethod.getAnnotation(Transactional.class) != null;
+        return TransactionAwareMessageEndpoint.isDeliveryTransacted(endpointClass, method);
+    }
+
+    @Override
+    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) throws UnavailableException {
+        // TODO: Implement timeout
+        return createEndpoint(xaResource);
+    }
+
+    @Override
+    public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
+        Object endpointInstance = getEndpointInstance();
+        MessageEndpoint endpoint = new TransactionAwareMessageEndpoint(xaResource, endpointClass);
+        return resourceAdapterSupport.wrap(endpoint, endpointInstance);
     }
 
     @Override

@@ -2,15 +2,11 @@ package io.quarkiverse.ironjacamar;
 
 import java.util.Map;
 
-import javax.transaction.xa.XAResource;
-
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
-
-import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpoint;
 
 /**
  * SPI for configuring the resource adapter.
@@ -49,11 +45,10 @@ public interface ResourceAdapterFactory {
      * In some cases, the ResourceEndpoint requires a specific interface to be implemented
      * (e.g. {@link jakarta.jms.MessageListener} for JMS).
      *
-     * @param resourceEndpoint the resource endpoint (e.g. {@link jakarta.jms.MessageListener})
-     * @param resource the resource
-     * @param timeout the timeout
+     * @param messageEndpoint the resource endpoint (e.g. {@link jakarta.jms.MessageListener})
+     * @param instance the instance of the endpoint
      */
-    default MessageEndpoint createMessageEndpoint(Object resourceEndpoint, XAResource resource, long timeout) {
-        return new DefaultMessageEndpoint();
+    default MessageEndpoint wrap(MessageEndpoint messageEndpoint, Object instance) {
+        return messageEndpoint;
     }
 }

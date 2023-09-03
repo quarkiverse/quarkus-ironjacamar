@@ -1,9 +1,6 @@
 package io.quarkiverse.ironjacamar;
 
-import java.lang.reflect.Method;
 import java.util.Map;
-
-import javax.transaction.xa.XAResource;
 
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
@@ -17,6 +14,8 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactor
 import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
+
+import io.quarkiverse.ironjacamar.runtime.endpoint.MessageEndpointWrapper;
 
 /**
  * This would be in the artemis-jms extension
@@ -60,34 +59,22 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     }
 
     @Override
-    public MessageEndpoint createMessageEndpoint(Object resourceEndpoint, XAResource resource, long timeout) {
-        return new JMSMessageEndpoint((MessageListener) resourceEndpoint);
+    public MessageEndpoint wrap(MessageEndpoint endpoint, Object resourceEndpoint) {
+        return new JMSMessageEndpoint(endpoint, (MessageListener) resourceEndpoint);
     }
 
-    private static class JMSMessageEndpoint implements MessageEndpoint, MessageListener {
+    private static class JMSMessageEndpoint extends MessageEndpointWrapper implements MessageListener {
 
         private final MessageListener listener;
 
-        private JMSMessageEndpoint(MessageListener listener) {
+        private JMSMessageEndpoint(MessageEndpoint messageEndpoint, MessageListener listener) {
+            super(messageEndpoint);
             this.listener = listener;
         }
 
         @Override
         public void onMessage(Message message) {
             listener.onMessage(message);
-        }
-
-        @Override
-        public void beforeDelivery(Method method) {
-        }
-
-        @Override
-        public void afterDelivery() {
-        }
-
-        @Override
-        public void release() {
-
         }
     }
 }

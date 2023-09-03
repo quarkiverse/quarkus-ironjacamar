@@ -1,12 +1,10 @@
 package io.quarkiverse.ironjacamar;
 
-import java.lang.reflect.Method;
 import java.util.Map;
-
-import javax.transaction.xa.XAResource;
 
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
+import jakarta.jms.XAConnectionFactory;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
@@ -18,11 +16,13 @@ import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
+import io.quarkiverse.ironjacamar.runtime.endpoint.MessageEndpointWrapper;
+
 /**
  * This would be in the artemis-jms extension
  */
 @ResourceAdapterKind(value = "artemis")
-@ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class })
+@ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class, XAConnectionFactory.class })
 public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
     @Override
@@ -34,6 +34,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
         adapter.setUseJNDI(false);
         adapter.setUserName(config.get("user"));
         adapter.setPassword(config.get("password"));
+        adapter.setIgnoreJTA(false);
         return adapter;
     }
 
@@ -42,6 +43,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
             throws ResourceException {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
+        factory.setInJtaTransaction(true);
         return factory;
     }
 
@@ -60,34 +62,22 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     }
 
     @Override
-    public MessageEndpoint createMessageEndpoint(Object resourceEndpoint, XAResource resource, long timeout) {
-        return new JMSMessageEndpoint((MessageListener) resourceEndpoint);
+    public MessageEndpoint wrap(MessageEndpoint endpoint, Object resourceEndpoint) {
+        return new JMSMessageEndpoint(endpoint, (MessageListener) resourceEndpoint);
     }
 
-    private static class JMSMessageEndpoint implements MessageEndpoint, MessageListener {
+    private static class JMSMessageEndpoint extends MessageEndpointWrapper implements MessageListener {
 
         private final MessageListener listener;
 
-        private JMSMessageEndpoint(MessageListener listener) {
+        public JMSMessageEndpoint(MessageEndpoint messageEndpoint, MessageListener listener) {
+            super(messageEndpoint);
             this.listener = listener;
         }
 
         @Override
         public void onMessage(Message message) {
             listener.onMessage(message);
-        }
-
-        @Override
-        public void beforeDelivery(Method method) {
-        }
-
-        @Override
-        public void afterDelivery() {
-        }
-
-        @Override
-        public void release() {
-
         }
     }
 }

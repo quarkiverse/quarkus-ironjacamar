@@ -20,7 +20,6 @@ import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory
 public class IronJacamarContainer implements Closeable {
 
     private final ResourceAdapterFactory resourceAdapterFactory;
-
     private final ResourceAdapter resourceAdapter;
     private final ManagedConnectionFactory managedConnectionFactory;
     private final ConnectionManager connectionManager;

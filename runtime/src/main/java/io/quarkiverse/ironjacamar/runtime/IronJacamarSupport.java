@@ -72,10 +72,8 @@ public class IronJacamarSupport {
     }
 
     private static ResourceAdapterFactory getResourceAdapterFactoryForKind(String kind) {
-        ArcContainer container = Arc.container();
-        ResourceAdapterFactory resourceAdapterFactory = container.select(ResourceAdapterFactory.class,
+        return Arc.container().select(ResourceAdapterFactory.class,
                 ResourceAdapterKind.Literal.of(kind)).get();
-        return resourceAdapterFactory;
     }
 
 }
