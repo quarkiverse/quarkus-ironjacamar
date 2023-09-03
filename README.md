@@ -8,7 +8,7 @@
 ## Overview
 
 This extension provides support for Jakarta Connectors in Quarkus. It is based on
-the [Jakarta Connector Architecture](https://projects.eclipse.org/projects/ee4j.jca) 2.1.0 specification.
+the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/connectors/2.1/) specification.
 
 ## Features
 
