@@ -29,6 +29,8 @@ public class SalesEndpoint implements MessageListener {
             Log.info("####### QuarkusTransaction.isActive = " + QuarkusTransaction.isActive());
             String body = message.getBody(String.class);
             Log.infof("######### Received message from Sales queue: %s", body);
+            Log.info("######### Redelivered: " + message.getJMSRedelivered());
+            Log.infof("######### Delivered %d times", message.getIntProperty("JMSXDeliveryCount"));
             try (JMSContext context = connectionFactory.createContext()) {
                 context.createProducer().send(message.getJMSReplyTo(), "Replied: " + body);
             }
