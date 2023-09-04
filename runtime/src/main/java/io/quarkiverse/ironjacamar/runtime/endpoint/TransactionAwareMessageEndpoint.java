@@ -9,7 +9,6 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.transaction.RollbackException;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.Transaction;
-import jakarta.transaction.Transactional;
 
 import com.arjuna.ats.jta.TransactionManager;
 
@@ -19,12 +18,11 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 public class TransactionAwareMessageEndpoint implements MessageEndpoint {
 
     private final XAResource xaResource;
-    private final Class<?> endpointClass;
-    private boolean transacted;
+    private final boolean transacted;
 
-    public TransactionAwareMessageEndpoint(XAResource xaResource, Class<?> endpointClass) {
+    public TransactionAwareMessageEndpoint(XAResource xaResource, boolean transacted) {
         this.xaResource = xaResource;
-        this.endpointClass = endpointClass;
+        this.transacted = transacted;
     }
 
     /**
@@ -32,11 +30,6 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
      */
     @Override
     public void beforeDelivery(Method method) throws ResourceException {
-        try {
-            transacted = isDeliveryTransacted(endpointClass, method);
-        } catch (NoSuchMethodException e) {
-            // Ignore
-        }
         if (transacted) {
             Arc.container().requestContext().activate();
             QuarkusTransaction.begin();
@@ -70,10 +63,5 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
     @Override
     public void release() {
 
-    }
-
-    static boolean isDeliveryTransacted(Class<?> endpointClass, Method method) throws NoSuchMethodException {
-        Method endpointClassMethod = endpointClass.getMethod(method.getName(), method.getParameterTypes());
-        return endpointClassMethod.getAnnotation(Transactional.class) != null;
     }
 }

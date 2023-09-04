@@ -8,6 +8,7 @@ import javax.transaction.xa.XAResource;
 import jakarta.resource.spi.UnavailableException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
+import jakarta.transaction.Transactional;
 
 import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
@@ -20,6 +21,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     private final Class<?> endpointClass;
     private final String identifier;
     private final ResourceAdapterFactory resourceAdapterSupport;
+    private Boolean transacted;
 
     public DefaultMessageEndpointFactory(Class<?> endpointClass, String identifier, ResourceAdapterFactory adapterFactory) {
         this.endpointClass = endpointClass;
@@ -29,7 +31,11 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     @Override
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
-        return TransactionAwareMessageEndpoint.isDeliveryTransacted(endpointClass, method);
+        if (transacted == null) {
+            Method endpointClassMethod = endpointClass.getMethod(method.getName(), method.getParameterTypes());
+            transacted = endpointClassMethod.getAnnotation(Transactional.class) != null;
+        }
+        return transacted;
     }
 
     @Override
@@ -40,9 +46,8 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
-        Object endpointInstance = getEndpointInstance();
-        MessageEndpoint endpoint = new TransactionAwareMessageEndpoint(xaResource, endpointClass);
-        return resourceAdapterSupport.wrap(endpoint, endpointInstance);
+        MessageEndpoint endpoint = new TransactionAwareMessageEndpoint(xaResource, transacted);
+        return resourceAdapterSupport.wrap(endpoint, getEndpointInstance());
     }
 
     @Override
@@ -60,12 +65,12 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
         ArcContainer container = Arc.container();
         if (Defaults.DEFAULT_RESOURCE_ADAPTER_NAME.equals(identifier)) {
             // Try with default identifier and fallback to default if null
-            instance = container.instance(endpointClass, Identifier.Literal.of(identifier)).get();
+            instance = container.select(endpointClass, Identifier.Literal.of(identifier)).orElse(null);
             if (instance == null) {
-                instance = container.instance(endpointClass).get();
+                instance = container.select(endpointClass).get();
             }
         } else {
-            instance = container.instance(endpointClass, Identifier.Literal.of(identifier)).get();
+            instance = container.select(endpointClass, Identifier.Literal.of(identifier)).get();
         }
         return Objects.requireNonNull(instance, "Unable to find endpoint instance for " + endpointClass.getName()
                 + " with identifier " + identifier + " in Arc container");
