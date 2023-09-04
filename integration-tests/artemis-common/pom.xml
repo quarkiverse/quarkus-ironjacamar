@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.quarkiverse.ironjacamar</groupId>
+        <artifactId>quarkus-ironjacamar-integration-tests</artifactId>
+        <version>999-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>artemis-common</artifactId>
+    <name>Quarkus IronJacamar - Artemis integration</name>
+
+    <dependencies>
+        <!-- Add deployment to hint the IDE to build it too -->
+        <dependency>
+            <groupId>io.quarkiverse.ironjacamar</groupId>
+            <artifactId>quarkus-ironjacamar-deployment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.ironjacamar</groupId>
+            <artifactId>quarkus-ironjacamar</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-jakarta-ra</artifactId>
+            <version>2.30.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>artemis-hqclient-protocol</artifactId>
+            <version>2.30.0</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>3.1.3</version>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -18,26 +18,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
         </dependency>
-        <!-- Add deployment to hint the IDE to build it too -->
         <dependency>
             <groupId>io.quarkiverse.ironjacamar</groupId>
-            <artifactId>quarkus-ironjacamar-deployment</artifactId>
+            <artifactId>artemis-common</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.ironjacamar</groupId>
-            <artifactId>quarkus-ironjacamar</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>artemis-jakarta-ra</artifactId>
-            <version>2.30.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>artemis-hqclient-protocol</artifactId>
-            <version>2.30.0</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.artemis</groupId>

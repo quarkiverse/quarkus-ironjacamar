@@ -1,9 +1,10 @@
-package io.quarkiverse.ironjacamar;
+package io.quarkiverse.ironjacamar.artemis;
 
 import java.util.Map;
 
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
+import jakarta.jms.XAConnectionFactory;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
@@ -15,13 +16,16 @@ import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
 
+import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
+import io.quarkiverse.ironjacamar.ResourceAdapterKind;
+import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.runtime.endpoint.MessageEndpointWrapper;
 
 /**
- * This would be in the artemis-jms extension
+ * Integration with IronJacamar for Artemis
  */
 @ResourceAdapterKind(value = "artemis")
-@ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class })
+@ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class, XAConnectionFactory.class })
 public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
     @Override
@@ -33,6 +37,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
         adapter.setUseJNDI(false);
         adapter.setUserName(config.get("user"));
         adapter.setPassword(config.get("password"));
+        adapter.setIgnoreJTA(false);
         return adapter;
     }
 
@@ -41,6 +46,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
             throws ResourceException {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
+        factory.setInJtaTransaction(true);
         return factory;
     }
 
@@ -54,7 +60,6 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
         activationSpec.setMaxSession(Integer.valueOf(config.getOrDefault("max-session", "5")));
         activationSpec.setRebalanceConnections(Boolean.valueOf(config.getOrDefault("rebalance-connections", "true")));
         activationSpec.setUseJNDI(false);
-        activationSpec.setUseLocalTx(false);
         return activationSpec;
     }
 
@@ -67,7 +72,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
         private final MessageListener listener;
 
-        private JMSMessageEndpoint(MessageEndpoint messageEndpoint, MessageListener listener) {
+        public JMSMessageEndpoint(MessageEndpoint messageEndpoint, MessageListener listener) {
             super(messageEndpoint);
             this.listener = listener;
         }

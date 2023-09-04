@@ -12,9 +12,9 @@
     <packaging>pom</packaging>
     <name>Quarkus IronJacamar - Integration Tests</name>
     <modules>
+        <module>artemis-common</module>
         <module>artemis-jms</module>
         <module>multiple-artemis-jms</module>
-        <module>reactive-messaging-artemis-jms</module>
     </modules>
     <properties>
         <skipITs>true</skipITs>

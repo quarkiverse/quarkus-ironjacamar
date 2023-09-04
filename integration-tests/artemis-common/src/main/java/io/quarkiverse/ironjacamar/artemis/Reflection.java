@@ -1,4 +1,4 @@
-package io.quarkiverse.ironjacamar;
+package io.quarkiverse.ironjacamar.artemis;
 
 import org.apache.activemq.artemis.api.core.client.loadbalance.FirstElementConnectionLoadBalancingPolicy;
 import org.apache.activemq.artemis.api.core.client.loadbalance.RandomConnectionLoadBalancingPolicy;
