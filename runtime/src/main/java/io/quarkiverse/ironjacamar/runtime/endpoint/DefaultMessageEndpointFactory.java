@@ -33,7 +33,13 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
         if (transacted == null) {
             Method endpointClassMethod = endpointClass.getMethod(method.getName(), method.getParameterTypes());
-            transacted = endpointClassMethod.getAnnotation(Transactional.class) != null;
+            Transactional annotation = endpointClassMethod.getAnnotation(Transactional.class);
+            if (annotation == null) {
+                transacted = Boolean.FALSE;
+            } else {
+                transacted = annotation.value() != Transactional.TxType.NEVER &&
+                        annotation.value() != Transactional.TxType.NOT_SUPPORTED;
+            }
         }
         return transacted;
     }
