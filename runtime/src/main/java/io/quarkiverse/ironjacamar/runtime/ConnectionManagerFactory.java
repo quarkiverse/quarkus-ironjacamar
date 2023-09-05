@@ -3,15 +3,12 @@ package io.quarkiverse.ironjacamar.runtime;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.resource.spi.ManagedConnectionFactory;
-import jakarta.resource.spi.TransactionSupport;
 
 import org.jboss.jca.common.api.metadata.Defaults;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
-import org.jboss.jca.core.api.connectionmanager.pool.PoolConfiguration;
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
-import org.jboss.jca.core.connectionmanager.pool.api.PoolStrategy;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 
@@ -28,18 +25,20 @@ public class ConnectionManagerFactory {
         this.ccm = ccm;
     }
 
-    public ConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf) {
+    public ConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf,
+            IronJacamarRuntimeConfig.ConnectionManagerConfig config) {
+        var poolConfig = config.pool();
         Pool pool = new PoolFactory()
-                .create(PoolStrategy.POOL_BY_CRI,
+                .create(poolConfig.strategy(),
                         mcf,
-                        new PoolConfiguration(),
-                        Defaults.NO_TX_SEPARATE_POOL,
-                        Defaults.SHARABLE,
+                        poolConfig.config().toPoolConfiguration(),
+                        poolConfig.noTxSeparatePool(),
+                        poolConfig.sharable(),
                         ManagedConnectionPoolFactory.DEFAULT_IMPLEMENTATION);
         pool.setName("pool-" + id);
         return new org.jboss.jca.core.connectionmanager.ConnectionManagerFactory()
                 .createTransactional(
-                        TransactionSupport.TransactionSupportLevel.XATransaction,
+                        config.transactionSupport().toTransactionSupportLevel(),
                         pool,
                         null,
                         null,
@@ -50,12 +49,12 @@ public class ConnectionManagerFactory {
                         Defaults.CONNECTABLE,
                         Defaults.TRACKING,
                         new org.jboss.jca.core.api.management.ConnectionManager(id),
-                        Defaults.FLUSH_STRATEGY,
-                        5,
-                        1000L,
+                        config.flushStrategy(),
+                        config.allocationRetry(),
+                        config.allocationRetryWait().toMillis(),
                         transactionIntegration,
                         Defaults.INTERLEAVING,
-                        1000,
+                        config.xaResourceTimeout().toSecondsPart(),
                         Defaults.IS_SAME_RM_OVERRIDE,
                         Defaults.WRAP_XA_RESOURCE,
                         Defaults.PAD_XID);

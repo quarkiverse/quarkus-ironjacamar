@@ -1,6 +1,15 @@
 package io.quarkiverse.ironjacamar.runtime;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
+
+import jakarta.resource.spi.TransactionSupport;
+
+import org.jboss.jca.common.api.metadata.common.FlushStrategy;
+import org.jboss.jca.core.api.connectionmanager.pool.PoolConfiguration;
+import org.jboss.jca.core.connectionmanager.pool.api.PoolStrategy;
 
 import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkus.runtime.annotations.ConfigDocMapKey;
@@ -8,6 +17,7 @@ import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithDefaults;
 import io.smallrye.config.WithName;
 import io.smallrye.config.WithParentName;
@@ -46,6 +56,182 @@ public interface IronJacamarRuntimeConfig {
          * The configuration for this resource adapter
          */
         Map<String, String> config();
+
+        /**
+         * The connection manager configuration for this resource adapter
+         */
+        ConnectionManagerConfig connectionManager();
+    }
+
+    @ConfigGroup
+    interface ConnectionManagerConfig {
+        /**
+         * The transaction support level for the Connection Manager
+         */
+        @WithDefault("local")
+        TransactionSupportConfig transactionSupport();
+
+        /**
+         * The number of times to retry the allocation of a connection
+         */
+        @WithDefault("5")
+        int allocationRetry();
+
+        /**
+         * The time to wait between retries of the allocation of a connection
+         */
+        @WithDefault("1s")
+        Duration allocationRetryWait();
+
+        /**
+         * The transaction timeout for the XAResource
+         */
+        @WithDefault("120s")
+        Duration xaResourceTimeout();
+
+        /**
+         * The flush strategy for the Connection Manager
+         */
+        @WithDefault("failing-connection-only")
+        FlushStrategy flushStrategy();
+
+        /**
+         * The pool configuration for the Connection Manager
+         */
+        PoolConfig pool();
+
+        enum TransactionSupportConfig {
+            LOCAL,
+            XA;
+
+            public TransactionSupport.TransactionSupportLevel toTransactionSupportLevel() {
+                switch (this) {
+                    case LOCAL:
+                        return TransactionSupport.TransactionSupportLevel.LocalTransaction;
+                    case XA:
+                        return TransactionSupport.TransactionSupportLevel.XATransaction;
+                    default:
+                        throw new IllegalStateException("Unsupported transaction support level: " + this);
+                }
+            }
+        }
+
+        @ConfigGroup
+        interface PoolConfig {
+
+            /**
+             * The pool strategy
+             */
+            @WithDefault("pool-by-cri")
+            PoolStrategy strategy();
+
+            /**
+             * The pool configuration
+             */
+            PoolConfigurationConfig config();
+
+            /**
+             * Whether the pool is sharable
+             */
+            @WithDefault("true")
+            boolean sharable();
+
+            /**
+             * Should the pool be created without a separate pool for non-transactional connections?
+             */
+            @WithDefault("false")
+            boolean noTxSeparatePool();
+
+            interface PoolConfigurationConfig {
+                /**
+                 * Minimum size of the pool
+                 */
+                @WithDefault("0")
+                int minSize();
+
+                /**
+                 * Initial size of the pool
+                 */
+                OptionalInt initialSize();
+
+                /**
+                 * Maximum size of the pool
+                 */
+                @WithDefault("20")
+                int maxSize();
+
+                /**
+                 * Blocking timeout
+                 */
+                @WithDefault("30000ms")
+                Duration blockingTimeout();
+
+                /**
+                 * Idle timeout period. Default 30 mins
+                 */
+                @WithDefault("30m")
+                Duration idleTimeoutMinutes();
+
+                /**
+                 * Validate on match validation
+                 */
+                @WithDefault("false")
+                boolean validateOnMatch();
+
+                /**
+                 * Background validation
+                 */
+                @WithDefault("false")
+                boolean backgroundValidation();
+
+                /**
+                 * Background validation - millis
+                 */
+                Optional<Duration> backgroundValidationMillis();
+
+                /**
+                 * Prefill pool
+                 */
+                @WithDefault("false")
+                boolean prefill();
+
+                /**
+                 * Strict minimum, default false
+                 */
+                @WithDefault("false")
+                boolean strictMin();
+
+                /**
+                 * Do we want to immediately break when a connection cannot be matched and
+                 * not evaluate the rest of the pool?
+                 */
+                @WithDefault("false")
+                boolean useFastFail();
+
+                /**
+                 * Fairness of semaphore permits, default true
+                 */
+                @WithDefault("true")
+                boolean fair();
+
+                default PoolConfiguration toPoolConfiguration() {
+                    PoolConfiguration poolConfiguration = new PoolConfiguration();
+                    poolConfiguration.setMinSize(minSize());
+                    initialSize().ifPresent(poolConfiguration::setInitialSize);
+                    poolConfiguration.setMaxSize(maxSize());
+                    poolConfiguration.setBlockingTimeout(blockingTimeout().toMillis());
+                    poolConfiguration.setIdleTimeoutMinutes(idleTimeoutMinutes().toMinutesPart());
+                    poolConfiguration.setValidateOnMatch(validateOnMatch());
+                    poolConfiguration.setBackgroundValidation(backgroundValidation());
+                    backgroundValidationMillis().ifPresent(d -> poolConfiguration.setBackgroundValidationMillis(d.toMillis()));
+                    poolConfiguration.setPrefill(prefill());
+                    poolConfiguration.setStrictMin(strictMin());
+                    poolConfiguration.setUseFastFail(useFastFail());
+                    poolConfiguration.setFair(fair());
+                    return poolConfiguration;
+                }
+            }
+        }
     }
 
     @ConfigGroup
