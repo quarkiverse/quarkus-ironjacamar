@@ -8,6 +8,7 @@ import jakarta.jms.JMSProducer;
 import jakarta.jms.Queue;
 import jakarta.jms.TextMessage;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
@@ -15,7 +16,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
-import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 
 @Path("/jca")
@@ -33,7 +33,9 @@ public class JcaResource {
             Queue myQueue = context.createQueue("MyQueue");
             JMSProducer producer = context.createProducer();
             producer.send(myQueue, "Hello " + name);
-            Log.info("MESSAGES SENT");
+            Gift gift = new Gift();
+            gift.name = name;
+            gift.persist();
             if (name.equals("rollback"))
                 QuarkusTransaction.setRollbackOnly();
         }
@@ -50,6 +52,20 @@ public class JcaResource {
             msg.setJMSReplyTo(context.createQueue("inventory"));
             producer.send(context.createQueue("sales"), msg);
         }
+    }
+
+    @DELETE
+    @Path("/gifts")
+    @Transactional
+    public void deleteGifts() {
+        Gift.deleteAll();
+    }
+
+    @GET
+    @Path("/gifts/count")
+    @Transactional
+    public long countGifts() {
+        return Gift.count();
     }
 
     @GET
