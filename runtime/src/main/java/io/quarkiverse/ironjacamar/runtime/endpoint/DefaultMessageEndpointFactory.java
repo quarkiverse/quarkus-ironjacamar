@@ -52,7 +52,12 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
-        MessageEndpoint endpoint = new TransactionAwareMessageEndpoint(xaResource, transacted);
+        final MessageEndpoint endpoint;
+        if (xaResource == null) {
+            endpoint = NoopMessageEndpoint.INSTANCE;
+        } else {
+            endpoint = new TransactionAwareMessageEndpoint(xaResource);
+        }
         return resourceAdapterSupport.wrap(endpoint, getEndpointInstance());
     }
 
