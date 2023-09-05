@@ -52,7 +52,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
             throws ResourceException {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
-        factory.setInJtaTransaction(true);
+        factory.setAllowLocalTransactions(true);
         return factory;
     }
 
