@@ -76,9 +76,11 @@ public class IronJacamarRecorder {
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class, Identifier.Literal.of(key)).get();
         // Lookup JTA beans
-        TransactionSynchronizationRegistry tsr = container.instance(TransactionSynchronizationRegistry.class).get();
-        XATerminator xaTerminator = container.instance(XATerminator.class).get();
-        IronJacamarVerticle verticle = new IronJacamarVerticle(ijContainer.getResourceAdapter(), tsr, xaTerminator);
+        TransactionSynchronizationRegistry tsr = container.select(TransactionSynchronizationRegistry.class).get();
+        XATerminator xaTerminator = container.select(XATerminator.class).get();
+        IronJacamarVerticle verticle = new IronJacamarVerticle(ijContainer.getResourceAdapter(), tsr, xaTerminator,
+                key,
+                ijContainer.getResourceAdapterFactory().getDescription());
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool")
                 .setWorkerPoolSize(1)
@@ -94,7 +96,7 @@ public class IronJacamarRecorder {
         Future<String> future = containerFuture.getValue();
         future.onSuccess(s -> {
             ArcContainer container = Arc.container();
-            IronJacamarSupport producer = container.instance(IronJacamarSupport.class).get();
+            IronJacamarSupport producer = container.select(IronJacamarSupport.class).get();
             producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
         });
     }

@@ -3,7 +3,6 @@ package io.quarkiverse.ironjacamar.runtime;
 import java.io.Closeable;
 import java.util.Map;
 
-import jakarta.enterprise.inject.Produces;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
@@ -34,9 +33,12 @@ public class IronJacamarContainer implements Closeable {
         this.connectionManager = connectionManager;
     }
 
-    @Produces
     public ResourceAdapter getResourceAdapter() {
         return resourceAdapter;
+    }
+
+    public ResourceAdapterFactory getResourceAdapterFactory() {
+        return resourceAdapterFactory;
     }
 
     public Object createConnectionFactory() throws ResourceException {

@@ -7,8 +7,6 @@ import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.XATerminator;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
-import org.jboss.logging.Logger;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 
@@ -17,24 +15,26 @@ import io.vertx.core.Promise;
  */
 final class IronJacamarVerticle extends AbstractVerticle {
 
-    private static final Logger log = Logger.getLogger(IronJacamarVerticle.class);
-
     private final ResourceAdapter ra;
     private final TransactionSynchronizationRegistry tsr;
     private final XATerminator xaTerminator;
+    private final String id;
+    private final String description;
+
     private QuarkusWorkManager workManager;
 
     public IronJacamarVerticle(ResourceAdapter resourceAdapter, TransactionSynchronizationRegistry tsr,
-            XATerminator xaTerminator) {
+            XATerminator xaTerminator, String id, String description) {
         this.ra = Objects.requireNonNull(resourceAdapter, "resourceAdapter cannot be null");
         this.tsr = Objects.requireNonNull(tsr, "tsr cannot be null");
         this.xaTerminator = Objects.requireNonNull(xaTerminator, "xaTerminator cannot be null");
-
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.description = Objects.requireNonNull(description, "description cannot be null");
     }
 
     @Override
     public void start() throws Exception {
-        log.infof("Starting JCA Resource Adapter %s", ra);
+        QuarkusIronJacamarLogger.log.startingResourceAdapter(id, description);
         workManager = new QuarkusWorkManager(vertx);
         // Create BootstrapContext
         BootstrapContext bootstrapContext = new QuarkusBootstrapContext(workManager, tsr, xaTerminator);

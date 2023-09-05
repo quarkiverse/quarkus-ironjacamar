@@ -16,6 +16,15 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 public interface ResourceAdapterFactory {
 
     /**
+     * A human-readable description of the resource adapter.
+     *
+     * @return the description that is displayed in the logs
+     */
+    default String getDescription() {
+        return toString();
+    }
+
+    /**
      * Create and configure the resource adapter.
      *
      * @param config the configuration subset to be used in {@link ResourceAdapter}

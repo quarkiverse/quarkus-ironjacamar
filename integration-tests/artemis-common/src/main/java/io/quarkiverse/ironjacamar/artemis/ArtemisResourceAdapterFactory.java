@@ -15,6 +15,7 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactor
 import org.apache.activemq.artemis.ra.ActiveMQRAManagedConnectionFactory;
 import org.apache.activemq.artemis.ra.ActiveMQResourceAdapter;
 import org.apache.activemq.artemis.ra.inflow.ActiveMQActivationSpec;
+import org.apache.activemq.artemis.utils.VersionLoader;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
@@ -27,6 +28,11 @@ import io.quarkiverse.ironjacamar.runtime.endpoint.MessageEndpointWrapper;
 @ResourceAdapterKind(value = "artemis")
 @ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class, XAConnectionFactory.class })
 public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
+
+    @Override
+    public String getDescription() {
+        return String.format("%s %s", ActiveMQResourceAdapter.PRODUCT_NAME, VersionLoader.getVersion().getFullVersion());
+    }
 
     @Override
     public ActiveMQResourceAdapter createResourceAdapter(Map<String, String> config) {
