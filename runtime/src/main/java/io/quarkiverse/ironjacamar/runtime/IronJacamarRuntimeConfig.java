@@ -67,9 +67,13 @@ public interface IronJacamarRuntimeConfig {
     interface ConnectionManagerConfig {
         /**
          * The transaction support level for the Connection Manager
+         * <p>
+         * See the <a href=
+         * "https://jakarta.ee/specifications/connectors/2.1/apidocs/jakarta.resource/jakarta/resource/spi/transactionsupport.transactionsupportlevel">TransactionSupportLevel
+         * Javadoc</a> for more information
          */
-        @WithDefault("local")
-        TransactionSupportConfig transactionSupport();
+        @WithDefault("XATransaction")
+        TransactionSupport.TransactionSupportLevel transactionSupportLevel();
 
         /**
          * The number of times to retry the allocation of a connection
@@ -99,22 +103,6 @@ public interface IronJacamarRuntimeConfig {
          * The pool configuration for the Connection Manager
          */
         PoolConfig pool();
-
-        enum TransactionSupportConfig {
-            LOCAL,
-            XA;
-
-            public TransactionSupport.TransactionSupportLevel toTransactionSupportLevel() {
-                switch (this) {
-                    case LOCAL:
-                        return TransactionSupport.TransactionSupportLevel.LocalTransaction;
-                    case XA:
-                        return TransactionSupport.TransactionSupportLevel.XATransaction;
-                    default:
-                        throw new IllegalStateException("Unsupported transaction support level: " + this);
-                }
-            }
-        }
 
         @ConfigGroup
         interface PoolConfig {
