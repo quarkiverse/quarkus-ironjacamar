@@ -43,6 +43,7 @@ final class IronJacamarVerticle extends AbstractVerticle {
 
     @Override
     public void stop(Promise<Void> stopPromise) {
+        QuarkusIronJacamarLogger.log.stoppingResourceAdapter(id);
         if (workManager != null) {
             workManager.close().andThen((v) -> ra.stop()).andThen(stopPromise);
         } else {

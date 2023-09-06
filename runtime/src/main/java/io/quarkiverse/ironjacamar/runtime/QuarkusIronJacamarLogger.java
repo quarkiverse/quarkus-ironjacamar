@@ -23,4 +23,7 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     @Message(id = 1, value = "Starting Resource Adapter %s: %s")
     void startingResourceAdapter(String id, String description);
 
+    @LogMessage(level = INFO)
+    @Message(id = 2, value = "Stopping Resource Adapter %s")
+    void stoppingResourceAdapter(String id);
 }
