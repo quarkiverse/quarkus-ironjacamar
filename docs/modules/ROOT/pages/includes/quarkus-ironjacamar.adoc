@@ -48,6 +48,26 @@ endif::add-copy-button-to-env-var[]
 |
 
 
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support[quarkus.ironjacamar.ra.connection-manager.transaction-support]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.transaction-support]`
+
+
+[.description]
+--
+The transaction support level for the Connection Manager
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_TRANSACTION_SUPPORT+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_TRANSACTION_SUPPORT+++`
+endif::add-copy-button-to-env-var[]
+-- a|
+`local`, `xa` 
+|`local`
+
+
 a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry[quarkus.ironjacamar.ra.connection-manager.allocation-retry]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.allocation-retry]`

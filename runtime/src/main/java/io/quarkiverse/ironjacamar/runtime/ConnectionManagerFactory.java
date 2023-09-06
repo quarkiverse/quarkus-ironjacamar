@@ -3,7 +3,6 @@ package io.quarkiverse.ironjacamar.runtime;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.resource.spi.ManagedConnectionFactory;
-import jakarta.resource.spi.TransactionSupport;
 
 import org.jboss.jca.common.api.metadata.Defaults;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
@@ -39,7 +38,7 @@ public class ConnectionManagerFactory {
         pool.setName("pool-" + id);
         return new org.jboss.jca.core.connectionmanager.ConnectionManagerFactory()
                 .createTransactional(
-                        TransactionSupport.TransactionSupportLevel.XATransaction,
+                        config.transactionSupport().toTransactionSupportLevel(),
                         pool,
                         null,
                         null,
