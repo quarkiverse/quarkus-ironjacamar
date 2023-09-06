@@ -82,7 +82,7 @@ public class IronJacamarRecorder {
                 key,
                 ijContainer.getResourceAdapterFactory().getDescription());
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
-                .setWorkerPoolName("jca-worker-pool")
+                .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)
                 .setWorker(true));
         return new RuntimeValue<>(future);
