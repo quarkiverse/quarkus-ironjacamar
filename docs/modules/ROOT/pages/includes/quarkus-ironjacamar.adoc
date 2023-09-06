@@ -48,6 +48,28 @@ endif::add-copy-button-to-env-var[]
 |
 
 
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support-level]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support-level[quarkus.ironjacamar.ra.connection-manager.transaction-support-level]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support-level[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.transaction-support-level]`
+
+
+[.description]
+--
+The transaction support level for the Connection Manager
+
+See the link:https://jakarta.ee/specifications/connectors/2.1/apidocs/jakarta.resource/jakarta/resource/spi/transactionsupport.transactionsupportlevel[TransactionSupportLevel Javadoc] for more information
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_TRANSACTION_SUPPORT_LEVEL+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_TRANSACTION_SUPPORT_LEVEL+++`
+endif::add-copy-button-to-env-var[]
+-- a|
+`no-transaction`, `local-transaction`, `xa-transaction` 
+|`xa-transaction`
+
+
 a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry[quarkus.ironjacamar.ra.connection-manager.allocation-retry]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.allocation-retry]`

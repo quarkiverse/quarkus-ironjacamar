@@ -37,27 +37,45 @@ public class ConnectionManagerFactory {
                         poolConfig.sharable(),
                         ManagedConnectionPoolFactory.DEFAULT_IMPLEMENTATION);
         pool.setName("pool-" + id);
-        return new org.jboss.jca.core.connectionmanager.ConnectionManagerFactory()
-                .createTransactional(
-                        TransactionSupport.TransactionSupportLevel.XATransaction,
-                        pool,
-                        null,
-                        null,
-                        Defaults.USE_CCM,
-                        ccm,
-                        Defaults.SHARABLE,
-                        Defaults.ENLISTMENT,
-                        Defaults.CONNECTABLE,
-                        Defaults.TRACKING,
-                        new org.jboss.jca.core.api.management.ConnectionManager(id),
-                        config.flushStrategy(),
-                        config.allocationRetry(),
-                        config.allocationRetryWait().toMillis(),
-                        transactionIntegration,
-                        Defaults.INTERLEAVING,
-                        config.xaResourceTimeout().toSecondsPart(),
-                        Defaults.IS_SAME_RM_OVERRIDE,
-                        Defaults.WRAP_XA_RESOURCE,
-                        Defaults.PAD_XID);
+        var factory = new org.jboss.jca.core.connectionmanager.ConnectionManagerFactory();
+        if (config.transactionSupportLevel() == TransactionSupport.TransactionSupportLevel.NoTransaction) {
+            return factory.createNonTransactional(
+                    config.transactionSupportLevel(),
+                    pool,
+                    null,
+                    null,
+                    Defaults.USE_CCM,
+                    ccm,
+                    Defaults.SHARABLE,
+                    Defaults.ENLISTMENT,
+                    Defaults.CONNECTABLE,
+                    Defaults.TRACKING,
+                    config.flushStrategy(),
+                    config.allocationRetry(),
+                    config.allocationRetryWait().toMillis());
+        } else {
+            return factory
+                    .createTransactional(
+                            config.transactionSupportLevel(),
+                            pool,
+                            null,
+                            null,
+                            Defaults.USE_CCM,
+                            ccm,
+                            Defaults.SHARABLE,
+                            Defaults.ENLISTMENT,
+                            Defaults.CONNECTABLE,
+                            Defaults.TRACKING,
+                            new org.jboss.jca.core.api.management.ConnectionManager(id),
+                            config.flushStrategy(),
+                            config.allocationRetry(),
+                            config.allocationRetryWait().toMillis(),
+                            transactionIntegration,
+                            Defaults.INTERLEAVING,
+                            config.xaResourceTimeout().toSecondsPart(),
+                            Defaults.IS_SAME_RM_OVERRIDE,
+                            Defaults.WRAP_XA_RESOURCE,
+                            Defaults.PAD_XID);
+        }
     }
 }

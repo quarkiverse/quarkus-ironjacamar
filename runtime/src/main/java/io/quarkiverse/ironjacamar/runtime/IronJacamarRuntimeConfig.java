@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import jakarta.resource.spi.TransactionSupport;
+
 import org.jboss.jca.common.api.metadata.common.FlushStrategy;
 import org.jboss.jca.core.api.connectionmanager.pool.PoolConfiguration;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolStrategy;
@@ -63,6 +65,16 @@ public interface IronJacamarRuntimeConfig {
 
     @ConfigGroup
     interface ConnectionManagerConfig {
+        /**
+         * The transaction support level for the Connection Manager
+         * <p>
+         * See the <a href=
+         * "https://jakarta.ee/specifications/connectors/2.1/apidocs/jakarta.resource/jakarta/resource/spi/transactionsupport.transactionsupportlevel">TransactionSupportLevel
+         * Javadoc</a> for more information
+         */
+        @WithDefault("XATransaction")
+        TransactionSupport.TransactionSupportLevel transactionSupportLevel();
+
         /**
          * The number of times to retry the allocation of a connection
          */
