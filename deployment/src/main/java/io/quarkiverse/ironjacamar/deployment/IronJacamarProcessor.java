@@ -267,8 +267,8 @@ class IronJacamarProcessor {
             Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
             for (AnnotationInstance instance : annotations) {
                 ClassInfo classInfo = instance.target().asClass();
-                String resourceEndpoint = classInfo.name().toString();
                 String activationSpecId = getActivationSpecId(instance);
+                String resourceEndpoint = classInfo.name().toString();
                 // TODO: Extract config
                 Map<String, String> buildTimeConfig = Map.of();
                 recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, activationSpecId,
@@ -289,8 +289,8 @@ class IronJacamarProcessor {
                     }
                     // Test if the identifier matches the container
                     if (container.identifier.equals(annotation.value().asString())) {
-                        String resourceEndpoint = instance.target().asClass().name().toString();
                         String activationSpecId = getActivationSpecId(instance);
+                        String resourceEndpoint = instance.target().asClass().name().toString();
                         // TODO: Extract config
                         Map<String, String> buildTimeConfig = Map.of();
                         recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, activationSpecId,
