@@ -3,11 +3,11 @@ package io.quarkiverse.ironjacamar.runtime;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
@@ -23,7 +23,7 @@ import io.smallrye.common.annotation.Identifier;
  * <p>
  * It is separated from the recorder because there are runtime configuration that are not available at build time.
  */
-@Singleton
+@Dependent
 public class IronJacamarSupport {
 
     @Inject
