@@ -78,6 +78,10 @@ class IronJacamarProcessor {
                 .setUnremovable()
                 .setDefaultScope(DotNames.SINGLETON)
                 .build());
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClasses(
+                        IronJacamarSupport.class)
+                .build());
     }
 
     @BuildStep
