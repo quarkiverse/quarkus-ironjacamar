@@ -87,7 +87,6 @@ class IronJacamarProcessor {
     @BuildStep
     UnremovableBeanBuildItem unremovables() {
         return UnremovableBeanBuildItem.beanTypes(
-                ResourceAdapterFactory.class,
                 TransactionSynchronizationRegistry.class,
                 XATerminator.class);
     }
@@ -125,10 +124,9 @@ class IronJacamarProcessor {
 
             kindProducer.produce(new ResourceAdapterKindBuildItem(rak.value().asString(), factory.name().toString()));
 
-            // Register the factory as a Singleton bean
+            // Register the factory as a managed bean
             additionalBeans.produce(AdditionalBeanBuildItem.builder()
                     .addBeanClasses(factory.name().toString())
-                    .setDefaultScope(DotNames.SINGLETON)
                     .build());
         }
     }
