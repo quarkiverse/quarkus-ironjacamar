@@ -3,6 +3,8 @@ package io.quarkiverse.ironjacamar.runtime;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -14,8 +16,6 @@ import org.jboss.jca.core.connectionmanager.ConnectionManager;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
-import io.quarkus.arc.Arc;
-import io.quarkus.arc.ArcContainer;
 import io.smallrye.common.annotation.Identifier;
 
 /**
@@ -32,8 +32,17 @@ public class IronJacamarSupport {
     @Inject
     ConnectionManagerFactory connectionManagerFactory;
 
+    @Inject
+    @Any
+    Instance<IronJacamarContainer> containers;
+
+    @Inject
+    @Any
+    Instance<ResourceAdapterFactory> resourceAdapterFactories;
+
     public IronJacamarContainer createContainer(String id, String kind) {
-        ResourceAdapterFactory resourceAdapterFactory = getResourceAdapterFactoryForKind(kind);
+        ResourceAdapterFactory resourceAdapterFactory = resourceAdapterFactories.select(ResourceAdapterKind.Literal.of(kind))
+                .get();
         var adapterRuntimeConfig = runtimeConfig.resourceAdapters().get(id);
         ResourceAdapter resourceAdapter;
         ManagedConnectionFactory managedConnectionFactory;
@@ -52,9 +61,7 @@ public class IronJacamarSupport {
 
     public void activateEndpoint(String containerId, String activationSpecConfigId, String endpointClassName,
             Map<String, String> buildTimeConfig) {
-        ArcContainer container = Arc.container();
-        IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class, Identifier.Literal.of(containerId))
-                .get();
+        IronJacamarContainer ijContainer = containers.select(Identifier.Literal.of(containerId)).get();
         Class<?> endpointClass;
         try {
             endpointClass = Class.forName(endpointClassName, true, Thread.currentThread().getContextClassLoader());
@@ -72,10 +79,4 @@ public class IronJacamarSupport {
             throw new RuntimeException(e);
         }
     }
-
-    private static ResourceAdapterFactory getResourceAdapterFactoryForKind(String kind) {
-        return Arc.container().select(ResourceAdapterFactory.class,
-                ResourceAdapterKind.Literal.of(kind)).get();
-    }
-
 }
