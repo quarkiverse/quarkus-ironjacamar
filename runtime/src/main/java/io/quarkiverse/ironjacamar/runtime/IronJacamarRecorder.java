@@ -70,8 +70,7 @@ public class IronJacamarRecorder {
 
     public RuntimeValue<Future<String>> initResourceAdapter(
             String key,
-            Supplier<Vertx> vertxSupplier)
-            throws Exception {
+            Supplier<Vertx> vertxSupplier) {
         ArcContainer container = Arc.container();
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class, Identifier.Literal.of(key)).get();

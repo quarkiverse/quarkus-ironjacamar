@@ -240,7 +240,7 @@ class IronJacamarProcessor {
             List<ContainerCreatedBuildItem> containers,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
-            BuildProducer<ContainerStartedBuildItem> startedProducer) throws Exception {
+            BuildProducer<ContainerStartedBuildItem> startedProducer) {
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter

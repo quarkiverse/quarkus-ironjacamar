@@ -2,7 +2,6 @@ package io.quarkiverse.ironjacamar.runtime.endpoint;
 
 import java.lang.reflect.Method;
 
-import jakarta.resource.ResourceException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 /**
@@ -12,12 +11,12 @@ enum NoopMessageEndpoint implements MessageEndpoint {
     INSTANCE;
 
     @Override
-    public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
+    public void beforeDelivery(Method method) {
         // Do nothing
     }
 
     @Override
-    public void afterDelivery() throws ResourceException {
+    public void afterDelivery() {
         // Do nothing
     }
 

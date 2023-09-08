@@ -43,7 +43,7 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
     }
 
     @Override
-    public void afterDelivery() throws ResourceException {
+    public void afterDelivery() {
         if (QuarkusTransaction.isActive()) {
             if (QuarkusTransaction.isRollbackOnly()) {
                 QuarkusTransaction.rollback();
