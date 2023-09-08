@@ -1,4 +1,4 @@
-# Quarkus Jakarta Connectors
+# Quarkus IronJacamar
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -7,7 +7,7 @@
 
 ## Overview
 
-This extension provides support for Jakarta Connectors in Quarkus. It is based on
+This extension provides support for running Jakarta Connectors in Quarkus. It is based on
 the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/connectors/2.1/) specification.
 
 ## Features
