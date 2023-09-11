@@ -1,7 +1,7 @@
 package io.quarkiverse.ironjacamar.runtime;
 
+import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.TransactionSupport;
 
@@ -13,7 +13,7 @@ import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 
-@Singleton
+@Dependent
 public class ConnectionManagerFactory {
 
     private final TransactionIntegration transactionIntegration;

@@ -73,13 +73,13 @@ class IronJacamarProcessor {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(
                         IronJacamarSupport.class,
-                        ConnectionManagerFactory.class,
                         TransactionIntegrationImpl.class)
                 .setUnremovable()
                 .setDefaultScope(DotNames.SINGLETON)
                 .build());
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(
+                        ConnectionManagerFactory.class,
                         IronJacamarSupport.class)
                 .build());
     }
