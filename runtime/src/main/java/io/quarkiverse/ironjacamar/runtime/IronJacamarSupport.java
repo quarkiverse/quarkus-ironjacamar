@@ -54,7 +54,7 @@ public class IronJacamarSupport {
             throw new DeploymentException("Cannot deploy resource adapter", re);
         }
         ConnectionManager connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory,
-                ra.connectionManager());
+                ra.cm());
         return new IronJacamarContainer(resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
                 connectionManager);
     }

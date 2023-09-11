@@ -23,7 +23,7 @@ public class IronJacamarMetricsProcessor {
             if (config == null) {
                 continue;
             }
-            if (config.ra().connectionManager().pool().metricsEnabled()) {
+            if (config.ra().cm().pool().metricsEnabled()) {
                 metrics.produce(new MetricsFactoryConsumerBuildItem(
                         recorder.registerPoolMetrics(container.identifier)));
             }
