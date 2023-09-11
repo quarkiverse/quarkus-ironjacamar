@@ -29,6 +29,25 @@ endif::add-copy-button-to-env-var[]
 |
 
 
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled[quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.metrics.enabled]`
+
+
+[.description]
+--
+Enable pool metrics
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_METRICS_ENABLED+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_METRICS_ENABLED+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`false`
+
+
 a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar.ra.config]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar."resource-adapter-name".ra.config]`
