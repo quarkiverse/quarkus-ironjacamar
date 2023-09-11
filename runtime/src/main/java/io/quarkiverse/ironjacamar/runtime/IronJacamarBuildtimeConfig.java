@@ -3,6 +3,7 @@ package io.quarkiverse.ironjacamar.runtime;
 import java.util.Map;
 import java.util.Optional;
 
+import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkus.runtime.annotations.ConfigDocMapKey;
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigPhase;
@@ -17,8 +18,6 @@ import io.smallrye.config.WithUnnamedKey;
 @ConfigMapping(prefix = "quarkus.ironjacamar")
 @ConfigRoot(phase = ConfigPhase.BUILD_TIME)
 public interface IronJacamarBuildtimeConfig {
-
-    String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
 
     /**
      * Whether IronJacamar (pool) metrics are published in case a metrics extension is present.
@@ -36,7 +35,7 @@ public interface IronJacamarBuildtimeConfig {
     @ConfigDocMapKey("resource-adapter-name")
     @WithParentName
     @WithDefaults
-    @WithUnnamedKey(DEFAULT_RESOURCE_ADAPTER_NAME)
+    @WithUnnamedKey(Defaults.DEFAULT_RESOURCE_ADAPTER_NAME)
     Map<String, ResourceAdapterOuterNamedConfig> resourceAdapters();
 
     @ConfigGroup
