@@ -29,9 +29,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled[quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.metrics.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.metrics.enabled[quarkus.ironjacamar.ra.cm.pool.metrics.enabled]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.metrics.enabled[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.metrics.enabled]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.metrics.enabled[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.metrics.enabled]`
 
 
 [.description]
@@ -39,10 +39,10 @@ a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar
 Enable pool metrics
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_METRICS_ENABLED+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_METRICS_ENABLED+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_METRICS_ENABLED+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_METRICS_ENABLED+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`
@@ -67,9 +67,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support-level]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support-level[quarkus.ironjacamar.ra.connection-manager.transaction-support-level]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.transaction-support-level]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.transaction-support-level[quarkus.ironjacamar.ra.cm.transaction-support-level]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.transaction-support-level[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.transaction-support-level]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.transaction-support-level[quarkus.ironjacamar."resource-adapter-name".ra.cm.transaction-support-level]`
 
 
 [.description]
@@ -79,19 +79,19 @@ The transaction support level for the Connection Manager
 See the link:https://jakarta.ee/specifications/connectors/2.1/apidocs/jakarta.resource/jakarta/resource/spi/transactionsupport.transactionsupportlevel[TransactionSupportLevel Javadoc] for more information
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_TRANSACTION_SUPPORT_LEVEL+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_TRANSACTION_SUPPORT_LEVEL+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_TRANSACTION_SUPPORT_LEVEL+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_TRANSACTION_SUPPORT_LEVEL+++`
 endif::add-copy-button-to-env-var[]
 -- a|
 `no-transaction`, `local-transaction`, `xa-transaction` 
 |`xa-transaction`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry[quarkus.ironjacamar.ra.connection-manager.allocation-retry]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry[quarkus.ironjacamar.ra.cm.allocation-retry]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.allocation-retry]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry[quarkus.ironjacamar."resource-adapter-name".ra.cm.allocation-retry]`
 
 
 [.description]
@@ -99,18 +99,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-re
 The number of times to retry the allocation of a connection
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_ALLOCATION_RETRY+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_ALLOCATION_RETRY+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_ALLOCATION_RETRY+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_ALLOCATION_RETRY+++`
 endif::add-copy-button-to-env-var[]
 --|int 
 |`5`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry-wait]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry-wait[quarkus.ironjacamar.ra.connection-manager.allocation-retry-wait]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry-wait]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry-wait[quarkus.ironjacamar.ra.cm.allocation-retry-wait]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-retry-wait[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.allocation-retry-wait]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry-wait[quarkus.ironjacamar."resource-adapter-name".ra.cm.allocation-retry-wait]`
 
 
 [.description]
@@ -118,19 +118,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.allocation-re
 The time to wait between retries of the allocation of a connection
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_ALLOCATION_RETRY_WAIT+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_ALLOCATION_RETRY_WAIT+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_ALLOCATION_RETRY_WAIT+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_ALLOCATION_RETRY_WAIT+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
   link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
 |`1S`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.xa-resource-timeout]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.xa-resource-timeout[quarkus.ironjacamar.ra.connection-manager.xa-resource-timeout]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.xa-resource-timeout]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.xa-resource-timeout[quarkus.ironjacamar.ra.cm.xa-resource-timeout]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.xa-resource-timeout[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.xa-resource-timeout]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.xa-resource-timeout[quarkus.ironjacamar."resource-adapter-name".ra.cm.xa-resource-timeout]`
 
 
 [.description]
@@ -138,19 +138,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.xa-resource-t
 The transaction timeout for the XAResource
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_XA_RESOURCE_TIMEOUT+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_XA_RESOURCE_TIMEOUT+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_XA_RESOURCE_TIMEOUT+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_XA_RESOURCE_TIMEOUT+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
   link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
 |`120S`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.flush-strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.flush-strategy[quarkus.ironjacamar.ra.connection-manager.flush-strategy]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.flush-strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.flush-strategy[quarkus.ironjacamar.ra.cm.flush-strategy]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.flush-strategy[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.flush-strategy]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.flush-strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.flush-strategy]`
 
 
 [.description]
@@ -158,19 +158,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.flush-strateg
 The flush strategy for the Connection Manager
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_FLUSH_STRATEGY+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_FLUSH_STRATEGY+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_FLUSH_STRATEGY+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_FLUSH_STRATEGY+++`
 endif::add-copy-button-to-env-var[]
 -- a|
 `unknown`, `failing-connection-only`, `invalid-idle-connections`, `idle-connections`, `gracefully`, `entire-pool`, `all-invalid-idle-connections`, `all-idle-connections`, `all-gracefully`, `all-connections` 
 |`failing-connection-only`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.strategy[quarkus.ironjacamar.ra.connection-manager.pool.strategy]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar.ra.cm.pool.strategy]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.strategy[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.strategy]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.strategy]`
 
 
 [.description]
@@ -178,19 +178,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.strategy
 The pool strategy
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_STRATEGY+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_STRATEGY+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_STRATEGY+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_STRATEGY+++`
 endif::add-copy-button-to-env-var[]
 -- a|
 `pool-by-cri`, `pool-by-subject`, `pool-by-subject-and-cri`, `one-pool`, `reauth` 
 |`pool-by-cri`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.min-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.min-size[quarkus.ironjacamar.ra.connection-manager.pool.config.min-size]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.min-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.min-size[quarkus.ironjacamar.ra.cm.pool.config.min-size]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.min-size[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.min-size]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.min-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.min-size]`
 
 
 [.description]
@@ -198,18 +198,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.m
 Minimum size of the pool
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_MIN_SIZE+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_MIN_SIZE+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_MIN_SIZE+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_MIN_SIZE+++`
 endif::add-copy-button-to-env-var[]
 --|int 
 |`0`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.initial-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.initial-size[quarkus.ironjacamar.ra.connection-manager.pool.config.initial-size]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.initial-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.initial-size[quarkus.ironjacamar.ra.cm.pool.config.initial-size]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.initial-size[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.initial-size]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.initial-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.initial-size]`
 
 
 [.description]
@@ -217,18 +217,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.i
 Initial size of the pool
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_INITIAL_SIZE+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_INITIAL_SIZE+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_INITIAL_SIZE+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_INITIAL_SIZE+++`
 endif::add-copy-button-to-env-var[]
 --|int 
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.max-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.max-size[quarkus.ironjacamar.ra.connection-manager.pool.config.max-size]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.max-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.max-size[quarkus.ironjacamar.ra.cm.pool.config.max-size]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.max-size[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.max-size]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.max-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.max-size]`
 
 
 [.description]
@@ -236,18 +236,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.m
 Maximum size of the pool
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_MAX_SIZE+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_MAX_SIZE+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_MAX_SIZE+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_MAX_SIZE+++`
 endif::add-copy-button-to-env-var[]
 --|int 
 |`20`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.blocking-timeout]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.blocking-timeout[quarkus.ironjacamar.ra.connection-manager.pool.config.blocking-timeout]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout[quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.blocking-timeout[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.blocking-timeout]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.blocking-timeout]`
 
 
 [.description]
@@ -255,19 +255,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.b
 Blocking timeout
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_BLOCKING_TIMEOUT+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BLOCKING_TIMEOUT+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_BLOCKING_TIMEOUT+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BLOCKING_TIMEOUT+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
   link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
 |`30000MS`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.idle-timeout-minutes]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.idle-timeout-minutes[quarkus.ironjacamar.ra.connection-manager.pool.config.idle-timeout-minutes]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes[quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.idle-timeout-minutes[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.idle-timeout-minutes]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.idle-timeout-minutes]`
 
 
 [.description]
@@ -275,19 +275,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.i
 Idle timeout period. Default 30 mins
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_IDLE_TIMEOUT_MINUTES+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_IDLE_TIMEOUT_MINUTES+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_IDLE_TIMEOUT_MINUTES+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_IDLE_TIMEOUT_MINUTES+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
   link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
 |`30M`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.validate-on-match]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.validate-on-match[quarkus.ironjacamar.ra.connection-manager.pool.config.validate-on-match]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.validate-on-match]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.validate-on-match[quarkus.ironjacamar.ra.cm.pool.config.validate-on-match]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.validate-on-match[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.validate-on-match]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.validate-on-match[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.validate-on-match]`
 
 
 [.description]
@@ -295,18 +295,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.v
 Validate on match validation
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_VALIDATE_ON_MATCH+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_VALIDATE_ON_MATCH+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_VALIDATE_ON_MATCH+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_VALIDATE_ON_MATCH+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation[quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation[quarkus.ironjacamar.ra.cm.pool.config.background-validation]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.background-validation]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.background-validation]`
 
 
 [.description]
@@ -314,18 +314,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.b
 Background validation
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_BACKGROUND_VALIDATION+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BACKGROUND_VALIDATION+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_BACKGROUND_VALIDATION+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BACKGROUND_VALIDATION+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation-millis]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation-millis[quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation-millis]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis[quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.background-validation-millis[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.background-validation-millis]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.background-validation-millis]`
 
 
 [.description]
@@ -333,19 +333,19 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.b
 Background validation - millis
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_BACKGROUND_VALIDATION_MILLIS+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BACKGROUND_VALIDATION_MILLIS+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_BACKGROUND_VALIDATION_MILLIS+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BACKGROUND_VALIDATION_MILLIS+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
   link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.prefill]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.prefill[quarkus.ironjacamar.ra.connection-manager.pool.config.prefill]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.prefill]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.prefill[quarkus.ironjacamar.ra.cm.pool.config.prefill]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.prefill[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.prefill]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.prefill[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.prefill]`
 
 
 [.description]
@@ -353,18 +353,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.p
 Prefill pool
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_PREFILL+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_PREFILL+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_PREFILL+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_PREFILL+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.strict-min]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.strict-min[quarkus.ironjacamar.ra.connection-manager.pool.config.strict-min]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.strict-min]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.strict-min[quarkus.ironjacamar.ra.cm.pool.config.strict-min]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.strict-min[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.strict-min]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.strict-min[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.strict-min]`
 
 
 [.description]
@@ -372,18 +372,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.s
 Strict minimum, default false
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_STRICT_MIN+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_STRICT_MIN+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_STRICT_MIN+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_STRICT_MIN+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.use-fast-fail]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.use-fast-fail[quarkus.ironjacamar.ra.connection-manager.pool.config.use-fast-fail]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail[quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.use-fast-fail[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.use-fast-fail]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.use-fast-fail]`
 
 
 [.description]
@@ -391,18 +391,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.u
 Do we want to immediately break when a connection cannot be matched and not evaluate the rest of the pool?
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_USE_FAST_FAIL+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_USE_FAST_FAIL+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_USE_FAST_FAIL+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_USE_FAST_FAIL+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.fair]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.fair[quarkus.ironjacamar.ra.connection-manager.pool.config.fair]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.fair]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.fair[quarkus.ironjacamar.ra.cm.pool.config.fair]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.fair[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.config.fair]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.fair[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.fair]`
 
 
 [.description]
@@ -410,18 +410,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.config.f
 Fairness of semaphore permits, default true
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_FAIR+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_FAIR+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_CONFIG_FAIR+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_FAIR+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.sharable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.sharable[quarkus.ironjacamar.ra.connection-manager.pool.sharable]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.sharable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.sharable[quarkus.ironjacamar.ra.cm.pool.sharable]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.sharable[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.sharable]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.sharable[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.sharable]`
 
 
 [.description]
@@ -429,18 +429,18 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.sharable
 Whether the pool is sharable
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_SHARABLE+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_SHARABLE+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_SHARABLE+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_SHARABLE+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.no-tx-separate-pool]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.no-tx-separate-pool[quarkus.ironjacamar.ra.connection-manager.pool.no-tx-separate-pool]`
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool[quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.no-tx-separate-pool[quarkus.ironjacamar."resource-adapter-name".ra.connection-manager.pool.no-tx-separate-pool]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.no-tx-separate-pool]`
 
 
 [.description]
@@ -448,10 +448,10 @@ a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.connection-manager.pool.no-tx-se
 Should the pool be created without a separate pool for non-transactional connections?
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_NO_TX_SEPARATE_POOL+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_NO_TX_SEPARATE_POOL+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CONNECTION_MANAGER_POOL_NO_TX_SEPARATE_POOL+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_NO_TX_SEPARATE_POOL+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
 |`false`

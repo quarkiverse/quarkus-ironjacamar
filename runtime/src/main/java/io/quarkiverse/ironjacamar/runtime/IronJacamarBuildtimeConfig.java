@@ -47,7 +47,7 @@ public interface IronJacamarBuildtimeConfig {
         /**
          * The connection manager configuration for this resource adapter
          */
-        ConnectionManagerBuildConfig connectionManager();
+        ConnectionManagerBuildConfig cm();
     }
 
     @ConfigGroup

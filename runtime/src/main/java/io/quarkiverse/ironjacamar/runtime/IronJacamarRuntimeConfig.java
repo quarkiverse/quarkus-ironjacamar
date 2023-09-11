@@ -60,7 +60,7 @@ public interface IronJacamarRuntimeConfig {
         /**
          * The connection manager configuration for this resource adapter
          */
-        ConnectionManagerConfig connectionManager();
+        ConnectionManagerConfig cm();
     }
 
     @ConfigGroup
