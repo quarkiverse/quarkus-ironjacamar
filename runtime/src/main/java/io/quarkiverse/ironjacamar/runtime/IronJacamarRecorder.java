@@ -12,7 +12,6 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
-import org.jboss.logging.Logger;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
@@ -26,8 +25,6 @@ import io.vertx.core.Vertx;
 
 @Recorder
 public class IronJacamarRecorder {
-
-    private static final Logger log = Logger.getLogger(IronJacamarRecorder.class);
 
     public Function<SyntheticCreationalContext<IronJacamarContainer>, IronJacamarContainer> createContainerFunction(String id,
             String kind) {
