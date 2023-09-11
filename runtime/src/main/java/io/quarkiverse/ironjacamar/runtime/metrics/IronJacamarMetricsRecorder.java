@@ -25,147 +25,146 @@ public class IronJacamarMetricsRecorder {
                 PoolStatisticsImpl statistics = connectionManager.getPool().getInternalStatistics();
 
                 metricsFactory.builder("ironjacamar.pool.active.count")
-                        .description(
-                                "Number of active connections")
+                        .description(statistics.getDescription("ActiveCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getActiveCount);
 
                 metricsFactory.builder("ironjacamar.pool.available.count")
-                        .description("Number of idle connections")
+                        .description(statistics.getDescription("AvailableCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getAvailableCount);
 
                 metricsFactory.builder("ironjacamar.pool.average.blocking.time")
-                        .description("Get the average time spent waiting on a connection (milliseconds)")
+                        .description(statistics.getDescription("AverageBlockingTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getAverageBlockingTime);
 
                 metricsFactory.builder("ironjacamar.pool.average.creation.time")
-                        .description("Get the average time spent creating a connection (milliseconds)")
+                        .description(statistics.getDescription("AverageCreationTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getAverageCreationTime);
 
                 metricsFactory.builder("ironjacamar.pool.average.get.time")
-                        .description("Get the average time spent obtaining a connection (milliseconds)")
+                        .description(statistics.getDescription("AverageGetTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getAverageGetTime);
 
                 metricsFactory.builder("ironjacamar.pool.average.pool.time")
-                        .description("Get the average time for a connection in the pool (milliseconds)")
+                        .description(statistics.getDescription("AveragePoolTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getAveragePoolTime);
 
                 metricsFactory.builder("ironjacamar.pool.average.usage.time")
-                        .description("Get the average time spent using a connection (milliseconds)")
+                        .description(statistics.getDescription("AverageUsageTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getAverageUsageTime);
 
                 metricsFactory.builder("ironjacamar.pool.blocking.failure.count")
-                        .description("Get the blocking failure count")
+                        .description(statistics.getDescription("BlockingFailureCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getBlockingFailureCount);
 
                 metricsFactory.builder("ironjacamar.pool.created.count")
-                        .description("Get created count")
+                        .description(statistics.getDescription("CreatedCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getCreatedCount);
 
                 metricsFactory.builder("ironjacamar.pool.destroyed.count")
-                        .description("Get destroyed count")
+                        .description(statistics.getDescription("DestroyedCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getDestroyedCount);
 
                 metricsFactory.builder("ironjacamar.pool.idle.count")
-                        .description("Get idle count")
+                        .description(statistics.getDescription("IdleCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getIdleCount);
 
                 metricsFactory.builder("ironjacamar.pool.in-use.count")
-                        .description("Get in-use count")
+                        .description(statistics.getDescription("InUseCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getInUseCount);
 
                 metricsFactory.builder("ironjacamar.pool.max.creation.time")
-                        .description("Get max creation time (milliseconds)")
+                        .description(statistics.getDescription("MaxCreationTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getMaxCreationTime);
 
                 metricsFactory.builder("ironjacamar.pool.max.get.time")
-                        .description("Get max get time (milliseconds)")
+                        .description(statistics.getDescription("MaxGetTime"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getMaxGetTime);
 
                 metricsFactory.builder("ironjacamar.pool.max.pool.time")
-                        .description("Get max pool time (milliseconds)")
+                        .description(statistics.getDescription("MaxPoolTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getMaxPoolTime);
 
                 metricsFactory.builder("ironjacamar.pool.max.usage.time")
-                        .description("Get max usage time (milliseconds)")
+                        .description(statistics.getDescription("MaxUsageTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getMaxUsageTime);
 
                 metricsFactory.builder("ironjacamar.pool.max.used.count")
-                        .description("Get max used count")
+                        .description(statistics.getDescription("MaxUsedCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getMaxUsedCount);
 
                 metricsFactory.builder("ironjacamar.pool.max.wait.count")
-                        .description("Get max wait count")
+                        .description(statistics.getDescription("MaxWaitCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getMaxWaitCount);
 
                 metricsFactory.builder("ironjacamar.pool.max.wait.time")
-                        .description("Get max wait time (milliseconds)")
+                        .description(statistics.getDescription("MaxWaitTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getMaxWaitTime);
 
                 metricsFactory.builder("ironjacamar.pool.timeout.count")
-                        .description("Get timed out")
+                        .description(statistics.getDescription("TimedOut"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getTimedOut);
 
                 metricsFactory.builder("ironjacamar.pool.total.blocking.time")
-                        .description("Get the total time spent waiting on connections (milliseconds)")
+                        .description(statistics.getDescription("TotalBlockingTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getTotalBlockingTime);
 
                 metricsFactory.builder("ironjacamar.pool.total.creation.time")
-                        .description("Get the total time spent creating connections (milliseconds)")
+                        .description(statistics.getDescription("TotalCreationTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getTotalCreationTime);
 
                 metricsFactory.builder("ironjacamar.pool.total.get.time")
-                        .description("Get the total time spent obtaining connections (milliseconds)")
+                        .description(statistics.getDescription("TotalGetTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getTotalGetTime);
 
                 metricsFactory.builder("ironjacamar.pool.total.pool.time")
-                        .description("Get the total time for connections in the pool (milliseconds)")
+                        .description(statistics.getDescription("TotalPoolTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getTotalPoolTime);
 
                 metricsFactory.builder("ironjacamar.pool.total.usage.time")
-                        .description("Get the total time spent using connections (milliseconds)")
+                        .description(statistics.getDescription("TotalUsageTime"))
                         .unit("milliseconds")
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildGauge(statistics::getTotalUsageTime);
 
                 metricsFactory.builder("ironjacamar.pool.wait.count")
-                        .description("Get wait count")
+                        .description(statistics.getDescription("WaitCount"))
                         .tag("resourceAdapter", resourceAdapterId)
                         .buildCounter(statistics::getWaitCount);
 
