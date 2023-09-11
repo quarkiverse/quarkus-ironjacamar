@@ -1,6 +1,8 @@
 = Quarkus IronJacamar
 
 include::./includes/attributes.adoc[]
+:diataxis-type: reference
+:categories: integration
 
 This extension allows you to deploy JCA Resource Adapters in Quarkus.
 IronJacamar is a Java Connector Architecture (JCA) implementation.
@@ -30,7 +32,6 @@ If you don't want to create a Quarkus extension for your Resource Adapter, just 
 
 A `ResourceAdapterFactory` is an SPI that the IronJacamar extension introduces to create `ResourceAdapter`, `ManagedConnectionFactory` and `ActivationSpec` instances.
 You must use the `@ResourceAdapterKind` annotation on it to specify the resource adapter kind that will be used to identify the factory in the application code.
-
 
 [source,java,subs=attributes+]
 ----
@@ -63,7 +64,8 @@ public class MyResourceEndpoint implements MessageListener {...} <2>
 
 ----
 
-<1> An optional activation spec configuration key. The `activationSpecConfigKey` is the key that will be consumed from the configuration (see the `application.properties` example below)
+<1> An optional activation spec configuration key.
+The `activationSpecConfigKey` is the key that will be consumed from the configuration (see the `application.properties` example below)
 <2> The resource endpoint implementation.
 Because the Artemis ResourceAdapter implementation expects a `jakarta.jms.MessageListener` instance, you must implement this interface.
 
@@ -140,6 +142,13 @@ public class MyResourceEndpoint implements MessageListener {
 <1> This MessageListener will be activated by the `other` resource adapter configured above.
 <2> This `ConnectionFactory` will be the one configured in the `main` resource adapter.
 
+== Metrics
+
+If you are using the `quarkus-micrometer` or `quarkus-smallrye-metrics` extension, `quarkus-ironjacamar` can contribute some connection pool-related metrics to the metric registry.
+
+This can be activated by setting the `quarkus.ironjacamar.metrics.enabled` property to `true`.
+
+Alternatively, you can disable the pool metrics for a specific resource adapter by setting the `quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics` property to `false`.
 
 [[extension-configuration-reference]]
 === Extension Configuration Reference
