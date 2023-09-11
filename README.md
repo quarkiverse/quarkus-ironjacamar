@@ -17,6 +17,7 @@ the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/conn
 - WorkManager implementation uses Vert.x worker threads
 - Integrates with the Quarkus transaction manager
 - Native mode is supported (but not every the Resource Adapter, which demands a specific extension if necessary)
+- Pool metrics are exposed as Prometheus metrics
 
 ## Limitations
 
