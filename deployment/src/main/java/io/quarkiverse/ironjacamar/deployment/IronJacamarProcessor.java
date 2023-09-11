@@ -190,8 +190,9 @@ class IronJacamarProcessor {
             String key = entry.getKey();
             // Using @Identifier to avoid bean name collision
             var raKind = resolveKind(entry, kindsMap);
-            var ra = entry.getValue().ra();
-
+            if (raKind == null) {
+                continue;
+            }
             ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName);
             Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
                     .asClassArray();
@@ -317,11 +318,14 @@ class IronJacamarProcessor {
         if (kind.isPresent()) {
             result = kind.get();
         } else {
-            if (kinds.size() == 1) {
+            if (kinds.isEmpty()) {
+                return null;
+            } else if (kinds.size() == 1) {
                 result = kinds.values().iterator().next().kind;
             } else {
                 throw new ConfigurationException(
-                        "Multiple kinds found, please set the kind config for the " + entry.getKey() + " configuration");
+                        "Multiple kinds found (" + kinds + "), please set the kind config for the " + entry.getKey()
+                                + " configuration");
             }
         }
         return kinds.get(result);

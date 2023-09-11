@@ -41,6 +41,10 @@ public class IronJacamarContainer implements Closeable {
         return resourceAdapterFactory;
     }
 
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
+
     public Object createConnectionFactory() throws ResourceException {
         return managedConnectionFactory.createConnectionFactory(connectionManager);
     }

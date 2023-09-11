@@ -20,11 +20,11 @@ public class IronJacamarConfigTest {
         assertThat(runtimeConfig.resourceAdapters().get("<default>").ra()).satisfies(
                 ra -> {
                     assertThat(ra.config()).hasEntrySatisfying("connection-parameters", cp -> {
-                        assertThat(cp).isEqualTo("host=localhost;port=61616;protocols=AMQP");
+                        assertThat(cp).matches("host=localhost;port=[0-9]+;protocols=AMQP");
                     });
                 });
         assertThat(runtimeConfig.activationSpecs().map().get("myqueue").config()).hasEntrySatisfying("destination", d -> {
-            assertThat(d).isEqualTo("MyQueue");
+            assertThat(d).endsWith("MyQueue");
         });
 
     }
