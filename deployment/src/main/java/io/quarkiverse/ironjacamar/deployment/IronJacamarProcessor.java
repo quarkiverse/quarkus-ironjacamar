@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.resource.spi.XATerminator;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
@@ -32,6 +31,7 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
+import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
@@ -51,9 +51,7 @@ import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.gizmo.MethodDescriptor;
-import io.quarkus.logging.Log;
 import io.quarkus.runtime.RuntimeValue;
-import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.Future;
@@ -112,14 +110,13 @@ class IronJacamarProcessor {
 
         var factories = index.getAllKnownImplementors(ResourceAdapterFactory.class);
         if (factories.isEmpty()) {
-            Log.warn("No default resource adapter kind found. Ironjacamar is disabled");
+            QuarkusIronJacamarLogger.log.noDefaultResourceAdapterKindFound();
             return;
         }
         for (ClassInfo factory : factories) {
             AnnotationInstance rak = factory.annotation(ResourceAdapterKind.class);
             if (rak == null) {
-                throw new DeploymentException(
-                        "Resource adapter factory " + factory + " must be annotated with @ResourceAdapterKind");
+                throw QuarkusIronJacamarLogger.log.resourceAdapterFactoryMustBeAnnotatedException(factory.name().toString());
             }
 
             kindProducer.produce(new ResourceAdapterKindBuildItem(rak.value().asString(), factory.name().toString()));
@@ -282,9 +279,7 @@ class IronJacamarProcessor {
                 for (AnnotationInstance instance : annotations) {
                     AnnotationInstance annotation = instance.target().declaredAnnotation(Identifier.class);
                     if (annotation == null) {
-                        throw new DeploymentException(
-                                "Because there are more than one resource adapter configured, you need to explicitly use the @Identifier annotation on "
-                                        + instance.target());
+                        throw QuarkusIronJacamarLogger.log.useIdentifierAnnotation(instance.target().toString());
                     }
                     // Test if the identifier matches the container
                     if (container.identifier.equals(annotation.value().asString())) {
@@ -323,9 +318,7 @@ class IronJacamarProcessor {
             } else if (kinds.size() == 1) {
                 result = kinds.values().iterator().next().kind;
             } else {
-                throw new ConfigurationException(
-                        "Multiple kinds found (" + kinds + "), please set the kind config for the " + entry.getKey()
-                                + " configuration");
+                throw QuarkusIronJacamarLogger.log.multipleKindsFound(kinds.keySet(), entry.getKey());
             }
         }
         return kinds.get(result);
