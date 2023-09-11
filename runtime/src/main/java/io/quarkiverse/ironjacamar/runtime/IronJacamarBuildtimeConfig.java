@@ -21,6 +21,16 @@ public interface IronJacamarBuildtimeConfig {
     String DEFAULT_RESOURCE_ADAPTER_NAME = "<default>";
 
     /**
+     * Whether IronJacamar (pool) metrics are published in case a metrics extension is present.
+     * <p>
+     * This is a global setting and is not specific to a resource adapter.
+     * <p>
+     */
+    @WithName("metrics.enabled")
+    @WithDefault("false")
+    boolean metricsEnabled();
+
+    /**
      * Resource Adapters
      */
     @ConfigDocMapKey("resource-adapter-name")
@@ -61,10 +71,9 @@ public interface IronJacamarBuildtimeConfig {
     @ConfigGroup
     interface PoolBuildConfig {
         /**
-         * Enable pool metrics
+         * Enable pool metrics collection. If unspecified, collecting metrics will be enabled by default if
+         * a metrics extension is active.
          */
-        @WithName("metrics.enabled")
-        @WithDefault("false")
-        boolean metricsEnabled();
+        Optional<Boolean> enableMetrics();
     }
 }

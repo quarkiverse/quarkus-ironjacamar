@@ -10,6 +10,25 @@ h|[[quarkus-ironjacamar_configuration]]link:#quarkus-ironjacamar_configuration[C
 h|Type
 h|Default
 
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.metrics.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.metrics.enabled[quarkus.ironjacamar.metrics.enabled]`
+
+
+[.description]
+--
+Whether IronJacamar (pool) metrics are published in case a metrics extension is present.
+
+This is a global setting and is not specific to a resource adapter.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_METRICS_ENABLED+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_METRICS_ENABLED+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`false`
+
+
 a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.kind]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar.ra.kind]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar."resource-adapter-name".ra.kind]`
@@ -29,23 +48,23 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.metrics.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.metrics.enabled[quarkus.ironjacamar.ra.cm.pool.metrics.enabled]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.enable-metrics]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.enable-metrics[quarkus.ironjacamar.ra.cm.pool.enable-metrics]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.metrics.enabled[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.metrics.enabled]`
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.enable-metrics[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics]`
 
 
 [.description]
 --
-Enable pool metrics
+Enable pool metrics collection. If unspecified, collecting metrics will be enabled by default if a metrics extension is active.
 
 ifdef::add-copy-button-to-env-var[]
-Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_METRICS_ENABLED+++[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_POOL_ENABLE_METRICS+++[]
 endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
-Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_METRICS_ENABLED+++`
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_ENABLE_METRICS+++`
 endif::add-copy-button-to-env-var[]
 --|boolean 
-|`false`
+|
 
 
 a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar.ra.config]`
