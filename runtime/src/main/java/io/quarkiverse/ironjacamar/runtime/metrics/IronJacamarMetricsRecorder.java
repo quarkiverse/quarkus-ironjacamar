@@ -2,8 +2,8 @@ package io.quarkiverse.ironjacamar.runtime.metrics;
 
 import java.util.function.Consumer;
 
+import org.jboss.jca.core.api.connectionmanager.pool.PoolStatistics;
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
-import org.jboss.jca.core.connectionmanager.pool.PoolStatisticsImpl;
 
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkus.arc.runtime.BeanContainer;
@@ -20,7 +20,7 @@ public class IronJacamarMetricsRecorder {
                     Identifier.Literal.of(resourceAdapterId));
             ConnectionManager connectionManager = container.getConnectionManager();
 
-            PoolStatisticsImpl statistics = connectionManager.getPool().getInternalStatistics();
+            PoolStatistics statistics = connectionManager.getPool().getStatistics();
 
             metricsFactory.builder("ironjacamar.pool.active.count")
                     .description(statistics.getDescription("ActiveCount"))
