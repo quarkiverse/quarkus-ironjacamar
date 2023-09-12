@@ -232,10 +232,9 @@ class IronJacamarProcessor {
 
     @BuildStep
     @Record(value = ExecutionTime.STATIC_INIT)
-    void initDefaultBootstrapContext(BeanContainerBuildItem beanContainerBuildItem,
-            IronJacamarRecorder recorder) {
+    void initDefaultBootstrapContext(BeanContainerBuildItem beanContainerBuildItem, IronJacamarRecorder recorder) {
         // Create the default bootstrap context
-        recorder.initDefaultBoostrapContext();
+        recorder.initDefaultBoostrapContext(beanContainerBuildItem.getValue());
     }
 
     @BuildStep
@@ -245,11 +244,13 @@ class IronJacamarProcessor {
             List<ContainerCreatedBuildItem> containers,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
+            BeanContainerBuildItem beanContainerBuildItem,
             BuildProducer<ContainerStartedBuildItem> startedProducer) {
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
-            RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(container.identifier,
+            RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
+                    container.identifier,
                     vertxBuildItem.getVertx());
             startedProducer.produce(new ContainerStartedBuildItem(container.identifier, futureRuntimeValue));
         }
@@ -264,6 +265,7 @@ class IronJacamarProcessor {
     @Produce(IronJacamarInitBuildItem.class)
     ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
             IronJacamarRecorder recorder,
+            BeanContainerBuildItem beanContainerBuildItem,
             List<ContainerStartedBuildItem> containers) {
         IndexView index = combinedIndexBuildItem.getIndex();
         boolean single = containers.size() == 1;
@@ -276,7 +278,8 @@ class IronJacamarProcessor {
                 String resourceEndpoint = classInfo.name().toString();
                 // TODO: Extract config
                 Map<String, String> buildTimeConfig = Map.of();
-                recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, activationSpecId,
+                recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue, container.identifier,
+                        activationSpecId,
                         resourceEndpoint,
                         buildTimeConfig);
             }
@@ -296,7 +299,8 @@ class IronJacamarProcessor {
                         String resourceEndpoint = instance.target().asClass().name().toString();
                         // TODO: Extract config
                         Map<String, String> buildTimeConfig = Map.of();
-                        recorder.activateEndpoint(container.futureRuntimeValue, container.identifier, activationSpecId,
+                        recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
+                                container.identifier, activationSpecId,
                                 resourceEndpoint,
                                 buildTimeConfig);
                     }

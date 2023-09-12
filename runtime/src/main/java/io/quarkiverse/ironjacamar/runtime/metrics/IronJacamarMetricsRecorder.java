@@ -6,7 +6,7 @@ import org.jboss.jca.core.connectionmanager.ConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.PoolStatisticsImpl;
 
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
-import io.quarkus.arc.Arc;
+import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.metrics.MetricsFactory;
 import io.smallrye.common.annotation.Identifier;
@@ -14,12 +14,12 @@ import io.smallrye.common.annotation.Identifier;
 @Recorder
 public class IronJacamarMetricsRecorder {
 
-    public Consumer<MetricsFactory> registerPoolMetrics(String resourceAdapterId) {
+    public Consumer<MetricsFactory> registerPoolMetrics(BeanContainer beanContainer, String resourceAdapterId) {
         return new Consumer<MetricsFactory>() {
             @Override
             public void accept(MetricsFactory metricsFactory) {
-                IronJacamarContainer container = Arc.container().select(IronJacamarContainer.class,
-                        Identifier.Literal.of(resourceAdapterId)).get();
+                IronJacamarContainer container = beanContainer.beanInstance(IronJacamarContainer.class,
+                        Identifier.Literal.of(resourceAdapterId));
                 ConnectionManager connectionManager = container.getConnectionManager();
 
                 PoolStatisticsImpl statistics = connectionManager.getPool().getInternalStatistics();

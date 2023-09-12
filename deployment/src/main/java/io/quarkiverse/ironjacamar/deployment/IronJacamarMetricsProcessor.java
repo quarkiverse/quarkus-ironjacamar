@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.metrics.IronJacamarMetricsRecorder;
+import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -20,6 +21,7 @@ public class IronJacamarMetricsProcessor {
             BuildProducer<MetricsFactoryConsumerBuildItem> metrics,
             List<ContainerCreatedBuildItem> containers,
             IronJacamarBuildtimeConfig buildtimeConfig,
+            BeanContainerBuildItem beanContainerBuildItem,
             Optional<MetricsCapabilityBuildItem> metricsCapability) {
         if (buildtimeConfig.metricsEnabled() && metricsCapability.isPresent()) {
             for (ContainerCreatedBuildItem container : containers) {
@@ -30,7 +32,7 @@ public class IronJacamarMetricsProcessor {
                 }
                 if (poolMetricsEnabled) {
                     metrics.produce(new MetricsFactoryConsumerBuildItem(
-                            recorder.registerPoolMetrics(container.identifier)));
+                            recorder.registerPoolMetrics(beanContainerBuildItem.getValue(), container.identifier)));
                 }
             }
         }

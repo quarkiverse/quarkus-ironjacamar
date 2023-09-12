@@ -21,9 +21,8 @@ import org.jboss.jca.core.workmanager.WorkManagerCoordinator;
 import org.jboss.jca.core.workmanager.WorkManagerImpl;
 
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
-import io.quarkus.arc.Arc;
-import io.quarkus.arc.ArcContainer;
 import io.quarkus.arc.SyntheticCreationalContext;
+import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.smallrye.common.annotation.Identifier;
@@ -73,11 +72,10 @@ public class IronJacamarRecorder {
         };
     }
 
-    public void initDefaultBoostrapContext() {
-        ArcContainer container = Arc.container();
-        TransactionIntegration transactionIntegration = container.select(TransactionIntegration.class).get();
+    public void initDefaultBoostrapContext(BeanContainer beanContainer) {
+        TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
         BaseCloneableBootstrapContext bootstrapContext = new BaseCloneableBootstrapContext();
-        ManagedExecutor executorService = container.select(ManagedExecutor.class).get();
+        ManagedExecutor executorService = beanContainer.beanInstance(ManagedExecutor.class);
 
         // Create WorkManagerImpl
         WorkManagerImpl workManager = new WorkManagerImpl();
@@ -101,11 +99,11 @@ public class IronJacamarRecorder {
     }
 
     public RuntimeValue<Future<String>> initResourceAdapter(
+            BeanContainer beanContainer,
             String key,
             Supplier<Vertx> vertxSupplier) {
-        ArcContainer container = Arc.container();
         Vertx vertx = vertxSupplier.get();
-        IronJacamarContainer ijContainer = container.select(IronJacamarContainer.class, Identifier.Literal.of(key)).get();
+        IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer.getResourceAdapterFactory().getDescription(),
                 ijContainer.getResourceAdapter(),
@@ -117,15 +115,15 @@ public class IronJacamarRecorder {
         return new RuntimeValue<>(future);
     }
 
-    public void activateEndpoint(RuntimeValue<Future<String>> containerFuture,
+    public void activateEndpoint(BeanContainer beanContainer,
+            RuntimeValue<Future<String>> containerFuture,
             String resourceAdapterId,
             String activationSpecConfigId,
             String endpointClassName,
             Map<String, String> buildTimeConfig) {
         Future<String> future = containerFuture.getValue();
         future.onSuccess(s -> {
-            ArcContainer container = Arc.container();
-            IronJacamarSupport producer = container.select(IronJacamarSupport.class).get();
+            IronJacamarSupport producer = beanContainer.beanInstance(IronJacamarSupport.class);
             producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
         });
     }
