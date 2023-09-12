@@ -23,6 +23,10 @@
       <artifactId>quarkus-narayana-jta</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-context-propagation</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jakarta.resource</groupId>
       <artifactId>jakarta.resource-api</artifactId>
     </dependency>

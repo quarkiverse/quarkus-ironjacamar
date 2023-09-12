@@ -34,6 +34,7 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeansRuntimeInitBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
@@ -227,6 +228,14 @@ class IronJacamarProcessor {
             producer.produce(cfConfigurator.done());
             createdProducer.produce(new ContainerCreatedBuildItem(key));
         }
+    }
+
+    @BuildStep
+    @Record(value = ExecutionTime.STATIC_INIT)
+    void initDefaultBootstrapContext(BeanContainerBuildItem beanContainerBuildItem,
+            IronJacamarRecorder recorder) {
+        // Create the default bootstrap context
+        recorder.initDefaultBoostrapContext();
     }
 
     @BuildStep
