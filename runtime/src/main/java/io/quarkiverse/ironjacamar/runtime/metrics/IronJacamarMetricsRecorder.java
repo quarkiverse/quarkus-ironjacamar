@@ -95,6 +95,7 @@ public class IronJacamarMetricsRecorder {
 
             metricsFactory.builder("ironjacamar.pool.max.get.time")
                     .description(statistics.getDescription("MaxGetTime"))
+                    .unit("milliseconds")
                     .tag("resourceAdapter", resourceAdapterId)
                     .buildGauge(statistics::getMaxGetTime);
 
