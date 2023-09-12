@@ -64,7 +64,7 @@ public class IronJacamarRecorder {
         };
     }
 
-    public void initDefaultBoostrapContext(BeanContainer beanContainer) {
+    public void initDefaultBootstrapContext(BeanContainer beanContainer) {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
         SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
         BaseCloneableBootstrapContext bootstrapContext = new BaseCloneableBootstrapContext();

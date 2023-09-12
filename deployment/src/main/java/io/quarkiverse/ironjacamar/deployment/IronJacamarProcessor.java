@@ -234,7 +234,7 @@ class IronJacamarProcessor {
     @Record(value = ExecutionTime.STATIC_INIT)
     void initDefaultBootstrapContext(BeanContainerBuildItem beanContainerBuildItem, IronJacamarRecorder recorder) {
         // Create the default bootstrap context
-        recorder.initDefaultBoostrapContext(beanContainerBuildItem.getValue());
+        recorder.initDefaultBootstrapContext(beanContainerBuildItem.getValue());
     }
 
     @BuildStep
