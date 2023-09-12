@@ -16,6 +16,7 @@ import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.bootstrapcontext.BaseCloneableBootstrapContext;
 import org.jboss.jca.core.bootstrapcontext.BootstrapContextCoordinator;
 import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
+import org.jboss.jca.core.spi.security.SecurityIntegration;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.workmanager.WorkManagerCoordinator;
 import org.jboss.jca.core.workmanager.WorkManagerImpl;
@@ -35,45 +36,37 @@ public class IronJacamarRecorder {
 
     public Function<SyntheticCreationalContext<IronJacamarContainer>, IronJacamarContainer> createContainerFunction(String id,
             String kind) {
-        return new Function<>() {
-            @Override
-            public IronJacamarContainer apply(SyntheticCreationalContext<IronJacamarContainer> context) {
-                IronJacamarSupport containerProducer = context
-                        .getInjectedReference(IronJacamarSupport.class);
-                return containerProducer.createContainer(id, kind);
-            }
+        return context -> {
+            IronJacamarSupport containerProducer = context
+                    .getInjectedReference(IronJacamarSupport.class);
+            return containerProducer.createContainer(id, kind);
         };
     }
 
     public Function<SyntheticCreationalContext<Object>, Object> createConnectionFactory(String id) {
-        return new Function<SyntheticCreationalContext<Object>, Object>() {
-            @Override
-            public Object apply(SyntheticCreationalContext<Object> context) {
-                IronJacamarContainer container = context.getInjectedReference(IronJacamarContainer.class,
-                        Identifier.Literal.of(id));
-                try {
-                    return container.createConnectionFactory();
-                } catch (ResourceException e) {
-                    throw new DeploymentException("Cannot create connection factory", e);
-                }
+        return context -> {
+            IronJacamarContainer container = context.getInjectedReference(IronJacamarContainer.class,
+                    Identifier.Literal.of(id));
+            try {
+                return container.createConnectionFactory();
+            } catch (ResourceException e) {
+                throw new DeploymentException("Cannot create connection factory", e);
             }
         };
     }
 
     public Function<SyntheticCreationalContext<CachedConnectionManager>, CachedConnectionManager> createCachedConnectionManager() {
-        return new Function<SyntheticCreationalContext<CachedConnectionManager>, CachedConnectionManager>() {
-            @Override
-            public CachedConnectionManager apply(SyntheticCreationalContext<CachedConnectionManager> context) {
-                TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
-                CachedConnectionManagerImpl cachedConnectionManager = new CachedConnectionManagerImpl(ti);
-                cachedConnectionManager.start();
-                return cachedConnectionManager;
-            }
+        return context -> {
+            TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
+            CachedConnectionManagerImpl cachedConnectionManager = new CachedConnectionManagerImpl(ti);
+            cachedConnectionManager.start();
+            return cachedConnectionManager;
         };
     }
 
     public void initDefaultBoostrapContext(BeanContainer beanContainer) {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
+        SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
         BaseCloneableBootstrapContext bootstrapContext = new BaseCloneableBootstrapContext();
         ManagedExecutor executorService = beanContainer.beanInstance(ManagedExecutor.class);
 
@@ -81,7 +74,7 @@ public class IronJacamarRecorder {
         WorkManagerImpl workManager = new WorkManagerImpl();
         workManager.setName(DEFAULT_WORK_MANAGER_NAME);
         workManager.setSpecCompliant(true);
-        workManager.setSecurityIntegration(new QuarkusSecurityIntegration());
+        workManager.setSecurityIntegration(securityIntegration);
 
         // TODO: Should we have separate thread pools for short and long running tasks?
         workManager.setShortRunningThreadPool(executorService);
