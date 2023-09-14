@@ -48,8 +48,8 @@ public class IronJacamarSupport {
         ManagedConnectionFactory managedConnectionFactory;
         IronJacamarRuntimeConfig.ResourceAdapterConfig ra = adapterRuntimeConfig.ra();
         try {
-            resourceAdapter = resourceAdapterFactory.createResourceAdapter(ra.config());
-            managedConnectionFactory = resourceAdapterFactory.createManagedConnectionFactory(resourceAdapter);
+            resourceAdapter = resourceAdapterFactory.createResourceAdapter(id, ra.config());
+            managedConnectionFactory = resourceAdapterFactory.createManagedConnectionFactory(id, resourceAdapter);
         } catch (ResourceException re) {
             throw new DeploymentException("Cannot deploy resource adapter", re);
         }

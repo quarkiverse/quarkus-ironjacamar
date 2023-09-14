@@ -51,7 +51,8 @@ public class IronJacamarContainer implements Closeable {
 
     public void endpointActivation(Class<?> endpointClass, String identifier, Map<String, String> config)
             throws ResourceException {
-        ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(resourceAdapter, endpointClass, config);
+        ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(identifier, resourceAdapter, endpointClass,
+                config);
         DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass, identifier,
                 resourceAdapterFactory);
         resourceAdapter.endpointActivation(messageEndpointFactory, activationSpec);

@@ -35,7 +35,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     }
 
     @Override
-    public ActiveMQResourceAdapter createResourceAdapter(Map<String, String> config) {
+    public ActiveMQResourceAdapter createResourceAdapter(String id, Map<String, String> config) {
         ActiveMQResourceAdapter adapter = new ActiveMQResourceAdapter();
         adapter.setConnectorClassName(NettyConnectorFactory.class.getName());
         adapter.setConnectionParameters(config.get("connection-parameters"));
@@ -48,7 +48,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     }
 
     @Override
-    public ManagedConnectionFactory createManagedConnectionFactory(ResourceAdapter adapter)
+    public ManagedConnectionFactory createManagedConnectionFactory(String id, ResourceAdapter adapter)
             throws ResourceException {
         ActiveMQRAManagedConnectionFactory factory = new ActiveMQRAManagedConnectionFactory();
         factory.setResourceAdapter(adapter);
@@ -57,7 +57,7 @@ public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
     }
 
     @Override
-    public ActivationSpec createActivationSpec(ResourceAdapter adapter, Class<?> type, Map<String, String> config)
+    public ActivationSpec createActivationSpec(String id, ResourceAdapter adapter, Class<?> type, Map<String, String> config)
             throws ResourceException {
         ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
         activationSpec.setResourceAdapter(adapter);
