@@ -55,12 +55,9 @@ Resource endpoints are activated in the ResourceAdapter (think EJB's `@MessageDr
 [source,java,subs=attributes+]
 ----
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
-import io.quarkiverse.ironjacamar.ResourceEndpoint.ActivationSpec;
-
-import jakarta.jms.MessageListener;
 
 @ResourceEndpoint(activationSpecConfigKey = "myqueue") <1>
-public class MyResourceEndpoint implements MessageListener {...} <2>
+public class MyResourceEndpoint implements jakarta.jms.MessageListener {...} <2>
 
 ----
 
