@@ -29,7 +29,7 @@ public interface ResourceAdapterFactory {
      *
      * @param config the configuration subset to be used in {@link ResourceAdapter}
      */
-    ResourceAdapter createResourceAdapter(Map<String, String> config) throws ResourceException;
+    ResourceAdapter createResourceAdapter(String id, Map<String, String> config) throws ResourceException;
 
     /**
      * Create a managed connection factory for the given resource adapter.
@@ -38,7 +38,7 @@ public interface ResourceAdapterFactory {
      * @return a {@link ManagedConnectionFactory} instance bound to the given {@link ResourceAdapter}
      * @throws ResourceException if something goes wrong
      */
-    ManagedConnectionFactory createManagedConnectionFactory(ResourceAdapter adapter)
+    ManagedConnectionFactory createManagedConnectionFactory(String id, ResourceAdapter adapter)
             throws ResourceException;
 
     /**
@@ -47,7 +47,7 @@ public interface ResourceAdapterFactory {
      * @param type the type
      * @return the activation spec
      */
-    ActivationSpec createActivationSpec(ResourceAdapter adapter, Class<?> type, Map<String, String> config)
+    ActivationSpec createActivationSpec(String id, ResourceAdapter adapter, Class<?> type, Map<String, String> config)
             throws ResourceException;
 
     /**
