@@ -5,7 +5,7 @@ include::./includes/attributes.adoc[]
 :categories: integration
 
 This extension allows you to deploy JCA Resource Adapters in Quarkus.
-IronJacamar is a Java Connector Architecture (JCA) implementation.
+IronJacamar is a Jakarta Connector Architecture (JCA) implementation.
 
 == Installation
 
