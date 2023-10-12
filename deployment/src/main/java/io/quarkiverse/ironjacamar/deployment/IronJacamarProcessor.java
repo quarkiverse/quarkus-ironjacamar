@@ -32,6 +32,7 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
+import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanContainerBuildItem;
@@ -168,6 +169,12 @@ class IronJacamarProcessor {
                     // return is void
                     mc.returnValue(null);
                 })
+                .done());
+
+        producer.produce(SyntheticBeanBuildItem.configure(QuarkusSecurityIntegration.class)
+                .scope(BuiltinScope.DEPENDENT.getInfo())
+                .unremovable()
+                .createWith(recorder.createSecurityIntegration())
                 .done());
     }
 
