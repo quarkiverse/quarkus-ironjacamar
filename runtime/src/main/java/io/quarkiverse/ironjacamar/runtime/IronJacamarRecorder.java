@@ -64,6 +64,10 @@ public class IronJacamarRecorder {
         };
     }
 
+    public Function<SyntheticCreationalContext<QuarkusSecurityIntegration>, QuarkusSecurityIntegration> createSecurityIntegration() {
+        return context -> new QuarkusSecurityIntegration();
+    }
+
     public void initDefaultBootstrapContext(BeanContainer beanContainer) {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
         SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
