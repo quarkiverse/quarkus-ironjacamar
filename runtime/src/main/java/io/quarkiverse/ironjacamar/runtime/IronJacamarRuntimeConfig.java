@@ -100,6 +100,58 @@ public interface IronJacamarRuntimeConfig {
         FlushStrategy flushStrategy();
 
         /**
+         * Whether the connection manager is sharable
+         */
+        @WithDefault("true")
+        boolean sharable();
+
+        /**
+         * Whether the connection manager should enlist connections
+         */
+        @WithDefault("true")
+        boolean enlistment();
+
+        /**
+         * Whether the connection manager should be connectable
+         */
+        @WithDefault("false")
+        boolean connectable();
+
+        /**
+         * Whether the connection manager should track connections
+         */
+        Optional<Boolean> tracking();
+
+        /**
+         * Whether the connection manager should use CCM
+         */
+        @WithDefault("true")
+        boolean useCcm();
+
+        /**
+         * Whether the connection manager should use interleaving
+         */
+        @WithDefault("false")
+        boolean interleaving();
+
+        /**
+         * Whether the connection manager should use same RM override
+         */
+        Optional<Boolean> isSameRMOverride();
+
+        /**
+         * Whether the connection manager should wrap the XAResource
+         */
+        @WithDefault("true")
+        boolean wrapXAResource();
+
+        /**
+         * Whether the connection manager should pad the XID
+         */
+        @WithDefault("false")
+        boolean padXid();
+
+        /**
          * The pool configuration for the Connection Manager
          */
         PoolConfig pool();

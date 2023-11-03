@@ -187,6 +187,177 @@ endif::add-copy-button-to-env-var[]
 |`failing-connection-only`
 
 
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.sharable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.sharable[quarkus.ironjacamar.ra.cm.sharable]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.sharable[quarkus.ironjacamar."resource-adapter-name".ra.cm.sharable]`
+
+
+[.description]
+--
+Whether the connection manager is sharable
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_SHARABLE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_SHARABLE+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.enlistment]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.enlistment[quarkus.ironjacamar.ra.cm.enlistment]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.enlistment[quarkus.ironjacamar."resource-adapter-name".ra.cm.enlistment]`
+
+
+[.description]
+--
+Whether the connection manager should enlist connections
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_ENLISTMENT+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_ENLISTMENT+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.connectable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.connectable[quarkus.ironjacamar.ra.cm.connectable]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.connectable[quarkus.ironjacamar."resource-adapter-name".ra.cm.connectable]`
+
+
+[.description]
+--
+Whether the connection manager should be connectable
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_CONNECTABLE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_CONNECTABLE+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`false`
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.tracking]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.tracking[quarkus.ironjacamar.ra.cm.tracking]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.tracking[quarkus.ironjacamar."resource-adapter-name".ra.cm.tracking]`
+
+
+[.description]
+--
+Whether the connection manager should track connections
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_TRACKING+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_TRACKING+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.use-ccm]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.use-ccm[quarkus.ironjacamar.ra.cm.use-ccm]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.use-ccm[quarkus.ironjacamar."resource-adapter-name".ra.cm.use-ccm]`
+
+
+[.description]
+--
+Whether the connection manager should use CCM
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_USE_CCM+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_USE_CCM+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.interleaving]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.interleaving[quarkus.ironjacamar.ra.cm.interleaving]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.interleaving[quarkus.ironjacamar."resource-adapter-name".ra.cm.interleaving]`
+
+
+[.description]
+--
+Whether the connection manager should use interleaving
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_INTERLEAVING+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_INTERLEAVING+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`false`
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.is-same-rm-override]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.is-same-rm-override[quarkus.ironjacamar.ra.cm.is-same-rm-override]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.is-same-rm-override[quarkus.ironjacamar."resource-adapter-name".ra.cm.is-same-rm-override]`
+
+
+[.description]
+--
+Whether the connection manager should use same RM override
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_IS_SAME_RM_OVERRIDE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_IS_SAME_RM_OVERRIDE+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.wrap-xa-resource]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.wrap-xa-resource[quarkus.ironjacamar.ra.cm.wrap-xa-resource]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.wrap-xa-resource[quarkus.ironjacamar."resource-adapter-name".ra.cm.wrap-xa-resource]`
+
+
+[.description]
+--
+Whether the connection manager should wrap the XAResource
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_WRAP_XA_RESOURCE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_WRAP_XA_RESOURCE+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`true`
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pad-xid]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pad-xid[quarkus.ironjacamar.ra.cm.pad-xid]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pad-xid[quarkus.ironjacamar."resource-adapter-name".ra.cm.pad-xid]`
+
+
+[.description]
+--
+Whether the connection manager should pad the XID
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_PAD_XID+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_PAD_XID+++`
+endif::add-copy-button-to-env-var[]
+--|boolean 
+|`false`
+
+
 a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar.ra.cm.pool.strategy]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.strategy]`
