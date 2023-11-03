@@ -71,9 +71,7 @@ class IronJacamarProcessor {
     @BuildStep
     void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                .addBeanClasses(
-                        IronJacamarSupport.class,
-                        TransactionIntegrationImpl.class)
+                .addBeanClasses(TransactionIntegrationImpl.class)
                 .setUnremovable()
                 .setDefaultScope(DotNames.SINGLETON)
                 .build());

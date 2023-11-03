@@ -16,6 +16,7 @@ import org.jboss.jca.core.connectionmanager.ConnectionManager;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
+import io.quarkus.arc.Unremovable;
 import io.smallrye.common.annotation.Identifier;
 
 /**
@@ -24,6 +25,7 @@ import io.smallrye.common.annotation.Identifier;
  * It is separated from the recorder because there are runtime configuration that are not available at build time.
  */
 @Dependent
+@Unremovable
 public class IronJacamarSupport {
 
     @Inject
