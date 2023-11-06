@@ -137,12 +137,14 @@ public interface IronJacamarRuntimeConfig {
         /**
          * Whether the connection manager should use same RM override
          */
+        @WithName("is-same-rm-override")
         Optional<Boolean> isSameRMOverride();
 
         /**
          * Whether the connection manager should wrap the XAResource
          */
         @WithDefault("true")
+        @WithName("wrap-xa-resource")
         boolean wrapXAResource();
 
         /**
