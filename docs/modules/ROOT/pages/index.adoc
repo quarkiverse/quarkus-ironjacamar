@@ -148,6 +148,6 @@ This can be activated by setting the `quarkus.ironjacamar.metrics.enabled` prope
 Alternatively, you can disable the pool metrics for a specific resource adapter by setting the `quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics` property to `false`.
 
 [[extension-configuration-reference]]
-=== Extension Configuration Reference
+== Extension Configuration Reference
 
 include::includes/quarkus-ironjacamar.adoc[leveloffset=+1,opts=optional]
