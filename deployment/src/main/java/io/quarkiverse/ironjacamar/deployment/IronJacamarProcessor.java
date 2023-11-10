@@ -19,6 +19,7 @@ import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
+import org.jboss.jca.core.recovery.DefaultRecoveryPlugin;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
@@ -71,7 +72,7 @@ class IronJacamarProcessor {
     @BuildStep
     void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
-                .addBeanClasses(TransactionIntegrationImpl.class)
+                .addBeanClasses(TransactionIntegrationImpl.class, DefaultRecoveryPlugin.class)
                 .setUnremovable()
                 .setDefaultScope(DotNames.SINGLETON)
                 .build());

@@ -13,10 +13,12 @@ import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
 
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
+import org.jboss.jca.core.connectionmanager.TxConnectionManager;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkus.arc.Unremovable;
+import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
 import io.smallrye.common.annotation.Identifier;
 
 /**
@@ -30,6 +32,9 @@ public class IronJacamarSupport {
 
     @Inject
     IronJacamarRuntimeConfig runtimeConfig;
+
+    @Inject
+    TransactionManagerConfiguration transactionManagerConfig;
 
     @Inject
     ConnectionManagerFactory connectionManagerFactory;
@@ -57,6 +62,16 @@ public class IronJacamarSupport {
         }
         ConnectionManager connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory,
                 ra.cm());
+        // Register recovery if enabled
+        if (transactionManagerConfig.enableRecovery) {
+            if (connectionManager instanceof TxConnectionManager) {
+                connectionManagerFactory.registerForRecovery(managedConnectionFactory,
+                        (TxConnectionManager) connectionManager,
+                        ra.cm().recovery());
+            } else {
+                QuarkusIronJacamarLogger.log.connectionManagerNotTransactional(id);
+            }
+        }
         return new IronJacamarContainer(resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
                 connectionManager);
     }

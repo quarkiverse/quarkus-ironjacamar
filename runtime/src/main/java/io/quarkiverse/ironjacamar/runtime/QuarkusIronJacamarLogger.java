@@ -47,4 +47,8 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     @Message(id = 6, value = "Multiple kinds found (%s), please set the kind config for the %s configuration")
     ConfigurationException multipleKindsFound(Set<String> missing, String configuration);
 
+    @LogMessage(level = WARN)
+    @Message(id = 7, value = "The connection manager for the resource adapter %s is not transactional, therefore it cannot be registered for recovery")
+    void connectionManagerNotTransactional(String adapter);
+
 }

@@ -154,6 +154,29 @@ public interface IronJacamarRuntimeConfig {
         boolean padXid();
 
         /**
+         * The recovery configuration for the Connection Manager
+         */
+        RecoveryConfig recovery();
+
+        @ConfigGroup
+        interface RecoveryConfig {
+            /**
+             * The recovery username for the Connection Manager
+             */
+            Optional<String> username();
+
+            /**
+             * The recovery password for the Connection Manager
+             */
+            Optional<String> password();
+
+            /**
+             * The recovery security domain for the Connection Manager
+             */
+            Optional<String> securityDomain();
+        }
+
+        /**
          * The pool configuration for the Connection Manager
          */
         PoolConfig pool();

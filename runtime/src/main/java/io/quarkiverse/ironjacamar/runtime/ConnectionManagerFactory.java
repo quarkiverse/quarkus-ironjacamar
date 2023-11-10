@@ -8,22 +8,30 @@ import jakarta.resource.spi.TransactionSupport;
 import org.jboss.jca.common.api.metadata.Defaults;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
+import org.jboss.jca.core.connectionmanager.TxConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
+import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
+import org.jboss.jca.core.spi.transaction.XAResourceStatistics;
+import org.jboss.jca.core.spi.transaction.recovery.XAResourceRecovery;
+
+import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig.ConnectionManagerConfig.RecoveryConfig;
 
 @Dependent
 public class ConnectionManagerFactory {
 
     private final TransactionIntegration transactionIntegration;
-
     private final CachedConnectionManager ccm;
+    private final RecoveryPlugin recoveryPlugin;
 
     @Inject
-    public ConnectionManagerFactory(TransactionIntegration transactionIntegration, CachedConnectionManager ccm) {
+    public ConnectionManagerFactory(TransactionIntegration transactionIntegration, CachedConnectionManager ccm,
+            RecoveryPlugin recoveryPlugin) {
         this.transactionIntegration = transactionIntegration;
         this.ccm = ccm;
+        this.recoveryPlugin = recoveryPlugin;
     }
 
     public ConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf,
@@ -77,5 +85,19 @@ public class ConnectionManagerFactory {
                             config.wrapXAResource(),
                             config.padXid());
         }
+    }
+
+    public void registerForRecovery(ManagedConnectionFactory mcf, TxConnectionManager cm, RecoveryConfig config) {
+        XAResourceRecovery xaResourceRecovery = transactionIntegration.createXAResourceRecovery(mcf,
+                cm.getPadXid(),
+                cm.getIsSameRMOverride(),
+                cm.getWrapXAResource(),
+                config.username().orElse(null),
+                config.password().orElse(null),
+                config.securityDomain().orElse(null),
+                cm.getSubjectFactory(),
+                recoveryPlugin,
+                (XAResourceStatistics) cm.getPool().getStatistics());
+        transactionIntegration.getRecoveryRegistry().addXAResourceRecovery(xaResourceRecovery);
     }
 }
