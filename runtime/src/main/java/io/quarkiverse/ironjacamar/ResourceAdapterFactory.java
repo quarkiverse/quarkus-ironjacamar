@@ -16,12 +16,26 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 public interface ResourceAdapterFactory {
 
     /**
+     * The product name of the resource adapter.
+     */
+    default String getProductName() {
+        return toString();
+    }
+
+    /**
+     * The product version of the resource adapter.
+     */
+    default String getProductVersion() {
+        return "1.0";
+    }
+
+    /**
      * A human-readable description of the resource adapter.
      *
      * @return the description that is displayed in the logs
      */
     default String getDescription() {
-        return toString();
+        return getProductName() + " " + getProductVersion();
     }
 
     /**

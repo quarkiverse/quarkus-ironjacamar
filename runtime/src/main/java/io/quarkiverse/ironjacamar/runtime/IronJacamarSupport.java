@@ -6,7 +6,6 @@ import java.util.Map;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
-import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.inject.Inject;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ManagedConnectionFactory;
@@ -14,6 +13,7 @@ import jakarta.resource.spi.ResourceAdapter;
 
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
 import org.jboss.jca.core.connectionmanager.TxConnectionManager;
+import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
@@ -53,31 +53,31 @@ public class IronJacamarSupport {
         var adapterRuntimeConfig = runtimeConfig.resourceAdapters().get(id);
         ResourceAdapter resourceAdapter;
         ManagedConnectionFactory managedConnectionFactory;
+        ConnectionManager connectionManager;
         IronJacamarRuntimeConfig.ResourceAdapterConfig ra = adapterRuntimeConfig.ra();
         try {
             resourceAdapter = resourceAdapterFactory.createResourceAdapter(id, ra.config());
             managedConnectionFactory = resourceAdapterFactory.createManagedConnectionFactory(id, resourceAdapter);
-        } catch (ResourceException re) {
-            throw new DeploymentException("Cannot deploy resource adapter", re);
-        }
-        ConnectionManager connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory,
-                ra.cm());
-        // Register recovery if enabled
-        if (transactionManagerConfig.enableRecovery) {
-            if (connectionManager instanceof TxConnectionManager) {
-                connectionManagerFactory.registerForRecovery(managedConnectionFactory,
-                        (TxConnectionManager) connectionManager,
-                        ra.cm().recovery());
-            } else {
-                QuarkusIronJacamarLogger.log.connectionManagerNotTransactional(id);
+            connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory, ra.cm());
+            // Register recovery if enabled
+            if (transactionManagerConfig.enableRecovery) {
+                if (connectionManager instanceof TxConnectionManager) {
+                    connectionManagerFactory.registerForRecovery(managedConnectionFactory,
+                            (TxConnectionManager) connectionManager,
+                            ra.cm().recovery());
+                } else {
+                    QuarkusIronJacamarLogger.log.connectionManagerNotTransactional(id);
+                }
             }
+        } catch (ResourceException re) {
+            throw QuarkusIronJacamarLogger.log.cannotDeployResourceAdapter(re);
         }
         return new IronJacamarContainer(resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
                 connectionManager);
     }
 
     public void activateEndpoint(String containerId, String activationSpecConfigId, String endpointClassName,
-            Map<String, String> buildTimeConfig) {
+            Map<String, String> buildTimeConfig, TransactionIntegration transactionIntegration) {
         IronJacamarContainer ijContainer = containers.select(Identifier.Literal.of(containerId)).get();
         Class<?> endpointClass;
         try {
@@ -93,9 +93,10 @@ public class IronJacamarSupport {
             }
         }
         try {
-            ijContainer.endpointActivation(endpointClass, containerId, config);
+            ijContainer.endpointActivation(endpointClass, containerId, config,
+                    transactionManagerConfig.enableRecovery ? transactionIntegration : null);
         } catch (ResourceException e) {
-            throw new RuntimeException(e);
+            throw QuarkusIronJacamarLogger.log.cannotActivateEndpoint(e);
         }
     }
 }

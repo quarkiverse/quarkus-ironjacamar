@@ -2,6 +2,7 @@ package io.quarkiverse.ironjacamar.runtime;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
+import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.TransactionSupport;
 
@@ -87,7 +88,8 @@ public class ConnectionManagerFactory {
         }
     }
 
-    public void registerForRecovery(ManagedConnectionFactory mcf, TxConnectionManager cm, RecoveryConfig config) {
+    public void registerForRecovery(ManagedConnectionFactory mcf, TxConnectionManager cm, RecoveryConfig config)
+            throws ResourceException {
         XAResourceRecovery xaResourceRecovery = transactionIntegration.createXAResourceRecovery(mcf,
                 cm.getPadXid(),
                 cm.getIsSameRMOverride(),
@@ -98,6 +100,11 @@ public class ConnectionManagerFactory {
                 cm.getSubjectFactory(),
                 recoveryPlugin,
                 (XAResourceStatistics) cm.getPool().getStatistics());
-        transactionIntegration.getRecoveryRegistry().addXAResourceRecovery(xaResourceRecovery);
+        try {
+            xaResourceRecovery.initialize();
+            transactionIntegration.getRecoveryRegistry().addXAResourceRecovery(xaResourceRecovery);
+        } catch (Exception e) {
+            throw QuarkusIronJacamarLogger.log.errorDuringRecoveryInitialization(e);
+        }
     }
 }

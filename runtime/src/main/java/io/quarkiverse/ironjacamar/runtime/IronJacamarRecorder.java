@@ -121,7 +121,8 @@ public class IronJacamarRecorder {
         Future<String> future = containerFuture.getValue();
         future.onSuccess(s -> {
             IronJacamarSupport producer = beanContainer.beanInstance(IronJacamarSupport.class);
-            producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
+            TransactionIntegration ti = beanContainer.beanInstance(TransactionIntegration.class);
+            producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig, ti);
         });
     }
 }
