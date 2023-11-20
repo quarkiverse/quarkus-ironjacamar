@@ -9,8 +9,7 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.transaction.RollbackException;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.Transaction;
-
-import com.arjuna.ats.jta.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
@@ -31,7 +30,7 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
         Arc.container().requestContext().activate();
         QuarkusTransaction.begin();
         try {
-            Transaction transaction = TransactionManager.transactionManager().getTransaction();
+            Transaction transaction = Arc.container().instance(TransactionManager.class).get().getTransaction();
             // Enlisting the resource so the message delivery is part of the transaction
             // See https://jakarta.ee/specifications/connectors/2.1/jakarta-connectors-spec-2.1#transacted-delivery-using-container-managed-transaction
             if (!transaction.enlistResource(xaResource)) {
