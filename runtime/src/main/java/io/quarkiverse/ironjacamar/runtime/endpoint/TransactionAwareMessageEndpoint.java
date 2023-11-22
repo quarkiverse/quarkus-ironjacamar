@@ -43,14 +43,20 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
 
     @Override
     public void afterDelivery() {
-        if (QuarkusTransaction.isActive()) {
-            if (QuarkusTransaction.isRollbackOnly()) {
-                QuarkusTransaction.rollback();
-            } else {
-                QuarkusTransaction.commit();
+        try {
+            if (QuarkusTransaction.isActive()) {
+                if (QuarkusTransaction.isRollbackOnly()) {
+                    QuarkusTransaction.rollback();
+                } else {
+                    QuarkusTransaction.commit();
+                }
+            }
+        } finally {
+            var context = Arc.container().requestContext();
+            if (context.isActive()) {
+                context.deactivate();
             }
         }
-        Arc.container().requestContext().deactivate();
     }
 
     @Override
