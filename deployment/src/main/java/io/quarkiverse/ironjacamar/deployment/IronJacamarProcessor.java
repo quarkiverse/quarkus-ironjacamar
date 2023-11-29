@@ -20,6 +20,7 @@ import org.jboss.jandex.Type;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.mcp.SemaphoreArrayListManagedConnectionPool;
 import org.jboss.jca.core.recovery.DefaultRecoveryPlugin;
+import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.tx.jbossts.TransactionIntegrationImpl;
 
@@ -33,6 +34,7 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
+import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -54,6 +56,7 @@ import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.gizmo.MethodDescriptor;
+import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
@@ -170,10 +173,16 @@ class IronJacamarProcessor {
                 })
                 .done());
 
-        producer.produce(SyntheticBeanBuildItem.configure(QuarkusSecurityIntegration.class)
-                .scope(BuiltinScope.DEPENDENT.getInfo())
+        // Produce TransactionRecoveryManager
+        producer.produce(SyntheticBeanBuildItem.configure(TransactionRecoveryManager.class)
+                .scope(BuiltinScope.SINGLETON.getInfo())
+                .setRuntimeInit()
                 .unremovable()
-                .createWith(recorder.createSecurityIntegration())
+                .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
+                .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionManagerConfiguration.class)))
+                .addInjectionPoint(ClassType.create(DotName.createSimple(RecoveryPlugin.class)))
+                .createWith(recorder.createTransactionRecoveryManager())
+                .destroyer(BeanDestroyer.CloseableDestroyer.class)
                 .done());
     }
 
@@ -186,6 +195,12 @@ class IronJacamarProcessor {
             List<ResourceAdapterKindBuildItem> kinds,
             BuildProducer<SyntheticBeanBuildItem> producer,
             BuildProducer<ContainerCreatedBuildItem> createdProducer) {
+        // Register security integration as a dependent bean
+        producer.produce(SyntheticBeanBuildItem.configure(QuarkusSecurityIntegration.class)
+                .scope(BuiltinScope.DEPENDENT.getInfo())
+                .unremovable()
+                .createWith(recorder.createSecurityIntegration())
+                .done());
         IndexView index = combinedIndexBuildItem.getIndex();
         Type containerType = Type.create(DotName.createSimple(IronJacamarContainer.class), Type.Kind.CLASS);
         var kindsMap = kinds.stream().collect(Collectors.toMap(ResourceAdapterKindBuildItem::getKind, Function.identity()));

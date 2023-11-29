@@ -2,23 +2,17 @@ package io.quarkiverse.ironjacamar.runtime;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.TransactionSupport;
 
 import org.jboss.jca.common.api.metadata.Defaults;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
-import org.jboss.jca.core.connectionmanager.TxConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
 import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
-import org.jboss.jca.core.spi.transaction.XAResourceStatistics;
-import org.jboss.jca.core.spi.transaction.recovery.XAResourceRecovery;
-
-import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig.ConnectionManagerConfig.RecoveryConfig;
 
 @Dependent
 public class ConnectionManagerFactory {
@@ -85,26 +79,6 @@ public class ConnectionManagerFactory {
                             config.isSameRMOverride().orElse(Defaults.IS_SAME_RM_OVERRIDE),
                             config.wrapXAResource(),
                             config.padXid());
-        }
-    }
-
-    public void registerForRecovery(ManagedConnectionFactory mcf, TxConnectionManager cm, RecoveryConfig config)
-            throws ResourceException {
-        XAResourceRecovery xaResourceRecovery = transactionIntegration.createXAResourceRecovery(mcf,
-                cm.getPadXid(),
-                cm.getIsSameRMOverride(),
-                cm.getWrapXAResource(),
-                config.username().orElse(null),
-                config.password().orElse(null),
-                config.securityDomain().orElse(null),
-                cm.getSubjectFactory(),
-                recoveryPlugin,
-                (XAResourceStatistics) cm.getPool().getStatistics());
-        try {
-            xaResourceRecovery.initialize();
-            transactionIntegration.getRecoveryRegistry().addXAResourceRecovery(xaResourceRecovery);
-        } catch (Exception e) {
-            throw QuarkusIronJacamarLogger.log.errorDuringRecoveryInitialization(e);
         }
     }
 }

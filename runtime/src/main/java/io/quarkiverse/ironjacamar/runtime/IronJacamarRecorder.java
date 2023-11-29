@@ -16,6 +16,7 @@ import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.bootstrapcontext.BaseCloneableBootstrapContext;
 import org.jboss.jca.core.bootstrapcontext.BootstrapContextCoordinator;
 import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
+import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.security.SecurityIntegration;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.workmanager.WorkManagerCoordinator;
@@ -24,6 +25,7 @@ import org.jboss.jca.core.workmanager.WorkManagerImpl;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
+import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.smallrye.common.annotation.Identifier;
@@ -66,6 +68,15 @@ public class IronJacamarRecorder {
 
     public Function<SyntheticCreationalContext<QuarkusSecurityIntegration>, QuarkusSecurityIntegration> createSecurityIntegration() {
         return context -> new QuarkusSecurityIntegration();
+    }
+
+    public Function<SyntheticCreationalContext<TransactionRecoveryManager>, TransactionRecoveryManager> createTransactionRecoveryManager() {
+        return context -> {
+            TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
+            TransactionManagerConfiguration tmConfig = context.getInjectedReference(TransactionManagerConfiguration.class);
+            RecoveryPlugin recoveryPlugin = context.getInjectedReference(RecoveryPlugin.class);
+            return new TransactionRecoveryManager(ti, recoveryPlugin, tmConfig.enableRecovery);
+        };
     }
 
     public void initDefaultBootstrapContext(BeanContainer beanContainer) {
@@ -121,8 +132,7 @@ public class IronJacamarRecorder {
         Future<String> future = containerFuture.getValue();
         future.onSuccess(s -> {
             IronJacamarSupport producer = beanContainer.beanInstance(IronJacamarSupport.class);
-            TransactionIntegration ti = beanContainer.beanInstance(TransactionIntegration.class);
-            producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig, ti);
+            producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
         });
     }
 }
