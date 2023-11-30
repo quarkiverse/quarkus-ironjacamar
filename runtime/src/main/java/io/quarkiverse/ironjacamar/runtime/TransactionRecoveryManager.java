@@ -74,6 +74,7 @@ public class TransactionRecoveryManager implements Closeable {
     public void close() {
         for (XAResourceRecovery xrr : recoverySet) {
             try {
+                transactionIntegration.getRecoveryRegistry().removeXAResourceRecovery(xrr);
                 xrr.shutdown();
             } catch (Exception e) {
                 QuarkusIronJacamarLogger.log.errorDuringRecoveryShutdown(e);
