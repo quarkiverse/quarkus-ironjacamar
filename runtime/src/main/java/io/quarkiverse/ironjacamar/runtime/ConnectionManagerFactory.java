@@ -11,19 +11,22 @@ import org.jboss.jca.core.connectionmanager.ConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
+import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 
 @Dependent
 public class ConnectionManagerFactory {
 
     private final TransactionIntegration transactionIntegration;
-
     private final CachedConnectionManager ccm;
+    private final RecoveryPlugin recoveryPlugin;
 
     @Inject
-    public ConnectionManagerFactory(TransactionIntegration transactionIntegration, CachedConnectionManager ccm) {
+    public ConnectionManagerFactory(TransactionIntegration transactionIntegration, CachedConnectionManager ccm,
+            RecoveryPlugin recoveryPlugin) {
         this.transactionIntegration = transactionIntegration;
         this.ccm = ccm;
+        this.recoveryPlugin = recoveryPlugin;
     }
 
     public ConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf,

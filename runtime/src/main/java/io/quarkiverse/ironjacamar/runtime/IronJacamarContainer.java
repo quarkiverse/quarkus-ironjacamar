@@ -22,15 +22,18 @@ public class IronJacamarContainer implements Closeable {
     private final ResourceAdapter resourceAdapter;
     private final ManagedConnectionFactory managedConnectionFactory;
     private final ConnectionManager connectionManager;
+    private final TransactionRecoveryManager transactionRecoveryManager;
 
     public IronJacamarContainer(ResourceAdapterFactory resourceAdapterFactory,
             ResourceAdapter resourceAdapter,
             ManagedConnectionFactory managedConnectionFactory,
-            ConnectionManager connectionManager) {
+            ConnectionManager connectionManager,
+            TransactionRecoveryManager transactionRecoveryManager) {
         this.resourceAdapterFactory = resourceAdapterFactory;
         this.resourceAdapter = resourceAdapter;
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionManager = connectionManager;
+        this.transactionRecoveryManager = transactionRecoveryManager;
     }
 
     public ResourceAdapter getResourceAdapter() {
@@ -56,6 +59,10 @@ public class IronJacamarContainer implements Closeable {
         DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass, identifier,
                 resourceAdapterFactory);
         resourceAdapter.endpointActivation(messageEndpointFactory, activationSpec);
+        if (transactionRecoveryManager.isEnabled()) {
+            transactionRecoveryManager.registerForRecovery(resourceAdapter, activationSpec,
+                    resourceAdapterFactory.getProductName(), resourceAdapterFactory.getProductVersion());
+        }
     }
 
     @Override

@@ -358,6 +358,63 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.username]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.username[quarkus.ironjacamar.ra.cm.recovery.username]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.username[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.username]`
+
+
+[.description]
+--
+The recovery username for the Connection Manager
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_RECOVERY_USERNAME+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_RECOVERY_USERNAME+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.password]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.password[quarkus.ironjacamar.ra.cm.recovery.password]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.password[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.password]`
+
+
+[.description]
+--
+The recovery password for the Connection Manager
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_RECOVERY_PASSWORD+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_RECOVERY_PASSWORD+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|
+
+
+a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.security-domain]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.security-domain[quarkus.ironjacamar.ra.cm.recovery.security-domain]`
+
+`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.security-domain[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.security-domain]`
+
+
+[.description]
+--
+The recovery security domain for the Connection Manager
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_CM_RECOVERY_SECURITY_DOMAIN+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_RECOVERY_SECURITY_DOMAIN+++`
+endif::add-copy-button-to-env-var[]
+--|string 
+|
+
+
 a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar.ra.cm.pool.strategy]`
 
 `link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.strategy]`
