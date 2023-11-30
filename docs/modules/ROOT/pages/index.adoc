@@ -139,6 +139,61 @@ public class MyResourceEndpoint implements MessageListener {
 <1> This MessageListener will be activated by the `other` resource adapter configured above.
 <2> This `ConnectionFactory` will be the one configured in the `main` resource adapter.
 
+== Transactions
+
+Quarkus IronJacamar supports the `@Transactional` annotation on `ResourceEndpoint` implementations to automatically enlist the connection in the current transaction:
+
+[source,java,subs=attributes+]
+----
+import io.quarkiverse.ironjacamar.ResourceEndpoint;
+
+import jakarta.inject.Inject;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import javax.transaction.Transactional;
+
+@ResourceEndpoint
+public class MyResourceEndpoint implements MessageListener {
+
+    @Inject
+    ConnectionFactory connectionFactory;
+
+    @Override
+    @Transactional
+    public void onMessage(Message message) {
+        //...
+    }
+}
+
+----
+
+It also supports the `@Transactional` annotation on methods consuming the managed connection factories produced by the `ResourceAdapterFactory` implementation:
+
+[source,java,subs=attributes+]
+----
+@Path("/jca")
+@ApplicationScoped
+public class JcaResource {
+
+        @Inject
+        ConnectionFactory connectionFactory;
+
+        @GET
+        @Path("/send")
+        @Transactional
+        public void send() {
+            try (Connection connection = connectionFactory.createConnection()) {
+                //...
+            }
+        }
+}
+----
+
+Some adapter implementations may require additional configuration to enable transaction support. Check the adapter documentation for more details.
+
+NOTE:: if running in a XA transaction, it is recommended to enable recovery by using `quarkus.transaction-manager.enable-recovery=true`. Check the guide on link:https://quarkus.io/guides/transaction[Using Transactions in Quarkus] for more details.
+
 == Metrics
 
 If you are using the `quarkus-micrometer` or `quarkus-smallrye-metrics` extension, `quarkus-ironjacamar` can contribute some connection pool-related metrics to the metric registry.
@@ -146,6 +201,8 @@ If you are using the `quarkus-micrometer` or `quarkus-smallrye-metrics` extensio
 This can be activated by setting the `quarkus.ironjacamar.metrics.enabled` property to `true`.
 
 Alternatively, you can disable the pool metrics for a specific resource adapter by setting the `quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics` property to `false`.
+
+
 
 [[extension-configuration-reference]]
 == Extension Configuration Reference
