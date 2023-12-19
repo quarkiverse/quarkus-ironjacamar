@@ -30,7 +30,7 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
         Arc.container().requestContext().activate();
         QuarkusTransaction.begin();
         try {
-            Transaction transaction = Arc.container().instance(TransactionManager.class).get().getTransaction();
+            Transaction transaction = Arc.container().select(TransactionManager.class).get().getTransaction();
             // Enlisting the resource so the message delivery is part of the transaction
             // See https://jakarta.ee/specifications/connectors/2.1/jakarta-connectors-spec-2.1#transacted-delivery-using-container-managed-transaction
             if (!transaction.enlistResource(xaResource)) {
