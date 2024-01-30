@@ -203,7 +203,7 @@ class IronJacamarProcessor {
                 .done());
         IndexView index = combinedIndexBuildItem.getIndex();
         Type containerType = Type.create(DotName.createSimple(IronJacamarContainer.class), Type.Kind.CLASS);
-        var kindsMap = kinds.stream().collect(Collectors.toMap(ResourceAdapterKindBuildItem::getKind, Function.identity()));
+        var kindsMap = kinds.stream().collect(Collectors.toMap(ResourceAdapterKindBuildItem::kind, Function.identity()));
         boolean single = kindsMap.size() == 1;
         for (var entry : config.resourceAdapters().entrySet()) {
             String key = entry.getKey();
@@ -212,7 +212,7 @@ class IronJacamarProcessor {
             if (raKind == null) {
                 continue;
             }
-            ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName);
+            ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName());
             Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
                     .asClassArray();
 
@@ -225,7 +225,7 @@ class IronJacamarProcessor {
                     .setRuntimeInit()
                     .addQualifier(qualifier)
                     .unremovable()
-                    .createWith(recorder.createContainerFunction(key, raKind.kind))
+                    .createWith(recorder.createContainerFunction(key, raKind.kind()))
                     .addInjectionPoint(ClassType.create(DotName.createSimple(IronJacamarSupport.class)))
                     .destroyer(BeanDestroyer.CloseableDestroyer.class);
             // Don't need to specify the identifier if a single Resource Adapter is deployed
@@ -350,7 +350,7 @@ class IronJacamarProcessor {
             if (kinds.isEmpty()) {
                 return null;
             } else if (kinds.size() == 1) {
-                result = kinds.values().iterator().next().kind;
+                result = kinds.values().iterator().next().kind();
             } else {
                 throw QuarkusIronJacamarLogger.log.multipleKindsFound(kinds.keySet(), entry.getKey());
             }

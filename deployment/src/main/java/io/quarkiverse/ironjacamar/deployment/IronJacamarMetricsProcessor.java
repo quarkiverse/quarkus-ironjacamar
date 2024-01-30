@@ -13,8 +13,28 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
 import io.quarkus.deployment.metrics.MetricsFactoryConsumerBuildItem;
 
+/**
+ * Processor that registers metrics for IronJacamar
+ */
 public class IronJacamarMetricsProcessor {
 
+    /**
+     * Constructor
+     */
+    public IronJacamarMetricsProcessor() {
+
+    }
+
+    /**
+     * Register metrics
+     *
+     * @param recorder the recorder
+     * @param metrics the metrics
+     * @param containers the containers
+     * @param buildtimeConfig the buildtime config
+     * @param beanContainerBuildItem the bean container
+     * @param metricsCapability the metrics capability
+     */
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     void registerMetrics(IronJacamarMetricsRecorder recorder,

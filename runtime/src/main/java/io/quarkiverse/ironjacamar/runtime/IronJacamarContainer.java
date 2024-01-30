@@ -24,6 +24,15 @@ public class IronJacamarContainer implements Closeable {
     private final ConnectionManager connectionManager;
     private final TransactionRecoveryManager transactionRecoveryManager;
 
+    /**
+     * Constructor
+     *
+     * @param resourceAdapterFactory The resource adapter factory
+     * @param resourceAdapter The resource adapter
+     * @param managedConnectionFactory The managed connection factory
+     * @param connectionManager The connection manager
+     * @param transactionRecoveryManager The transaction recovery manager
+     */
     public IronJacamarContainer(ResourceAdapterFactory resourceAdapterFactory,
             ResourceAdapter resourceAdapter,
             ManagedConnectionFactory managedConnectionFactory,
@@ -36,22 +45,51 @@ public class IronJacamarContainer implements Closeable {
         this.transactionRecoveryManager = transactionRecoveryManager;
     }
 
+    /**
+     * Get the resource adapter
+     *
+     * @return The resource adapter
+     */
     public ResourceAdapter getResourceAdapter() {
         return resourceAdapter;
     }
 
+    /**
+     * Get the managed connection factory
+     *
+     * @return The {@link ResourceAdapterFactory}
+     */
     public ResourceAdapterFactory getResourceAdapterFactory() {
         return resourceAdapterFactory;
     }
 
+    /**
+     * Get the connection manager
+     *
+     * @return The {@link ConnectionManager} instance
+     */
     public ConnectionManager getConnectionManager() {
         return connectionManager;
     }
 
+    /**
+     * Create a connection factory. It will be managed by the connection manager.
+     *
+     * @return The connection factory
+     * @throws ResourceException if something goes wrong
+     */
     public Object createConnectionFactory() throws ResourceException {
         return managedConnectionFactory.createConnectionFactory(connectionManager);
     }
 
+    /**
+     * Activate an endpoint
+     *
+     * @param endpointClass The endpoint class
+     * @param identifier The identifier
+     * @param config The configuration
+     * @throws ResourceException if something goes wrong
+     */
     public void endpointActivation(Class<?> endpointClass, String identifier, Map<String, String> config)
             throws ResourceException {
         ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(identifier, resourceAdapter, endpointClass,
@@ -65,6 +103,9 @@ public class IronJacamarContainer implements Closeable {
         }
     }
 
+    /**
+     * Called when the application shuts down
+     */
     @Override
     public void close() {
         connectionManager.prepareShutdown();

@@ -14,16 +14,26 @@ import jakarta.transaction.TransactionManager;
 import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 
+/**
+ * Transaction aware message endpoint for a given {@link XAResource}
+ */
 public class TransactionAwareMessageEndpoint implements MessageEndpoint {
 
     private final XAResource xaResource;
 
+    /**
+     * Constructor
+     *
+     * @param xaResource The XA resource
+     */
     public TransactionAwareMessageEndpoint(XAResource xaResource) {
         this.xaResource = xaResource;
     }
 
     /**
      * Initiate a transaction and enlist the XA Resource only if @Transactional is present on the endpoint method
+     *
+     * @param method The method
      */
     @Override
     public void beforeDelivery(Method method) throws ResourceException {
@@ -41,6 +51,9 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
         }
     }
 
+    /**
+     * Commit or rollback the transaction depending on the rollback only status
+     */
     @Override
     public void afterDelivery() {
         try {
@@ -59,8 +72,11 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
         }
     }
 
+    /**
+     * Does nothing
+     */
     @Override
     public void release() {
-
+        // Do nothing
     }
 }

@@ -33,9 +33,25 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
+/**
+ * The runtime recorder for IronJacamar
+ */
 @Recorder
 public class IronJacamarRecorder {
 
+    /**
+     * Constructor
+     */
+    public IronJacamarRecorder() {
+    }
+
+    /**
+     * Create an {@link IronJacamarContainer} for the given resource adapter
+     *
+     * @param id The resource adapter id
+     * @param kind The resource adapter kind
+     * @return A Function that creates an {@link IronJacamarContainer}
+     */
     public Function<SyntheticCreationalContext<IronJacamarContainer>, IronJacamarContainer> createContainerFunction(String id,
             String kind) {
         return context -> {
@@ -45,6 +61,12 @@ public class IronJacamarRecorder {
         };
     }
 
+    /**
+     * Create a connection factory from the given resource adapter (implementation vendor specific)
+     *
+     * @param id The resource adapter id
+     * @return A function that creates a connection factory
+     */
     public Function<SyntheticCreationalContext<Object>, Object> createConnectionFactory(String id) {
         return context -> {
             IronJacamarContainer container = context.getInjectedReference(IronJacamarContainer.class,
@@ -57,6 +79,11 @@ public class IronJacamarRecorder {
         };
     }
 
+    /**
+     * Create a {@link CachedConnectionManager}
+     *
+     * @return A function that creates a {@link CachedConnectionManager}
+     */
     public Function<SyntheticCreationalContext<CachedConnectionManager>, CachedConnectionManager> createCachedConnectionManager() {
         return context -> {
             TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
@@ -66,10 +93,20 @@ public class IronJacamarRecorder {
         };
     }
 
+    /**
+     * Create a {@link QuarkusSecurityIntegration}
+     *
+     * @return A function that creates a {@link QuarkusSecurityIntegration}
+     */
     public Function<SyntheticCreationalContext<QuarkusSecurityIntegration>, QuarkusSecurityIntegration> createSecurityIntegration() {
         return context -> new QuarkusSecurityIntegration();
     }
 
+    /**
+     * Create a {@link TransactionRecoveryManager}
+     *
+     * @return A function that creates a {@link TransactionRecoveryManager}
+     */
     public Function<SyntheticCreationalContext<TransactionRecoveryManager>, TransactionRecoveryManager> createTransactionRecoveryManager() {
         return context -> {
             TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
@@ -79,6 +116,11 @@ public class IronJacamarRecorder {
         };
     }
 
+    /**
+     * Initialize the default {@link CloneableBootstrapContext} and {@link WorkManagerImpl}
+     *
+     * @param beanContainer The bean container
+     */
     public void initDefaultBootstrapContext(BeanContainer beanContainer) {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
         SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
@@ -106,6 +148,14 @@ public class IronJacamarRecorder {
         BootstrapContextCoordinator.getInstance().setDefaultBootstrapContext(bootstrapContext);
     }
 
+    /**
+     * Initialize the resource adapter
+     *
+     * @param beanContainer The bean container
+     * @param key The resource adapter key
+     * @param vertxSupplier The vertx supplier
+     * @return A {@link RuntimeValue} containing a {@link Future} that completes when the resource adapter is initialized
+     */
     public RuntimeValue<Future<String>> initResourceAdapter(
             BeanContainer beanContainer,
             String key,
@@ -123,6 +173,16 @@ public class IronJacamarRecorder {
         return new RuntimeValue<>(future);
     }
 
+    /**
+     * Activate an endpoint
+     *
+     * @param beanContainer The bean container
+     * @param containerFuture The container future
+     * @param resourceAdapterId The resource adapter id
+     * @param activationSpecConfigId The activation spec config id
+     * @param endpointClassName The endpoint class name
+     * @param buildTimeConfig The build time config
+     */
     public void activateEndpoint(BeanContainer beanContainer,
             RuntimeValue<Future<String>> containerFuture,
             String resourceAdapterId,

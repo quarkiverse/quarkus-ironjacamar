@@ -11,24 +11,37 @@ import org.jboss.jca.core.connectionmanager.ConnectionManager;
 import org.jboss.jca.core.connectionmanager.pool.api.Pool;
 import org.jboss.jca.core.connectionmanager.pool.api.PoolFactory;
 import org.jboss.jca.core.connectionmanager.pool.mcp.ManagedConnectionPoolFactory;
-import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 
+/**
+ * A factory for creating connection managers.
+ */
 @Dependent
 public class ConnectionManagerFactory {
 
     private final TransactionIntegration transactionIntegration;
     private final CachedConnectionManager ccm;
-    private final RecoveryPlugin recoveryPlugin;
 
+    /**
+     * Constructor
+     *
+     * @param transactionIntegration The transaction integration
+     * @param ccm The cached connection manager
+     */
     @Inject
-    public ConnectionManagerFactory(TransactionIntegration transactionIntegration, CachedConnectionManager ccm,
-            RecoveryPlugin recoveryPlugin) {
+    public ConnectionManagerFactory(TransactionIntegration transactionIntegration, CachedConnectionManager ccm) {
         this.transactionIntegration = transactionIntegration;
         this.ccm = ccm;
-        this.recoveryPlugin = recoveryPlugin;
     }
 
+    /**
+     * Create a connection manager
+     *
+     * @param id The id used in the pool name
+     * @param mcf The managed connection factory
+     * @param config The configuration
+     * @return The connection manager
+     */
     public ConnectionManager createConnectionManager(String id, ManagedConnectionFactory mcf,
             IronJacamarRuntimeConfig.ConnectionManagerConfig config) {
         var poolConfig = config.pool();

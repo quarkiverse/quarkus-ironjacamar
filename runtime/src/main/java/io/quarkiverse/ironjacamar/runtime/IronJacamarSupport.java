@@ -28,23 +28,45 @@ import io.smallrye.common.annotation.Identifier;
 @Unremovable
 public class IronJacamarSupport {
 
-    @Inject
-    IronJacamarRuntimeConfig runtimeConfig;
+    private final IronJacamarRuntimeConfig runtimeConfig;
 
-    @Inject
-    ConnectionManagerFactory connectionManagerFactory;
+    private final ConnectionManagerFactory connectionManagerFactory;
 
-    @Inject
-    TransactionRecoveryManager transactionRecoveryManager;
+    private final TransactionRecoveryManager transactionRecoveryManager;
 
-    @Inject
-    @Any
-    Instance<IronJacamarContainer> containers;
+    private final Instance<IronJacamarContainer> containers;
 
-    @Inject
-    @Any
-    Instance<ResourceAdapterFactory> resourceAdapterFactories;
+    private final Instance<ResourceAdapterFactory> resourceAdapterFactories;
 
+    /**
+     * Constructor
+     *
+     * @param runtimeConfig The runtime configuration
+     * @param connectionManagerFactory The connection manager factory
+     * @param transactionRecoveryManager The transaction recovery manager
+     * @param containers The containers
+     * @param resourceAdapterFactories The resource adapter factories
+     */
+    @Inject
+    public IronJacamarSupport(IronJacamarRuntimeConfig runtimeConfig, ConnectionManagerFactory connectionManagerFactory,
+            TransactionRecoveryManager transactionRecoveryManager,
+            @Any Instance<IronJacamarContainer> containers,
+            @Any Instance<ResourceAdapterFactory> resourceAdapterFactories) {
+        this.runtimeConfig = runtimeConfig;
+        this.connectionManagerFactory = connectionManagerFactory;
+        this.transactionRecoveryManager = transactionRecoveryManager;
+        this.containers = containers;
+        this.resourceAdapterFactories = resourceAdapterFactories;
+
+    }
+
+    /**
+     * Create a container for the given resource adapter
+     *
+     * @param id The resource adapter id
+     * @param kind The resource adapter kind
+     * @return The container
+     */
     public IronJacamarContainer createContainer(String id, String kind) {
         ResourceAdapterFactory resourceAdapterFactory = resourceAdapterFactories.select(ResourceAdapterKind.Literal.of(kind))
                 .get();
@@ -76,6 +98,14 @@ public class IronJacamarSupport {
                 connectionManager, transactionRecoveryManager);
     }
 
+    /**
+     * Activate an endpoint
+     *
+     * @param containerId The container id
+     * @param activationSpecConfigId The activation spec config id
+     * @param endpointClassName The endpoint class name
+     * @param buildTimeConfig The build time config
+     */
     public void activateEndpoint(String containerId, String activationSpecConfigId, String endpointClassName,
             Map<String, String> buildTimeConfig) {
         IronJacamarContainer ijContainer = containers.select(Identifier.Literal.of(containerId)).get();

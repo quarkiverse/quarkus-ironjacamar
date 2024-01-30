@@ -11,9 +11,25 @@ import io.quarkus.runtime.annotations.Recorder;
 import io.quarkus.runtime.metrics.MetricsFactory;
 import io.smallrye.common.annotation.Identifier;
 
+/**
+ * The runtime recorder for IronJacamar metrics
+ */
 @Recorder
 public class IronJacamarMetricsRecorder {
 
+    /**
+     * Constructor
+     */
+    public IronJacamarMetricsRecorder() {
+    }
+
+    /**
+     * Create a {@link MetricsFactory} consumer that registers IronJacamar pool metrics
+     *
+     * @param beanContainer The bean container
+     * @param resourceAdapterId The resource adapter id
+     * @return A {@link MetricsFactory} consumer
+     */
     public Consumer<MetricsFactory> registerPoolMetrics(BeanContainer beanContainer, String resourceAdapterId) {
         return metricsFactory -> {
             IronJacamarContainer container = beanContainer.beanInstance(IronJacamarContainer.class,

@@ -16,6 +16,9 @@ import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.smallrye.common.annotation.Identifier;
 
+/**
+ * Default implementation of {@link MessageEndpointFactory}.
+ */
 public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     private final Class<?> endpointClass;
@@ -23,6 +26,13 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     private final ResourceAdapterFactory resourceAdapterSupport;
     private Boolean transacted;
 
+    /**
+     * Constructor
+     *
+     * @param endpointClass The endpoint class
+     * @param identifier The identifier
+     * @param adapterFactory The resource adapter factory
+     */
     public DefaultMessageEndpointFactory(Class<?> endpointClass, String identifier, ResourceAdapterFactory adapterFactory) {
         this.endpointClass = endpointClass;
         this.identifier = identifier;

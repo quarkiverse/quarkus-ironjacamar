@@ -15,6 +15,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ResourceEndpoint {
     /**
+     * The activation spec config key.
+     *
      * @return The ActivationSpec config key
      */
     String activationSpecConfigKey() default Defaults.DEFAULT_ACTIVATION_SPEC_NAME;

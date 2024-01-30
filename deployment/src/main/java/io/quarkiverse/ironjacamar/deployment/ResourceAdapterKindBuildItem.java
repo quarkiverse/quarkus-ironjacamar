@@ -7,15 +7,35 @@ import io.quarkus.builder.item.MultiBuildItem;
  */
 public final class ResourceAdapterKindBuildItem extends MultiBuildItem {
 
-    public final String kind;
-    public final String resourceAdapterFactoryClassName;
+    private final String kind;
+    private final String resourceAdapterFactoryClassName;
 
+    /**
+     * Constructor
+     *
+     * @param kind the kind
+     * @param resourceAdapterFactoryClassName the resource adapter factory class name
+     */
     public ResourceAdapterKindBuildItem(String kind, String resourceAdapterFactoryClassName) {
         this.kind = kind;
         this.resourceAdapterFactoryClassName = resourceAdapterFactoryClassName;
     }
 
-    public String getKind() {
+    /**
+     * Get the kind
+     *
+     * @return the kind
+     */
+    public String kind() {
         return kind;
+    }
+
+    /**
+     * Get the resource adapter factory class name
+     *
+     * @return the resource adapter factory class name
+     */
+    public String resourceAdapterFactoryClassName() {
+        return resourceAdapterFactoryClassName;
     }
 }
