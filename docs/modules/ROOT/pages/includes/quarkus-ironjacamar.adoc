@@ -10,7 +10,7 @@ h|[[quarkus-ironjacamar_configuration]]link:#quarkus-ironjacamar_configuration[C
 h|Type
 h|Default
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.metrics.enabled]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.metrics.enabled[quarkus.ironjacamar.metrics.enabled]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus-ironjacamar-metrics-enabled]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-metrics-enabled[quarkus.ironjacamar.metrics.enabled]`
 
 
 [.description]
@@ -29,9 +29,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.kind]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar.ra.kind]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus-ironjacamar-ra-kind]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-kind[quarkus.ironjacamar.ra.kind]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.kind[quarkus.ironjacamar."resource-adapter-name".ra.kind]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-kind[quarkus.ironjacamar."resource-adapter-name".ra.kind]`
 
 
 [.description]
@@ -48,9 +48,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.enable-metrics]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.enable-metrics[quarkus.ironjacamar.ra.cm.pool.enable-metrics]`
+a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-enable-metrics]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-enable-metrics[quarkus.ironjacamar.ra.cm.pool.enable-metrics]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.enable-metrics[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-enable-metrics[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics]`
 
 
 [.description]
@@ -67,9 +67,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar.ra.config]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-config-config]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-config-config[quarkus.ironjacamar.ra.config]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.config-config[quarkus.ironjacamar."resource-adapter-name".ra.config]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-config-config[quarkus.ironjacamar."resource-adapter-name".ra.config]`
 
 
 [.description]
@@ -86,9 +86,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.transaction-support-level]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.transaction-support-level[quarkus.ironjacamar.ra.cm.transaction-support-level]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-transaction-support-level]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-transaction-support-level[quarkus.ironjacamar.ra.cm.transaction-support-level]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.transaction-support-level[quarkus.ironjacamar."resource-adapter-name".ra.cm.transaction-support-level]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-transaction-support-level[quarkus.ironjacamar."resource-adapter-name".ra.cm.transaction-support-level]`
 
 
 [.description]
@@ -108,9 +108,9 @@ endif::add-copy-button-to-env-var[]
 |`xa-transaction`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry[quarkus.ironjacamar.ra.cm.allocation-retry]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry[quarkus.ironjacamar.ra.cm.allocation-retry]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry[quarkus.ironjacamar."resource-adapter-name".ra.cm.allocation-retry]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry[quarkus.ironjacamar."resource-adapter-name".ra.cm.allocation-retry]`
 
 
 [.description]
@@ -127,9 +127,9 @@ endif::add-copy-button-to-env-var[]
 |`5`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry-wait]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry-wait[quarkus.ironjacamar.ra.cm.allocation-retry-wait]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry-wait]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry-wait[quarkus.ironjacamar.ra.cm.allocation-retry-wait]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.allocation-retry-wait[quarkus.ironjacamar."resource-adapter-name".ra.cm.allocation-retry-wait]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry-wait[quarkus.ironjacamar."resource-adapter-name".ra.cm.allocation-retry-wait]`
 
 
 [.description]
@@ -143,13 +143,13 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_ALLOCATION_RETRY_WAIT+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
 |`1S`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.xa-resource-timeout]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.xa-resource-timeout[quarkus.ironjacamar.ra.cm.xa-resource-timeout]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-xa-resource-timeout]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-xa-resource-timeout[quarkus.ironjacamar.ra.cm.xa-resource-timeout]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.xa-resource-timeout[quarkus.ironjacamar."resource-adapter-name".ra.cm.xa-resource-timeout]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-xa-resource-timeout[quarkus.ironjacamar."resource-adapter-name".ra.cm.xa-resource-timeout]`
 
 
 [.description]
@@ -163,13 +163,13 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_XA_RESOURCE_TIMEOUT+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
 |`120S`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.flush-strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.flush-strategy[quarkus.ironjacamar.ra.cm.flush-strategy]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-flush-strategy]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-flush-strategy[quarkus.ironjacamar.ra.cm.flush-strategy]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.flush-strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.flush-strategy]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-flush-strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.flush-strategy]`
 
 
 [.description]
@@ -187,9 +187,9 @@ endif::add-copy-button-to-env-var[]
 |`failing-connection-only`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.sharable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.sharable[quarkus.ironjacamar.ra.cm.sharable]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-sharable]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-sharable[quarkus.ironjacamar.ra.cm.sharable]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.sharable[quarkus.ironjacamar."resource-adapter-name".ra.cm.sharable]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-sharable[quarkus.ironjacamar."resource-adapter-name".ra.cm.sharable]`
 
 
 [.description]
@@ -206,9 +206,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.enlistment]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.enlistment[quarkus.ironjacamar.ra.cm.enlistment]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-enlistment]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-enlistment[quarkus.ironjacamar.ra.cm.enlistment]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.enlistment[quarkus.ironjacamar."resource-adapter-name".ra.cm.enlistment]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-enlistment[quarkus.ironjacamar."resource-adapter-name".ra.cm.enlistment]`
 
 
 [.description]
@@ -225,9 +225,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.connectable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.connectable[quarkus.ironjacamar.ra.cm.connectable]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-connectable]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-connectable[quarkus.ironjacamar.ra.cm.connectable]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.connectable[quarkus.ironjacamar."resource-adapter-name".ra.cm.connectable]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-connectable[quarkus.ironjacamar."resource-adapter-name".ra.cm.connectable]`
 
 
 [.description]
@@ -244,9 +244,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.tracking]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.tracking[quarkus.ironjacamar.ra.cm.tracking]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-tracking]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-tracking[quarkus.ironjacamar.ra.cm.tracking]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.tracking[quarkus.ironjacamar."resource-adapter-name".ra.cm.tracking]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-tracking[quarkus.ironjacamar."resource-adapter-name".ra.cm.tracking]`
 
 
 [.description]
@@ -263,9 +263,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.use-ccm]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.use-ccm[quarkus.ironjacamar.ra.cm.use-ccm]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-use-ccm]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-use-ccm[quarkus.ironjacamar.ra.cm.use-ccm]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.use-ccm[quarkus.ironjacamar."resource-adapter-name".ra.cm.use-ccm]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-use-ccm[quarkus.ironjacamar."resource-adapter-name".ra.cm.use-ccm]`
 
 
 [.description]
@@ -282,9 +282,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.interleaving]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.interleaving[quarkus.ironjacamar.ra.cm.interleaving]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-interleaving]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-interleaving[quarkus.ironjacamar.ra.cm.interleaving]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.interleaving[quarkus.ironjacamar."resource-adapter-name".ra.cm.interleaving]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-interleaving[quarkus.ironjacamar."resource-adapter-name".ra.cm.interleaving]`
 
 
 [.description]
@@ -301,9 +301,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.is-same-rm-override]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.is-same-rm-override[quarkus.ironjacamar.ra.cm.is-same-rm-override]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-is-same-rm-override]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-is-same-rm-override[quarkus.ironjacamar.ra.cm.is-same-rm-override]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.is-same-rm-override[quarkus.ironjacamar."resource-adapter-name".ra.cm.is-same-rm-override]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-is-same-rm-override[quarkus.ironjacamar."resource-adapter-name".ra.cm.is-same-rm-override]`
 
 
 [.description]
@@ -320,9 +320,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.wrap-xa-resource]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.wrap-xa-resource[quarkus.ironjacamar.ra.cm.wrap-xa-resource]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-wrap-xa-resource]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-wrap-xa-resource[quarkus.ironjacamar.ra.cm.wrap-xa-resource]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.wrap-xa-resource[quarkus.ironjacamar."resource-adapter-name".ra.cm.wrap-xa-resource]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-wrap-xa-resource[quarkus.ironjacamar."resource-adapter-name".ra.cm.wrap-xa-resource]`
 
 
 [.description]
@@ -339,9 +339,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pad-xid]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pad-xid[quarkus.ironjacamar.ra.cm.pad-xid]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pad-xid]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pad-xid[quarkus.ironjacamar.ra.cm.pad-xid]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pad-xid[quarkus.ironjacamar."resource-adapter-name".ra.cm.pad-xid]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pad-xid[quarkus.ironjacamar."resource-adapter-name".ra.cm.pad-xid]`
 
 
 [.description]
@@ -358,9 +358,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.username]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.username[quarkus.ironjacamar.ra.cm.recovery.username]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-username]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-username[quarkus.ironjacamar.ra.cm.recovery.username]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.username[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.username]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-username[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.username]`
 
 
 [.description]
@@ -377,9 +377,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.password]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.password[quarkus.ironjacamar.ra.cm.recovery.password]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-password]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-password[quarkus.ironjacamar.ra.cm.recovery.password]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.password[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.password]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-password[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.password]`
 
 
 [.description]
@@ -396,9 +396,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.security-domain]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.security-domain[quarkus.ironjacamar.ra.cm.recovery.security-domain]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-security-domain]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-security-domain[quarkus.ironjacamar.ra.cm.recovery.security-domain]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.recovery.security-domain[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.security-domain]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-recovery-security-domain[quarkus.ironjacamar."resource-adapter-name".ra.cm.recovery.security-domain]`
 
 
 [.description]
@@ -415,9 +415,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar.ra.cm.pool.strategy]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-strategy]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-strategy[quarkus.ironjacamar.ra.cm.pool.strategy]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.strategy]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-strategy[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.strategy]`
 
 
 [.description]
@@ -435,9 +435,9 @@ endif::add-copy-button-to-env-var[]
 |`pool-by-cri`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.min-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.min-size[quarkus.ironjacamar.ra.cm.pool.config.min-size]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-min-size]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-min-size[quarkus.ironjacamar.ra.cm.pool.config.min-size]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.min-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.min-size]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-min-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.min-size]`
 
 
 [.description]
@@ -454,9 +454,9 @@ endif::add-copy-button-to-env-var[]
 |`0`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.initial-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.initial-size[quarkus.ironjacamar.ra.cm.pool.config.initial-size]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-initial-size]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-initial-size[quarkus.ironjacamar.ra.cm.pool.config.initial-size]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.initial-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.initial-size]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-initial-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.initial-size]`
 
 
 [.description]
@@ -473,9 +473,9 @@ endif::add-copy-button-to-env-var[]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.max-size]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.max-size[quarkus.ironjacamar.ra.cm.pool.config.max-size]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-max-size]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-max-size[quarkus.ironjacamar.ra.cm.pool.config.max-size]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.max-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.max-size]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-max-size[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.max-size]`
 
 
 [.description]
@@ -492,9 +492,9 @@ endif::add-copy-button-to-env-var[]
 |`20`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout[quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-blocking-timeout]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-blocking-timeout[quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.blocking-timeout[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.blocking-timeout]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-blocking-timeout[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.blocking-timeout]`
 
 
 [.description]
@@ -508,13 +508,13 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BLOCKING_TIMEOUT+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
 |`30000MS`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes[quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-idle-timeout-minutes]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-idle-timeout-minutes[quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.idle-timeout-minutes]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-idle-timeout-minutes[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.idle-timeout-minutes]`
 
 
 [.description]
@@ -528,13 +528,13 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_IDLE_TIMEOUT_MINUTES+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
 |`30M`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.validate-on-match]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.validate-on-match[quarkus.ironjacamar.ra.cm.pool.config.validate-on-match]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-validate-on-match]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-validate-on-match[quarkus.ironjacamar.ra.cm.pool.config.validate-on-match]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.validate-on-match[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.validate-on-match]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-validate-on-match[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.validate-on-match]`
 
 
 [.description]
@@ -551,9 +551,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation[quarkus.ironjacamar.ra.cm.pool.config.background-validation]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-background-validation]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-background-validation[quarkus.ironjacamar.ra.cm.pool.config.background-validation]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.background-validation]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-background-validation[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.background-validation]`
 
 
 [.description]
@@ -570,9 +570,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis[quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-background-validation-millis]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-background-validation-millis[quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.background-validation-millis]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-background-validation-millis[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.background-validation-millis]`
 
 
 [.description]
@@ -586,13 +586,13 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BACKGROUND_VALIDATION_MILLIS+++`
 endif::add-copy-button-to-env-var[]
 --|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[], title=More information about the Duration format]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
 |
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.prefill]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.prefill[quarkus.ironjacamar.ra.cm.pool.config.prefill]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-prefill]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-prefill[quarkus.ironjacamar.ra.cm.pool.config.prefill]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.prefill[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.prefill]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-prefill[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.prefill]`
 
 
 [.description]
@@ -609,9 +609,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.strict-min]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.strict-min[quarkus.ironjacamar.ra.cm.pool.config.strict-min]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-strict-min]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-strict-min[quarkus.ironjacamar.ra.cm.pool.config.strict-min]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.strict-min[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.strict-min]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-strict-min[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.strict-min]`
 
 
 [.description]
@@ -628,9 +628,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail[quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-use-fast-fail]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-use-fast-fail[quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.use-fast-fail[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.use-fast-fail]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-use-fast-fail[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.use-fast-fail]`
 
 
 [.description]
@@ -647,9 +647,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.fair]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.fair[quarkus.ironjacamar.ra.cm.pool.config.fair]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-fair]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-fair[quarkus.ironjacamar.ra.cm.pool.config.fair]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.config.fair[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.fair]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-fair[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.config.fair]`
 
 
 [.description]
@@ -666,9 +666,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.sharable]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.sharable[quarkus.ironjacamar.ra.cm.pool.sharable]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-sharable]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-sharable[quarkus.ironjacamar.ra.cm.pool.sharable]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.sharable[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.sharable]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-sharable[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.sharable]`
 
 
 [.description]
@@ -685,9 +685,9 @@ endif::add-copy-button-to-env-var[]
 |`true`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool[quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-no-tx-separate-pool]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-no-tx-separate-pool[quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.ra.cm.pool.no-tx-separate-pool[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.no-tx-separate-pool]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-no-tx-separate-pool[quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.no-tx-separate-pool]`
 
 
 [.description]
@@ -704,9 +704,9 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
-a| [[quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config]]`link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec.config]`
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-config-config]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-config-config[quarkus.ironjacamar.activation-spec.config]`
 
-`link:#quarkus-ironjacamar_quarkus.ironjacamar.activation-spec.config-config[quarkus.ironjacamar.activation-spec."activation-spec-name".config]`
+`link:#quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-config-config[quarkus.ironjacamar.activation-spec."activation-spec-name".config]`
 
 
 [.description]
@@ -729,7 +729,7 @@ ifndef::no-duration-note[]
 .About the Duration format
 ====
 To write duration values, use the standard `java.time.Duration` format.
-See the link:https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)[Duration#parse() javadoc] for more information.
+See the link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html#parse(java.lang.CharSequence)[Duration#parse() Java API documentation] for more information.
 
 You can also use a simplified format, starting with a number:
 
