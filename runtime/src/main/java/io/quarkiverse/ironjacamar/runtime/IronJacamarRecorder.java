@@ -31,6 +31,7 @@ import io.quarkus.runtime.annotations.Recorder;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 
 /**
@@ -169,7 +170,7 @@ public class IronJacamarRecorder {
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)
-                .setWorker(true));
+                .setThreadingModel(ThreadingModel.WORKER));
         return new RuntimeValue<>(future);
     }
 
