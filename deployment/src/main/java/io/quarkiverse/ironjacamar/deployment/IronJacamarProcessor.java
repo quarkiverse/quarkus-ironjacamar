@@ -212,10 +212,6 @@ class IronJacamarProcessor {
             if (raKind == null) {
                 continue;
             }
-            ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName());
-            Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
-                    .asClassArray();
-
             AnnotationInstance qualifier = AnnotationInstance.builder(Identifier.class).add("value", key).build();
 
             // Register the IronJacamarContainer as a Synthetic bean
@@ -234,19 +230,26 @@ class IronJacamarProcessor {
             }
             producer.produce(configurator.done());
 
-            // Connection Factory bean
-            SyntheticBeanBuildItem.ExtendedBeanConfigurator cfConfigurator = SyntheticBeanBuildItem.configure(Object.class)
-                    .scope(BuiltinScope.SINGLETON.getInfo())
-                    .setRuntimeInit()
-                    .addQualifier(qualifier)
-                    .types(connectionFactoryProvides)
-                    .addInjectionPoint(containerType, qualifier)
-                    .unremovable()
-                    .createWith(recorder.createConnectionFactory(key));
-            if (single) {
-                cfConfigurator.addQualifier(DEFAULT_QUALIFIER);
+            ClassInfo raf = index.getClassByName(raKind.resourceAdapterFactoryClassName());
+            if (raf.hasAnnotation(ResourceAdapterTypes.class)) {
+                Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
+                        .asClassArray();
+                // Connection Factory bean
+                SyntheticBeanBuildItem.ExtendedBeanConfigurator cfConfigurator = SyntheticBeanBuildItem.configure(Object.class)
+                        .scope(BuiltinScope.SINGLETON.getInfo())
+                        .setRuntimeInit()
+                        .addQualifier(qualifier)
+                        .types(connectionFactoryProvides)
+                        .addInjectionPoint(containerType, qualifier)
+                        .unremovable()
+                        .createWith(recorder.createConnectionFactory(key));
+                if (single) {
+                    cfConfigurator.addQualifier(DEFAULT_QUALIFIER);
+                }
+                producer.produce(cfConfigurator.done());
+            } else {
+                QuarkusIronJacamarLogger.log.resourceAdapterTypesNotDefined(raf.name().toString());
             }
-            producer.produce(cfConfigurator.done());
             createdProducer.produce(new ContainerCreatedBuildItem(key));
         }
     }
