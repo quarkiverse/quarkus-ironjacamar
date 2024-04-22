@@ -1,7 +1,6 @@
 package io.quarkiverse.ironjacamar.runtime;
 
-import static org.jboss.logging.Logger.Level.INFO;
-import static org.jboss.logging.Logger.Level.WARN;
+import static org.jboss.logging.Logger.Level.*;
 
 import java.util.Set;
 
@@ -131,4 +130,13 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
      */
     @Message(id = 11, value = "Cannot activate endpoint")
     DeploymentException cannotActivateEndpoint(@Cause Exception cause);
+
+    /**
+     * Logs a message indicating that the resource adapter factory types are not defined.
+     *
+     * @param type the resource adapter factory type
+     */
+    @LogMessage(level = DEBUG)
+    @Message(id = 12, value = "The @ResourceAdapterTypes annotation was not found in %s. Injection of ConnectionFactories for this ResourceAdapter will not work")
+    void resourceAdapterTypesNotDefined(String type);
 }
