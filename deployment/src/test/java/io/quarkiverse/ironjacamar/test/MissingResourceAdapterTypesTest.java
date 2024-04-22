@@ -32,7 +32,7 @@ public class MissingResourceAdapterTypesTest {
                             TestResourceAdapter.class,
                             TestManagedConnectionFactory.class,
                             TestActivationSpec.class))
-            .withConfigurationResource("application.properties")
+            .overrideConfigKey("quarkus.ironjacamar.ra.kind", "test")
             .setLogRecordPredicate(record -> record.getLevel().intValue() >= Level.FINER.intValue()
                     && record.getMessage().contains("QIJ000012"))
             .assertLogRecords(records -> {

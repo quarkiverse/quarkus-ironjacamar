@@ -14,12 +14,12 @@ import jakarta.resource.spi.ManagedConnectionFactory;
 public class TestManagedConnectionFactory implements ManagedConnectionFactory {
     @Override
     public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
-        return null;
+        return new TestConnectionFactory();
     }
 
     @Override
     public Object createConnectionFactory() throws ResourceException {
-        return null;
+        return new TestConnectionFactory();
     }
 
     @Override
