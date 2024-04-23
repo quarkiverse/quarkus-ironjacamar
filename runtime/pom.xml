@@ -50,6 +50,10 @@
           <groupId>org.picketbox</groupId>
           <artifactId>picketbox</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.jboss.ironjacamar</groupId>
+          <artifactId>ironjacamar-common-spi</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
