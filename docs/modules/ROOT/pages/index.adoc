@@ -190,9 +190,11 @@ public class JcaResource {
 }
 ----
 
-Some adapter implementations may require additional configuration to enable transaction support. Check the adapter documentation for more details.
+Some adapter implementations may require additional configuration to enable transaction support.
+Check the adapter documentation for more details.
 
-NOTE:: if running in a XA transaction, it is recommended to enable recovery by using `quarkus.transaction-manager.enable-recovery=true`. Check the guide on link:https://quarkus.io/guides/transaction[Using Transactions in Quarkus] for more details.
+NOTE:: if running in a XA transaction, it is recommended to enable recovery by using `quarkus.transaction-manager.enable-recovery=true`.
+Check the guide on link:https://quarkus.io/guides/transaction[Using Transactions in Quarkus] for more details.
 
 == Metrics
 
@@ -202,7 +204,27 @@ This can be activated by setting the `quarkus.ironjacamar.metrics.enabled` prope
 
 Alternatively, you can disable the pool metrics for a specific resource adapter by setting the `quarkus.ironjacamar."resource-adapter-name".ra.cm.pool.enable-metrics` property to `false`.
 
+== Listening to lifecycle events
 
+You can listen to lifecycle events of the `ResourceAdapter` instances by having an `@ApplicationScoped` bean implementing the `ResourceAdapterLifecycleListener` interface.
+Here is an example:
+
+[source,java,subs=attributes+]
+----
+@ApplicationScoped
+public class WaitUntilServiceIsReady implements ResourceAdapterLifecycleListener {
+
+    @Override
+    public void preStartup(String id, ResourceAdapter resourceAdapter) {
+        // Using the org.awaitility.Awaitility library
+        await().atMost(10, SECONDS).until(() -> {
+            // Check if a dependent service is ready
+            return true;
+        });
+    }
+
+}
+----
 
 [[extension-configuration-reference]]
 == Extension Configuration Reference

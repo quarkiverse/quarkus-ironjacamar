@@ -1,5 +1,6 @@
 package io.quarkiverse.ironjacamar.deployment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
+import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -50,6 +52,7 @@ import io.quarkus.deployment.annotations.Consume;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.ApplicationIndexBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
@@ -145,6 +148,19 @@ class IronJacamarProcessor {
         // Register message endpoints as @ApplicationScoped beans
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(endpoints)
+                .setDefaultScope(DotNames.APPLICATION_SCOPED)
+                .setUnremovable()
+                .build());
+
+        // Register listeners as @ApplicationScoped beans
+        List<String> listeners = index.getAllKnownImplementors(ResourceAdapterLifecycleListener.class)
+                .stream()
+                .map(ClassInfo::name)
+                .map(DotName::toString)
+                .toList();
+
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClasses(listeners)
                 .setDefaultScope(DotNames.APPLICATION_SCOPED)
                 .setUnremovable()
                 .build());
@@ -265,17 +281,29 @@ class IronJacamarProcessor {
     @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
     void startResourceAdapters(
+            ApplicationIndexBuildItem applicationIndex,
             List<ContainerCreatedBuildItem> containers,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BeanContainerBuildItem beanContainerBuildItem,
             BuildProducer<ContainerStartedBuildItem> startedProducer) {
+        Collection<ClassInfo> allKnownImplementors = applicationIndex.getIndex()
+                .getAllKnownImplementors(ResourceAdapterLifecycleListener.class);
+        List<Class<ResourceAdapterLifecycleListener>> listeners = new ArrayList<>(allKnownImplementors.size());
+        for (ClassInfo type : allKnownImplementors) {
+            try {
+                listeners.add((Class<ResourceAdapterLifecycleListener>) Class.forName(type.name().toString(), true,
+                        Thread.currentThread().getContextClassLoader()));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
             RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
                     container.identifier,
-                    vertxBuildItem.getVertx());
+                    vertxBuildItem.getVertx(), listeners);
             startedProducer.produce(new ContainerStartedBuildItem(container.identifier, futureRuntimeValue));
         }
     }
