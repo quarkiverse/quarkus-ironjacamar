@@ -5,6 +5,8 @@ import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_WORK_MANAGER_NAME;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -163,11 +165,21 @@ public class IronJacamarRecorder {
             BeanContainer beanContainer,
             String key,
             Supplier<Vertx> vertxSupplier,
-            List<Class<ResourceAdapterLifecycleListener>> listenerClasses) {
+            Set<String> listenerClasses) {
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
         List<ResourceAdapterLifecycleListener> listeners = listenerClasses.stream()
+                .map(type -> {
+                    try {
+                        return (Class<ResourceAdapterLifecycleListener>) Class.forName(type, true,
+                                Thread.currentThread().getContextClassLoader());
+                    } catch (ClassNotFoundException e) {
+                        QuarkusIronJacamarLogger.log.debugf(e, "Cannot load listener class: %s", type);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .map(x -> beanContainer.beanInstance(x))
                 .toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
