@@ -151,7 +151,7 @@ class IronJacamarProcessor {
                 .setUnremovable()
                 .build());
 
-        // Register listeners as @ApplicationScoped beans
+        // Make listeners unremovable
         List<String> listeners = index.getAllKnownImplementors(ResourceAdapterLifecycleListener.class)
                 .stream()
                 .map(ClassInfo::name)
@@ -160,7 +160,6 @@ class IronJacamarProcessor {
 
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(listeners)
-                .setDefaultScope(DotNames.APPLICATION_SCOPED)
                 .setUnremovable()
                 .build());
 
