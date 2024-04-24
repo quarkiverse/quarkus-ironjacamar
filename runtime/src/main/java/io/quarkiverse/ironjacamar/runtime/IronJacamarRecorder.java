@@ -5,8 +5,6 @@ import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_WORK_MANAGER_NAME;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,6 +25,7 @@ import org.jboss.jca.core.workmanager.WorkManagerImpl;
 
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
+import io.quarkus.arc.Arc;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
@@ -164,24 +163,12 @@ public class IronJacamarRecorder {
     public RuntimeValue<Future<String>> initResourceAdapter(
             BeanContainer beanContainer,
             String key,
-            Supplier<Vertx> vertxSupplier,
-            Set<String> listenerClasses) {
+            Supplier<Vertx> vertxSupplier) {
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
-        List<ResourceAdapterLifecycleListener> listeners = listenerClasses.stream()
-                .map(type -> {
-                    try {
-                        return (Class<ResourceAdapterLifecycleListener>) Class.forName(type, true,
-                                Thread.currentThread().getContextClassLoader());
-                    } catch (ClassNotFoundException e) {
-                        QuarkusIronJacamarLogger.log.debugf(e, "Cannot load listener class: %s", type);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .map(x -> beanContainer.beanInstance(x))
-                .toList();
+        List<ResourceAdapterLifecycleListener> listeners = Arc.container().select(ResourceAdapterLifecycleListener.class)
+                .stream().toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)

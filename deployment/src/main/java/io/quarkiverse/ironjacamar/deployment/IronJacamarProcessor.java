@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -287,15 +286,12 @@ class IronJacamarProcessor {
             CoreVertxBuildItem vertxBuildItem,
             BeanContainerBuildItem beanContainerBuildItem,
             BuildProducer<ContainerStartedBuildItem> startedProducer) {
-        Set<String> allListeners = applicationIndex.getIndex()
-                .getAllKnownImplementors(ResourceAdapterLifecycleListener.class)
-                .stream().map(c -> c.name().toString()).collect(Collectors.toUnmodifiableSet());
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
             RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
                     container.identifier,
-                    vertxBuildItem.getVertx(), allListeners);
+                    vertxBuildItem.getVertx());
             startedProducer.produce(new ContainerStartedBuildItem(container.identifier, futureRuntimeValue));
         }
     }
