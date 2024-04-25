@@ -51,7 +51,6 @@ import io.quarkus.deployment.annotations.Consume;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
-import io.quarkus.deployment.builditem.ApplicationIndexBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
@@ -279,7 +278,6 @@ class IronJacamarProcessor {
     @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
     void startResourceAdapters(
-            ApplicationIndexBuildItem applicationIndex,
             List<ContainerCreatedBuildItem> containers,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
