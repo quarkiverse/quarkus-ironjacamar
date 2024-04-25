@@ -136,7 +136,7 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
      *
      * @param type the resource adapter factory type
      */
-    @LogMessage(level = DEBUG)
+    @LogMessage(level = WARN)
     @Message(id = 12, value = "The @ResourceAdapterTypes annotation was not found in %s. Injection of ConnectionFactories for this ResourceAdapter will not work")
     void resourceAdapterTypesNotDefined(String type);
 }

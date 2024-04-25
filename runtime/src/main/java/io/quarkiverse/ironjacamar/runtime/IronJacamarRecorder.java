@@ -3,6 +3,7 @@ package io.quarkiverse.ironjacamar.runtime;
 import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_BOOTSTRAP_CONTEXT_NAME;
 import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_WORK_MANAGER_NAME;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -22,7 +23,9 @@ import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.workmanager.WorkManagerCoordinator;
 import org.jboss.jca.core.workmanager.WorkManagerImpl;
 
+import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
+import io.quarkus.arc.Arc;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
@@ -164,9 +167,9 @@ public class IronJacamarRecorder {
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
-        IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer.getResourceAdapterFactory().getDescription(),
-                ijContainer.getResourceAdapter(),
-                bootstrapContext);
+        List<ResourceAdapterLifecycleListener> listeners = Arc.container().select(ResourceAdapterLifecycleListener.class)
+                .stream().toList();
+        IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)

@@ -35,6 +35,7 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
+import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -50,6 +51,7 @@ import io.quarkus.deployment.annotations.Consume;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.ApplicationIndexBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
@@ -146,6 +148,18 @@ class IronJacamarProcessor {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(endpoints)
                 .setDefaultScope(DotNames.APPLICATION_SCOPED)
+                .setUnremovable()
+                .build());
+
+        // Make listeners unremovable
+        List<String> listeners = index.getAllKnownImplementors(ResourceAdapterLifecycleListener.class)
+                .stream()
+                .map(ClassInfo::name)
+                .map(DotName::toString)
+                .toList();
+
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClasses(listeners)
                 .setUnremovable()
                 .build());
 
@@ -265,6 +279,7 @@ class IronJacamarProcessor {
     @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
     void startResourceAdapters(
+            ApplicationIndexBuildItem applicationIndex,
             List<ContainerCreatedBuildItem> containers,
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
