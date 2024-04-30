@@ -32,6 +32,7 @@ import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
@@ -282,13 +283,15 @@ class IronJacamarProcessor {
             IronJacamarRecorder recorder,
             CoreVertxBuildItem vertxBuildItem,
             BeanContainerBuildItem beanContainerBuildItem,
-            BuildProducer<ContainerStartedBuildItem> startedProducer) {
+            BuildProducer<ContainerStartedBuildItem> startedProducer,
+            IronJacamarRuntimeConfig runtimeConfig) {
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
             RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
                     container.identifier,
-                    vertxBuildItem.getVertx());
+                    vertxBuildItem.getVertx(),
+                    runtimeConfig);
             startedProducer.produce(new ContainerStartedBuildItem(container.identifier, futureRuntimeValue));
         }
     }

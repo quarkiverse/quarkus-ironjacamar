@@ -31,6 +31,16 @@ import io.smallrye.config.WithUnnamedKey;
 public interface IronJacamarRuntimeConfig {
 
     /**
+     * The maximum amount of time the worker thread can be blocked.
+     * If not specified it assumes the same value as defined by the <code>quarkus.vertx.max-worker-execute-time</code>
+     * configuration.
+     *
+     * @return the maximum amount of time the worker thread can be blocked
+     */
+    @WithDefault("${quarkus.vertx.max-worker-execute-time:60}")
+    Duration maxWorkerExecuteTime();
+
+    /**
      * Resource Adapters
      *
      * @return the resource adapters
