@@ -29,6 +29,24 @@ endif::add-copy-button-to-env-var[]
 |`false`
 
 
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-max-worker-execute-time]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-max-worker-execute-time[quarkus.ironjacamar.max-worker-execute-time]`
+
+
+[.description]
+--
+The maximum amount of time the worker thread can be blocked. If not specified it assumes the same value as defined by the `quarkus.vertx.max-worker-execute-time` configuration.
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_MAX_WORKER_EXECUTE_TIME+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_MAX_WORKER_EXECUTE_TIME+++`
+endif::add-copy-button-to-env-var[]
+--|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
+  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
+|`${QUARKUS.VERTX.MAX-WORKER-EXECUTE-TIME:60}`
+
+
 a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus-ironjacamar-ra-kind]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-kind[quarkus.ironjacamar.ra.kind]`
 
 `link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-kind[quarkus.ironjacamar."resource-adapter-name".ra.kind]`

@@ -3,8 +3,10 @@ package io.quarkiverse.ironjacamar.runtime;
 import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_BOOTSTRAP_CONTEXT_NAME;
 import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_WORK_MANAGER_NAME;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -163,17 +165,21 @@ public class IronJacamarRecorder {
     public RuntimeValue<Future<String>> initResourceAdapter(
             BeanContainer beanContainer,
             String key,
-            Supplier<Vertx> vertxSupplier) {
+            Supplier<Vertx> vertxSupplier,
+            IronJacamarRuntimeConfig config) {
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
         List<ResourceAdapterLifecycleListener> listeners = Arc.container().select(ResourceAdapterLifecycleListener.class)
                 .stream().toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
+        Duration maxWorkerExecuteTime = config.maxWorkerExecuteTime();
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)
-                .setThreadingModel(ThreadingModel.WORKER));
+                .setThreadingModel(ThreadingModel.WORKER)
+                .setMaxWorkerExecuteTime(maxWorkerExecuteTime.toMillis())
+                .setMaxWorkerExecuteTimeUnit(TimeUnit.MILLISECONDS));
         return new RuntimeValue<>(future);
     }
 
