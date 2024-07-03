@@ -24,21 +24,10 @@
   </scm>
   <properties>
     <quarkus.version>3.8.4</quarkus.version>
-    <jboss-logging-annotations.version>3.0.0.Final</jboss-logging-annotations.version>
     <ironjacamar.version>3.0.9.Final</ironjacamar.version>
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-processor</artifactId>
-        <version>${jboss-logging-annotations.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-annotations</artifactId>
-        <version>${jboss-logging-annotations.version}</version>
-     </dependency>
       <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-bom</artifactId>
