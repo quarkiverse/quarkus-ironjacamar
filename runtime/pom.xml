@@ -87,17 +87,14 @@
             <path>
               <groupId>org.jboss.logging</groupId>
               <artifactId>jboss-logging</artifactId>
-              <version>3.6.0.Final</version>
             </path>
             <path>
               <groupId>org.jboss.logging</groupId>
               <artifactId>jboss-logging-processor</artifactId>
-              <version>3.0.0.Final</version>
             </path>
             <path>
               <groupId>org.jboss.logging</groupId>
               <artifactId>jboss-logging-annotations</artifactId>
-              <version>3.0.0.Final</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

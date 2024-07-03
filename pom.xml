@@ -24,6 +24,7 @@
   </scm>
   <properties>
     <quarkus.version>3.8.4</quarkus.version>
+    <jboss-logging-annotations.version>3.0.0.Final</jboss-logging-annotations.version>
     <ironjacamar.version>3.0.9.Final</ironjacamar.version>
   </properties>
   <dependencyManagement>
@@ -31,12 +32,12 @@
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-processor</artifactId>
-        <version>3.0.0.Final</version>
+        <version>${jboss-logging-annotations.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-annotations</artifactId>
-        <version>3.0.0.Final</version>
+        <version>${jboss-logging-annotations.version}</version>
      </dependency>
       <dependency>
         <groupId>io.quarkus</groupId>
