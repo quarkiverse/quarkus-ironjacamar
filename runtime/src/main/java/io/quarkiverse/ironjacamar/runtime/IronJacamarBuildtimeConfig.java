@@ -19,7 +19,7 @@ import io.smallrye.config.WithUnnamedKey;
  * The IronJacamar build time configuration.
  */
 @ConfigMapping(prefix = "quarkus.ironjacamar")
-@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
+@ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
 public interface IronJacamarBuildtimeConfig {
 
     /**
