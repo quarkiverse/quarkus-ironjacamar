@@ -139,4 +139,19 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     @LogMessage(level = WARN)
     @Message(id = 12, value = "The @ResourceAdapterTypes annotation was not found in %s. Injection of ConnectionFactories for this ResourceAdapter will not work")
     void resourceAdapterTypesNotDefined(String type);
+
+    /**
+     * Logs a message indicating that the connection validator service is starting.
+     */
+    @LogMessage(level = INFO)
+    @Message(id = 13, value = "Starting Connection Validator service")
+    void startConnectionValidatorService();
+
+    /**
+     * Logs a message indicating that the connection validator service is stopping.
+     */
+    @LogMessage(level = INFO)
+    @Message(id = 14, value = "Stopping Connection Validator service")
+    void stopConnectionValidatorService();
+
 }
