@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import jakarta.resource.spi.TransactionSupport;
 
@@ -332,8 +333,8 @@ public interface IronJacamarRuntimeConfig {
                  *
                  * @return the idle timeout period (default is 30 mins)
                  */
-                @WithDefault("30m")
-                Duration idleTimeoutMinutes();
+                @WithDefault("30")
+                int idleTimeoutMinutes();
 
                 /**
                  * Validate on match validation
@@ -356,7 +357,7 @@ public interface IronJacamarRuntimeConfig {
                  *
                  * @return the background validation period
                  */
-                Optional<Duration> backgroundValidationMillis();
+                OptionalLong backgroundValidationMillis();
 
                 /**
                  * Prefill pool
@@ -402,10 +403,10 @@ public interface IronJacamarRuntimeConfig {
                     initialSize().ifPresent(poolConfiguration::setInitialSize);
                     poolConfiguration.setMaxSize(maxSize());
                     poolConfiguration.setBlockingTimeout(blockingTimeout().toMillis());
-                    poolConfiguration.setIdleTimeoutMinutes(idleTimeoutMinutes().toMinutesPart());
+                    poolConfiguration.setIdleTimeoutMinutes(idleTimeoutMinutes());
                     poolConfiguration.setValidateOnMatch(validateOnMatch());
                     poolConfiguration.setBackgroundValidation(backgroundValidation());
-                    backgroundValidationMillis().ifPresent(d -> poolConfiguration.setBackgroundValidationMillis(d.toMillis()));
+                    backgroundValidationMillis().ifPresent(poolConfiguration::setBackgroundValidationMillis);
                     poolConfiguration.setPrefill(prefill());
                     poolConfiguration.setStrictMin(strictMin());
                     poolConfiguration.setUseFastFail(useFastFail());
