@@ -23,15 +23,20 @@ public class ConnectionValidatorManager {
     @Inject
     IronJacamarRuntimeConfig runtimeConfig;
 
-    private static boolean shouldStartConnectionValidator;
+    private static Boolean shouldStartConnectionValidator;
 
     @PostConstruct
     void postConstruct() {
-        for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : runtimeConfig.resourceAdapters().values()) {
-            if (value.ra().cm().pool().config().backgroundValidation()) {
-                shouldStartConnectionValidator = true;
-                break;
+        if (shouldStartConnectionValidator == null) {
+            for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : runtimeConfig.resourceAdapters().values()) {
+                if (value.ra().cm().pool().config().backgroundValidation()) {
+                    shouldStartConnectionValidator = Boolean.TRUE;
+                    break;
+                }
             }
+        }
+        if (shouldStartConnectionValidator == null) {
+            shouldStartConnectionValidator = Boolean.FALSE;
         }
     }
 
