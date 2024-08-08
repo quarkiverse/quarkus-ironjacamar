@@ -545,9 +545,8 @@ endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_IDLE_TIMEOUT_MINUTES+++`
 endif::add-copy-button-to-env-var[]
---|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
-|`30M`
+--|int 
+|`30`
 
 
 a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-validate-on-match]]`link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-validate-on-match[quarkus.ironjacamar.ra.cm.pool.config.validate-on-match]`
@@ -603,8 +602,7 @@ endif::add-copy-button-to-env-var[]
 ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_CONFIG_BACKGROUND_VALIDATION_MILLIS+++`
 endif::add-copy-button-to-env-var[]
---|link:https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html[Duration]
-  link:#duration-note-anchor-{summaryTableId}[icon:question-circle[title=More information about the Duration format]]
+--|long 
 |
 
 
