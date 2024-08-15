@@ -30,6 +30,7 @@ import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
 import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
 import io.quarkiverse.ironjacamar.runtime.ConnectionValidatorManager;
+import io.quarkiverse.ironjacamar.runtime.IdleRemoverManager;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
@@ -85,6 +86,7 @@ class IronJacamarProcessor {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(
                         ConnectionValidatorManager.class,
+                        IdleRemoverManager.class,
                         ConnectionManagerFactory.class,
                         IronJacamarSupport.class)
                 .build());
