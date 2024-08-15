@@ -250,19 +250,22 @@ class IronJacamarProcessor {
             if (raf.hasAnnotation(ResourceAdapterTypes.class)) {
                 Type[] connectionFactoryProvides = raf.annotation(ResourceAdapterTypes.class).value("connectionFactoryTypes")
                         .asClassArray();
-                // Connection Factory bean
-                SyntheticBeanBuildItem.ExtendedBeanConfigurator cfConfigurator = SyntheticBeanBuildItem.configure(Object.class)
-                        .scope(BuiltinScope.SINGLETON.getInfo())
-                        .setRuntimeInit()
-                        .addQualifier(qualifier)
-                        .types(connectionFactoryProvides)
-                        .addInjectionPoint(containerType, qualifier)
-                        .unremovable()
-                        .createWith(recorder.createConnectionFactory(key));
-                if (single) {
-                    cfConfigurator.addQualifier(DEFAULT_QUALIFIER);
+                for (Type type : connectionFactoryProvides) {
+                    // Register the connection factory as a Synthetic bean
+                    SyntheticBeanBuildItem.ExtendedBeanConfigurator cfConfigurator = SyntheticBeanBuildItem
+                            .configure(type.name())
+                            .scope(BuiltinScope.DEPENDENT.getInfo())
+                            .setRuntimeInit()
+                            .addQualifier(qualifier)
+                            .types(type)
+                            .addInjectionPoint(containerType, qualifier)
+                            .unremovable()
+                            .createWith(recorder.createConnectionFactory(key));
+                    if (single) {
+                        cfConfigurator.addQualifier(DEFAULT_QUALIFIER);
+                    }
+                    producer.produce(cfConfigurator.done());
                 }
-                producer.produce(cfConfigurator.done());
             } else {
                 QuarkusIronJacamarLogger.log.resourceAdapterTypesNotDefined(raf.name().toString());
             }
