@@ -14,8 +14,8 @@ public @interface ResourceAdapterTypes {
     /**
      * What types are provided by the ConnectionFactory returned by mcf.createConnectionFactory(cm).
      *
-     * @return the types provided by the ConnectionFactory
+     * @return the types provided by the ConnectionFactory, never empty
      */
-    Class<?>[] connectionFactoryTypes() default {};
+    Class<?>[] connectionFactoryTypes();
 
 }
