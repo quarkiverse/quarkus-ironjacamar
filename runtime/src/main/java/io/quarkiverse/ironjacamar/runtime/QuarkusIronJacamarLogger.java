@@ -154,4 +154,18 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     @Message(id = 14, value = "Stopping Connection Validator service")
     void stopConnectionValidatorService();
 
+    /**
+     * Logs a message indicating that the connection validator service is starting.
+     */
+    @LogMessage(level = INFO)
+    @Message(id = 15, value = "Starting Idle Remover service")
+    void startIdleRemoverService();
+
+    /**
+     * Logs a message indicating that the connection validator service is stopping.
+     */
+    @LogMessage(level = INFO)
+    @Message(id = 16, value = "Stopping Idle Remover service")
+    void stopIdleRemoverService();
+
 }
