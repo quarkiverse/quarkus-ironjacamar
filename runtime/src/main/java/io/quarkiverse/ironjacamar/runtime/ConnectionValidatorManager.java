@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.jca.core.connectionmanager.pool.validator.ConnectionValidator;
 
+import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig.ConnectionManagerConfig.PoolConfig.PoolConfigurationConfig;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 
@@ -29,7 +30,8 @@ public class ConnectionValidatorManager {
     void postConstruct() {
         if (shouldStartConnectionValidator == null) {
             for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : runtimeConfig.resourceAdapters().values()) {
-                if (value.ra().cm().pool().config().backgroundValidation()) {
+                PoolConfigurationConfig config = value.ra().cm().pool().config();
+                if (config.backgroundValidation() && config.backgroundValidationMillis().isPresent()) {
                     shouldStartConnectionValidator = Boolean.TRUE;
                     break;
                 }
