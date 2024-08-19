@@ -31,7 +31,7 @@ public class ConnectionValidatorManager {
         if (shouldStartConnectionValidator == null) {
             for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : runtimeConfig.resourceAdapters().values()) {
                 PoolConfigurationConfig config = value.ra().cm().pool().config();
-                if (config.backgroundValidation() && config.backgroundValidationMillis().isPresent()) {
+                if (config.backgroundValidation() && config.backgroundValidationMillis().orElse(0L) > 0) {
                     shouldStartConnectionValidator = Boolean.TRUE;
                     break;
                 }
