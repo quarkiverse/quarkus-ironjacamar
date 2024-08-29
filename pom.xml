@@ -23,13 +23,13 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <quarkus.version>3.8.5</quarkus.version>
+    <quarkus.version>3.8.6</quarkus.version>
     <ironjacamar.version>3.0.9.Final</ironjacamar.version>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.quarkus</groupId>
+        <groupId>io.quarkus.platform</groupId>
         <artifactId>quarkus-bom</artifactId>
         <version>${quarkus.version}</version>
         <type>pom</type>
