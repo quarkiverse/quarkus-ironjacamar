@@ -1,4 +1,4 @@
-name: Quarkiverse Release
+name: Quarkiverse Prepare Release
 
 on:
   pull_request:
