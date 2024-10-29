@@ -77,7 +77,7 @@ public interface ResourceAdapterFactory {
             throws ResourceException;
 
     /**
-     * In some cases, the ResourceEndpoint requires a specific interface to be implemented
+     * In some cases, the resource endpoint requires a specific interface to be implemented
      * (e.g. <code>jakarta.jms.MessageListener</code> for JMS).
      *
      * @param messageEndpoint the resource endpoint (e.g. <code>jakarta.jms.MessageListener</code>)
