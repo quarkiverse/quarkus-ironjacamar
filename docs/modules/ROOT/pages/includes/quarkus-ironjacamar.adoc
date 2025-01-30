@@ -119,7 +119,7 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_TRANSACTION_SUPPORT_LEVEL+++`
 endif::add-copy-button-to-env-var[]
 --
-a|TransactionSupportLevel
+a|`no-transaction`, `local-transaction`, `xa-transaction`
 |`xa-transaction`
 
 a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-allocation-retry[`quarkus.ironjacamar.ra.cm.allocation-retry`]##
@@ -195,7 +195,7 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_FLUSH_STRATEGY+++`
 endif::add-copy-button-to-env-var[]
 --
-a|FlushStrategy
+a|`unknown`, `failing-connection-only`, `invalid-idle-connections`, `idle-connections`, `gracefully`, `entire-pool`, `all-invalid-idle-connections`, `all-idle-connections`, `all-gracefully`, `all-connections`
 |`failing-connection-only`
 
 a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-sharable]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-sharable[`quarkus.ironjacamar.ra.cm.sharable`]##
@@ -442,7 +442,7 @@ ifndef::add-copy-button-to-env-var[]
 Environment variable: `+++QUARKUS_IRONJACAMAR_RA_CM_POOL_STRATEGY+++`
 endif::add-copy-button-to-env-var[]
 --
-a|PoolStrategy
+a|`pool-by-cri`, `pool-by-subject`, `pool-by-subject-and-cri`, `one-pool`, `reauth`
 |`pool-by-cri`
 
 a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-min-size]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-cm-pool-config-min-size[`quarkus.ironjacamar.ra.cm.pool.config.min-size`]##
