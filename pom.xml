@@ -8,7 +8,7 @@
   </parent>
   <groupId>io.quarkiverse.ironjacamar</groupId>
   <artifactId>quarkus-ironjacamar-parent</artifactId>
-  <version>1.5.1</version>
+  <version>999-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Quarkus IronJacamar - Parent</name>
   <modules>
@@ -19,7 +19,7 @@
     <connection>scm:git:git@github.com:quarkiverse/quarkus-ironjacamar.git</connection>
     <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-ironjacamar.git</developerConnection>
     <url>https://github.com/quarkiverse/quarkus-ironjacamar</url>
-    <tag>1.5.1</tag>
+    <tag>HEAD</tag>
   </scm>
   <properties>
     <quarkus.version>3.15.3</quarkus.version>
