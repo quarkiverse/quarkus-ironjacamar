@@ -2,6 +2,7 @@ package io.quarkiverse.ironjacamar.it;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import jakarta.transaction.Transactional;
 
@@ -43,6 +44,11 @@ public class JcaResourceTest {
     @Test
     public void testTransacted() {
         given().when().get("/jca/transacted").then().statusCode(200).body(is("true"));
+    }
+
+    @Test
+    public void testRef() {
+        given().when().get("/jca/ref").then().statusCode(200).body(is(not("ref=null")));
     }
 
     @Test
