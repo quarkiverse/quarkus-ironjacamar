@@ -10,7 +10,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javax.naming.Reference;
+
 import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.resource.Referenceable;
 import jakarta.resource.ResourceException;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -78,7 +81,12 @@ public class IronJacamarRecorder {
             IronJacamarContainer container = context.getInjectedReference(IronJacamarContainer.class,
                     Identifier.Literal.of(id));
             try {
-                return container.createConnectionFactory();
+                Object connectionFactory = container.createConnectionFactory();
+                if (connectionFactory instanceof Referenceable ref) {
+                    // Set a reference to avoid serialization and JNDI lookups. See https://issues.apache.org/jira/browse/ARTEMIS-5253
+                    ref.setReference(new Reference(connectionFactory.getClass().getCanonicalName(), null, null));
+                }
+                return connectionFactory;
             } catch (ResourceException e) {
                 throw new DeploymentException("Cannot create connection factory", e);
             }

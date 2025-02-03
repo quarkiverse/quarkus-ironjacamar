@@ -1,5 +1,7 @@
 package io.quarkiverse.ironjacamar;
 
+import javax.naming.Referenceable;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.jms.ConnectionFactory;
@@ -83,6 +85,12 @@ public class JcaResource {
         try (JMSContext context = factory.createContext()) {
             return context.getTransacted();
         }
+    }
+
+    @GET
+    @Path("/ref")
+    public String getRef() throws Exception {
+        return "ref=" + ((Referenceable) factory).getReference();
     }
 
 }
