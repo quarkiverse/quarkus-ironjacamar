@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.quarkiverse.ironjacamar</groupId>
     <artifactId>quarkus-ironjacamar-parent</artifactId>
-    <version>1.5.2</version>
+    <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>quarkus-ironjacamar-deployment</artifactId>
   <name>Quarkus IronJacamar - Deployment</name>
