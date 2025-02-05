@@ -60,7 +60,6 @@ import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.gizmo.MethodDescriptor;
-import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
@@ -197,7 +196,6 @@ class IronJacamarProcessor {
                 .setRuntimeInit()
                 .unremovable()
                 .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
-                .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionManagerConfiguration.class)))
                 .addInjectionPoint(ClassType.create(DotName.createSimple(RecoveryPlugin.class)))
                 .createWith(recorder.createTransactionRecoveryManager())
                 .destroyer(BeanDestroyer.CloseableDestroyer.class)

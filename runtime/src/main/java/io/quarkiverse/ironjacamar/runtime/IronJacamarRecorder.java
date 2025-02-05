@@ -16,6 +16,7 @@ import jakarta.enterprise.inject.spi.DeploymentException;
 import jakarta.resource.Referenceable;
 import jakarta.resource.ResourceException;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.jca.core.api.bootstrap.CloneableBootstrapContext;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
@@ -33,7 +34,6 @@ import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
-import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.smallrye.common.annotation.Identifier;
@@ -124,9 +124,10 @@ public class IronJacamarRecorder {
     public Function<SyntheticCreationalContext<TransactionRecoveryManager>, TransactionRecoveryManager> createTransactionRecoveryManager() {
         return context -> {
             TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
-            TransactionManagerConfiguration tmConfig = context.getInjectedReference(TransactionManagerConfiguration.class);
             RecoveryPlugin recoveryPlugin = context.getInjectedReference(RecoveryPlugin.class);
-            return new TransactionRecoveryManager(ti, recoveryPlugin, tmConfig.enableRecovery);
+            boolean enableRecovery = ConfigProvider.getConfig().getOptionalValue("quarkus.transaction-manager.enable-recovery",
+                    Boolean.class).orElse(false);
+            return new TransactionRecoveryManager(ti, recoveryPlugin, enableRecovery);
         };
     }
 
