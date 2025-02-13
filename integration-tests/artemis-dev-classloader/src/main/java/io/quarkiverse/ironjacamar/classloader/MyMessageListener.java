@@ -27,8 +27,8 @@ public class MyMessageListener implements MessageListener {
         try (JMSContext context = connectionFactory.createContext()) {
             JMSProducer producer = context.createProducer();
             Queue queue = context.createQueue("reply");
-            producer.send(queue, myRestClient.get().hello());
-//            producer.send(queue, "Hello, World!");
+//            producer.send(queue, myRestClient.get().hello());
+            producer.send(queue, "Hello, World!");
         }
     }
 }
