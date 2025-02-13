@@ -12,7 +12,6 @@ import jakarta.ws.rs.Path;
 @Path("/hello")
 public class HelloResource {
 
-
     @Inject
     ConnectionFactory connectionFactory;
 
