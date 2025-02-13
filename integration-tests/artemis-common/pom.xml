@@ -10,10 +10,6 @@
     <artifactId>artemis-common</artifactId>
     <name>Quarkus IronJacamar - Artemis integration</name>
 
-    <properties>
-        <artemis.version>2.32.0</artemis.version>
-    </properties>
-
     <dependencies>
         <!-- Add deployment to hint the IDE to build it too -->
         <dependency>
@@ -29,12 +25,10 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-jakarta-ra</artifactId>
-            <version>${artemis.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-hqclient-protocol</artifactId>
-            <version>${artemis.version}</version>
         </dependency>
     </dependencies>
 </project>

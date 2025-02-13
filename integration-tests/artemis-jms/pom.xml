@@ -36,7 +36,6 @@
         <dependency>
             <groupId>io.quarkiverse.artemis</groupId>
             <artifactId>quarkus-test-artemis</artifactId>
-            <version>3.2.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -102,7 +101,7 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <skipTests>${native.surefire.skip}</skipTests>
+                            <skipTests>true</skipTests>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -110,8 +109,8 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.native.additional-build-args>--initialize-at-run-time=org.apache.activemq.artemis.api.core.ActiveMQBuffers\,org.apache.activemq.artemis.utils.RandomUtil</quarkus.native.additional-build-args>
-        <quarkus.native.enabled>true</quarkus.native.enabled>
-        <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                 <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
             </properties>
         </profile>
     </profiles>

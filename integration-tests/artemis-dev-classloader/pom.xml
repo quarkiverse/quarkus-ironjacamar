@@ -8,13 +8,17 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>quarkus-ironjacamar-integration-tests-multiple-artemis-jms</artifactId>
-    <name>Quarkus IronJacamar - Integration Tests - Multiple Artemis JMS</name>
+    <artifactId>quarkus-ironjacamar-integration-tests-artemis-dev-classloader</artifactId>
+    <name>Quarkus IronJacamar - Integration Tests - Artemis Dev Classloader</name>
 
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.ironjacamar</groupId>
@@ -63,5 +67,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
