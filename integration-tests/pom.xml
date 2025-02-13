@@ -13,6 +13,7 @@
     <modules>
         <module>artemis-common</module>
         <module>artemis-jms</module>
+        <module>artemis-dev-classloader</module>
         <module>multiple-artemis-jms</module>
     </modules>
     <properties>
