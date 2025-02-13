@@ -14,6 +14,7 @@ import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
+import io.quarkus.runtime.LaunchMode;
 import io.smallrye.common.annotation.Identifier;
 
 /**
@@ -24,6 +25,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     private final Class<?> endpointClass;
     private final String identifier;
     private final ResourceAdapterFactory resourceAdapterSupport;
+    private final ClassLoader classLoader;
     private Boolean transacted;
 
     /**
@@ -37,6 +39,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
         this.endpointClass = endpointClass;
         this.identifier = identifier;
         this.resourceAdapterSupport = adapterFactory;
+        this.classLoader = Thread.currentThread().getContextClassLoader();
     }
 
     @Override
@@ -61,12 +64,16 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     }
 
     @Override
-    public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
-        final MessageEndpoint endpoint;
+    public MessageEndpoint createEndpoint(XAResource xaResource) {
+        MessageEndpoint endpoint;
         if (xaResource == null) {
             endpoint = NoopMessageEndpoint.INSTANCE;
         } else {
             endpoint = new TransactionAwareMessageEndpoint(xaResource);
+        }
+        // When running in dev mode, we don't want to wrap the endpoint
+        if (LaunchMode.current() != LaunchMode.NORMAL) {
+            endpoint = new ClassLoaderMessageEndpoint(endpoint, classLoader);
         }
         return resourceAdapterSupport.wrap(endpoint, getEndpointInstance());
     }
