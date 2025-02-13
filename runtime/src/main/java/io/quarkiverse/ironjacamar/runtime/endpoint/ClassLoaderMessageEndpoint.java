@@ -8,7 +8,7 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 /**
  * A {@link MessageEndpoint} that sets the context class loader to a specific class loader before calling the delegate
  */
-class ClassLoaderMessageEndpoint extends MessageEndpointWrapper implements MessageEndpoint {
+class ClassLoaderMessageEndpoint extends MessageEndpointWrapper {
     private final ClassLoader classLoader;
 
     private ClassLoader originalClassLoader;
