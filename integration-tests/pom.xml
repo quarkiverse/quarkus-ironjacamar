@@ -17,7 +17,7 @@
         <module>multiple-artemis-jms</module>
     </modules>
     <properties>
-        <quarkus.artemis.version>3.2.1</quarkus.artemis.version>
+        <quarkus.artemis.version>3.6.4</quarkus.artemis.version>
         <skipITs>true</skipITs>
     </properties>
     <dependencyManagement>
