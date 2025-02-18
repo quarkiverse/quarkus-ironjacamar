@@ -1,7 +1,9 @@
 package io.quarkiverse.ironjacamar.runtime;
 
-import static org.jboss.logging.Logger.Level.*;
+import static org.jboss.logging.Logger.Level.INFO;
+import static org.jboss.logging.Logger.Level.WARN;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
 import jakarta.enterprise.inject.spi.DeploymentException;
@@ -27,7 +29,8 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     /**
      * A logger with the category {@code io.quarkiverse.ironjacamar.runtime}.
      */
-    QuarkusIronJacamarLogger log = Logger.getMessageLogger(QuarkusIronJacamarLogger.class,
+    QuarkusIronJacamarLogger log = Logger.getMessageLogger(MethodHandles.lookup(),
+            QuarkusIronJacamarLogger.class,
             QuarkusIronJacamarLogger.class.getPackageName());
 
     /**
