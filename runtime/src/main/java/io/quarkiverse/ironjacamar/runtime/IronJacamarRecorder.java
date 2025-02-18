@@ -6,6 +6,7 @@ import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_WORK_MANAGER_NAME;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,7 +18,6 @@ import jakarta.resource.Referenceable;
 import jakarta.resource.ResourceException;
 
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.jca.core.api.bootstrap.CloneableBootstrapContext;
 import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.bootstrapcontext.BaseCloneableBootstrapContext;
@@ -36,6 +36,7 @@ import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
+import io.quarkus.virtual.threads.VirtualThreadsRecorder;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -140,7 +141,7 @@ public class IronJacamarRecorder {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
         SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
         BaseCloneableBootstrapContext bootstrapContext = new BaseCloneableBootstrapContext();
-        ManagedExecutor executorService = beanContainer.beanInstance(ManagedExecutor.class);
+        ExecutorService executorService = VirtualThreadsRecorder.getCurrent();
 
         // Create WorkManagerImpl
         WorkManagerImpl workManager = new WorkManagerImpl();
