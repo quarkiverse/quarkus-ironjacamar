@@ -12,12 +12,14 @@ import org.jboss.jca.core.connectionmanager.ConnectionManager;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory;
+import io.vertx.core.Vertx;
 
 /**
  * A managed bean that holds the resource adapter, managed connection factory and connection manager.
  */
 public class IronJacamarContainer implements Closeable {
 
+    private final Vertx vertx;
     private final ResourceAdapterFactory resourceAdapterFactory;
     private final ResourceAdapter resourceAdapter;
     private final ManagedConnectionFactory managedConnectionFactory;
@@ -27,17 +29,19 @@ public class IronJacamarContainer implements Closeable {
     /**
      * Constructor
      *
+     * @param vertx
      * @param resourceAdapterFactory The resource adapter factory
      * @param resourceAdapter The resource adapter
      * @param managedConnectionFactory The managed connection factory
      * @param connectionManager The connection manager
      * @param transactionRecoveryManager The transaction recovery manager
      */
-    public IronJacamarContainer(ResourceAdapterFactory resourceAdapterFactory,
+    public IronJacamarContainer(Vertx vertx, ResourceAdapterFactory resourceAdapterFactory,
             ResourceAdapter resourceAdapter,
             ManagedConnectionFactory managedConnectionFactory,
             ConnectionManager connectionManager,
             TransactionRecoveryManager transactionRecoveryManager) {
+        this.vertx = vertx;
         this.resourceAdapterFactory = resourceAdapterFactory;
         this.resourceAdapter = resourceAdapter;
         this.managedConnectionFactory = managedConnectionFactory;
@@ -94,7 +98,8 @@ public class IronJacamarContainer implements Closeable {
             throws ResourceException {
         ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(identifier, resourceAdapter, endpointClass,
                 config);
-        DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(endpointClass, identifier,
+        DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(vertx, endpointClass,
+                identifier,
                 resourceAdapterFactory);
         resourceAdapter.endpointActivation(messageEndpointFactory, activationSpec);
         if (transactionRecoveryManager.isEnabled()) {

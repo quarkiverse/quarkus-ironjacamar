@@ -66,7 +66,9 @@ public class IronJacamarRecorder {
         return context -> {
             IronJacamarSupport containerProducer = context
                     .getInjectedReference(IronJacamarSupport.class);
-            return containerProducer.createContainer(id, kind);
+            Vertx vertx = context
+                    .getInjectedReference(Vertx.class);
+            return containerProducer.createContainer(vertx, id, kind);
         };
     }
 

@@ -12,6 +12,8 @@ import jakarta.transaction.Transactional;
 
 import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.smallrye.common.vertx.VertxContext;
+import io.vertx.mutiny.core.Vertx;
 
 @ApplicationScoped
 @ResourceEndpoint(activationSpecConfigKey = "sales")
@@ -27,6 +29,8 @@ public class SalesEndpoint implements MessageListener {
     public void onMessage(Message message) {
         try {
             Log.info("####### QuarkusTransaction.isActive = " + QuarkusTransaction.isActive());
+            Log.info("####### Vertx.context = " + Vertx.currentContext());
+            assert VertxContext.isOnDuplicatedContext();
             String body = message.getBody(String.class);
             Log.infof("######### Received message from Sales queue: %s", body);
             Log.info("######### Redelivered: " + message.getJMSRedelivered());
