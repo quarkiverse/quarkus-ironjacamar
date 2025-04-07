@@ -6,7 +6,6 @@
         <large-messages-directory>./target/artemis/default/large-messages</large-messages-directory>
         <suppress-session-notifications>true</suppress-session-notifications>
         <persistence-enabled>false</persistence-enabled>
-        <jmx-management-enabled>false</jmx-management-enabled>
         <connectors>
             <connector name="activemq">tcp://localhost:61616</connector>
         </connectors>
