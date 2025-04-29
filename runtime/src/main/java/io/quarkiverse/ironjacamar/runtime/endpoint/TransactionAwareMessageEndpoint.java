@@ -7,12 +7,16 @@ import javax.transaction.xa.XAResource;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.transaction.RollbackException;
+import jakarta.transaction.Status;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 
+import com.arjuna.ats.jta.UserTransaction;
+
 import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.narayana.jta.QuarkusTransactionException;
 
 /**
  * Transaction aware message endpoint for a given {@link XAResource}
@@ -57,8 +61,9 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
     @Override
     public void afterDelivery() {
         try {
-            if (QuarkusTransaction.isActive()) {
-                if (QuarkusTransaction.isRollbackOnly()) {
+            int currentStatus = getStatus();
+            if (isActive(currentStatus)) {
+                if (currentStatus == Status.STATUS_MARKED_ROLLBACK) {
                     QuarkusTransaction.rollback();
                 } else {
                     QuarkusTransaction.commit();
@@ -78,5 +83,29 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
     @Override
     public void release() {
         // Do nothing
+    }
+
+    /**
+     * Get the current transaction status
+     */
+    int getStatus() {
+        try {
+            return UserTransaction.userTransaction().getStatus();
+        } catch (SystemException e) {
+            throw new QuarkusTransactionException(e);
+        }
+    }
+
+    /**
+     * Check the transaction is active
+     */
+    boolean isActive(int status) {
+        return status == Status.STATUS_ACTIVE ||
+                status == Status.STATUS_MARKED_ROLLBACK ||
+                status == Status.STATUS_PREPARED ||
+                status == Status.STATUS_UNKNOWN ||
+                status == Status.STATUS_PREPARING ||
+                status == Status.STATUS_COMMITTING ||
+                status == Status.STATUS_ROLLING_BACK;
     }
 }
