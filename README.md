@@ -16,7 +16,7 @@ the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/conn
 - Flexible configuration of resource adapters
 - `WorkManager` implementation uses a [ManagedExecutor](https://download.eclipse.org/microprofile/microprofile-context-propagation-1.0/apidocs/org/eclipse/microprofile/context/ManagedExecutor.html)
 - Integrates with the Quarkus transaction manager
-- Native mode is supported (but not every the Resource Adapter, which demands a specific extension if necessary)
+- Native mode is supported (Resource Adapter implementations may require the creation of a separate extension)
 - Pool metrics are exposed as Prometheus metrics
 
 ## Limitations
