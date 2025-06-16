@@ -439,6 +439,16 @@ public interface IronJacamarRuntimeConfig {
      * The Activation Spec configuration
      */
     interface ActivationSpecConfig {
+
+        /**
+         * Enable this activation spec.
+         * If the activation spec is disabled, endpoints configured to use this activation spec will be not activated.
+         *
+         * @return true if the activation spec is enabled
+         */
+        @WithDefault("true")
+        boolean enabled();
+
         /**
          * The configuration for this resource adapter
          *

@@ -115,17 +115,21 @@ public class IronJacamarSupport {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+        boolean enabled = true;
         Map<String, String> config = new HashMap<>(buildTimeConfig);
         if (activationSpecConfigId != null) {
             var activationSpecConfig = runtimeConfig.activationSpecs().map().get(activationSpecConfigId);
             if (activationSpecConfig != null) {
+                enabled = activationSpecConfig.enabled();
                 config.putAll(activationSpecConfig.config());
             }
         }
-        try {
-            ijContainer.endpointActivation(endpointClass, containerId, config);
-        } catch (ResourceException e) {
-            throw QuarkusIronJacamarLogger.log.cannotActivateEndpoint(e);
+        if (enabled) {
+            try {
+                ijContainer.endpointActivation(endpointClass, containerId, config);
+            } catch (ResourceException e) {
+                throw QuarkusIronJacamarLogger.log.cannotActivateEndpoint(e);
+            }
         }
     }
 }
