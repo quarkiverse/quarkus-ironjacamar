@@ -711,6 +711,25 @@ endif::add-copy-button-to-env-var[]
 |boolean
 |`false`
 
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-enabled]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-enabled[`quarkus.ironjacamar.activation-spec.enabled`]##
+
+`quarkus.ironjacamar.activation-spec."activation-spec-name".enabled`
+
+[.description]
+--
+Enable this activation spec. If the activation spec is disabled, endpoints configured to use this activation spec will be not activated.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_ACTIVATION_SPEC_ENABLED+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_ACTIVATION_SPEC_ENABLED+++`
+endif::add-copy-button-to-env-var[]
+--
+|boolean
+|`true`
+
 a| [[quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-config-config]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-config-config[`quarkus.ironjacamar.activation-spec.config."config"`]##
 
 `quarkus.ironjacamar.activation-spec."activation-spec-name".config."config"`
