@@ -16,7 +16,6 @@ import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.runtime.LaunchMode;
 import io.smallrye.common.annotation.Identifier;
-import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
 /**
@@ -70,17 +69,18 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
     @Override
     public MessageEndpoint createEndpoint(XAResource xaResource) {
-        Context rootContext = vertx.getOrCreateContext();
         MessageEndpoint endpoint;
         if (xaResource == null) {
             endpoint = NoopMessageEndpoint.INSTANCE;
         } else {
-            endpoint = new TransactionAwareMessageEndpoint(rootContext, xaResource);
+            endpoint = new TransactionAwareMessageEndpoint(xaResource);
         }
         // When running in dev mode, we don't want to wrap the endpoint
         if (LaunchMode.current() != LaunchMode.NORMAL) {
             endpoint = new ClassLoaderMessageEndpoint(endpoint, classLoader);
         }
+        // Duplicate context
+        endpoint = new DuplicatedContextMessageEndpoint(endpoint, vertx.getOrCreateContext());
         return resourceAdapterSupport.wrap(endpoint, getEndpointInstance());
     }
 

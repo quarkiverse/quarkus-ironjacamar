@@ -13,7 +13,7 @@ import jakarta.transaction.Transactional;
 import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.smallrye.common.vertx.VertxContext;
-import io.vertx.mutiny.core.Vertx;
+import io.vertx.core.Vertx;
 
 @ApplicationScoped
 @ResourceEndpoint(activationSpecConfigKey = "sales")

@@ -13,7 +13,7 @@ import jakarta.ws.rs.Path;
 import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.smallrye.common.vertx.VertxContext;
-import io.vertx.mutiny.core.Vertx;
+import io.vertx.core.Vertx;
 
 @Singleton
 @ResourceEndpoint(activationSpecConfigKey = "myqueue")

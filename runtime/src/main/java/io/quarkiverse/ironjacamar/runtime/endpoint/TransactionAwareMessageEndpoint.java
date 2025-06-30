@@ -17,26 +17,20 @@ import com.arjuna.ats.jta.UserTransaction;
 import io.quarkus.arc.Arc;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.narayana.jta.QuarkusTransactionException;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.impl.ContextInternal;
 
 /**
  * Transaction aware message endpoint for a given {@link XAResource}
  */
 public class TransactionAwareMessageEndpoint implements MessageEndpoint {
 
-    private final Context rootContext;
     private final XAResource xaResource;
 
     /**
      * Constructor
      *
-     * @param rootContext
      * @param xaResource The XA resource
      */
-    public TransactionAwareMessageEndpoint(Context rootContext, XAResource xaResource) {
-        this.rootContext = rootContext;
+    public TransactionAwareMessageEndpoint(XAResource xaResource) {
         this.xaResource = xaResource;
     }
 
@@ -47,7 +41,6 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
      */
     @Override
     public void beforeDelivery(Method method) throws ResourceException {
-        ContextInternal ignoredAlwaysNull = ((ContextInternal) rootContext).duplicate().beginDispatch();
         Arc.container().requestContext().activate();
         QuarkusTransaction.begin();
         try {
@@ -67,7 +60,6 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
      */
     @Override
     public void afterDelivery() {
-        ContextInternal currentContext = (ContextInternal) Vertx.currentContext();
         try {
             int currentStatus = getStatus();
             if (isActive(currentStatus)) {
@@ -82,7 +74,6 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
             if (context.isActive()) {
                 context.deactivate();
             }
-            currentContext.endDispatch(null);
         }
     }
 
