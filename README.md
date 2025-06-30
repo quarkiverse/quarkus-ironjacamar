@@ -1,6 +1,6 @@
 # Quarkus IronJacamar
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Version](https://img.shields.io/maven-central/v/io.quarkiverse.ironjacamar/quarkus-ironjacamar?logo=apache-maven&style=for-the-badge)](https://search.maven.org/artifact/io.quarkiverse.ironjacamar/quarkus-ironjacamar)
@@ -43,6 +43,7 @@ Thanks go to these wonderful people ([emoji key](https://allcontributors.org/doc
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/vsevel"><img src="https://avatars.githubusercontent.com/u/6041620?v=4?s=100" width="100px;" alt="Vincent Sevel"/><br /><sub><b>Vincent Sevel</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-ironjacamar/issues?q=author%3Avsevel" title="Bug reports">🐛</a> <a href="#userTesting-vsevel" title="User Testing">📓</a> <a href="https://github.com/quarkiverse/quarkus-ironjacamar/commits?author=vsevel" title="Code">💻</a> <a href="#maintenance-vsevel" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://zhfeng.github.io/"><img src="https://avatars.githubusercontent.com/u/1246139?v=4?s=100" width="100px;" alt="Zheng Feng"/><br /><sub><b>Zheng Feng</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-ironjacamar/commits?author=zhfeng" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mkomadel"><img src="https://avatars.githubusercontent.com/u/38321228?v=4?s=100" width="100px;" alt="mkomadel"/><br /><sub><b>mkomadel</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-ironjacamar/issues?q=author%3Amkomadel" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ozangunalp"><img src="https://avatars.githubusercontent.com/u/294765?v=4?s=100" width="100px;" alt="Ozan Gunalp"/><br /><sub><b>Ozan Gunalp</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-ironjacamar/commits?author=ozangunalp" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
