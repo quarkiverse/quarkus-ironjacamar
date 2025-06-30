@@ -12,6 +12,8 @@ import jakarta.ws.rs.Path;
 
 import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.smallrye.common.vertx.VertxContext;
+import io.vertx.core.Vertx;
 
 @Singleton
 @ResourceEndpoint(activationSpecConfigKey = "myqueue")
@@ -24,6 +26,8 @@ public class MyQueueMessageEndpoint implements MessageListener {
     @Transactional
     public void onMessage(Message message) {
         try {
+            Log.info("####### Vertx.context = " + Vertx.currentContext());
+            assert VertxContext.isOnDuplicatedContext();
             String body = message.getBody(String.class);
             Log.infof("Received message: %s", body);
             counter.incrementAndGet();

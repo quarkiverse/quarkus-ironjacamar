@@ -64,6 +64,7 @@ import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 class IronJacamarProcessor {
 
@@ -238,6 +239,7 @@ class IronJacamarProcessor {
                     .addQualifier(qualifier)
                     .unremovable()
                     .createWith(recorder.createContainerFunction(key, raKind.kind()))
+                    .addInjectionPoint(ClassType.create(DotName.createSimple(Vertx.class)))
                     .addInjectionPoint(ClassType.create(DotName.createSimple(IronJacamarSupport.class)))
                     .destroyer(BeanDestroyer.CloseableDestroyer.class);
             // Don't need to specify the identifier if a single Resource Adapter is deployed

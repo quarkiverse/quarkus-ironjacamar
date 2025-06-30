@@ -18,6 +18,7 @@ import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkus.arc.Unremovable;
 import io.smallrye.common.annotation.Identifier;
+import io.vertx.core.Vertx;
 
 /**
  * This class is a producer for {@link IronJacamarContainer} used in the {@link IronJacamarRecorder}
@@ -63,11 +64,12 @@ public class IronJacamarSupport {
     /**
      * Create a container for the given resource adapter
      *
+     * @param vertx
      * @param id The resource adapter id
      * @param kind The resource adapter kind
      * @return The container
      */
-    public IronJacamarContainer createContainer(String id, String kind) {
+    public IronJacamarContainer createContainer(Vertx vertx, String id, String kind) {
         ResourceAdapterFactory resourceAdapterFactory = resourceAdapterFactories.select(ResourceAdapterKind.Literal.of(kind))
                 .get();
         var adapterRuntimeConfig = runtimeConfig.resourceAdapters().get(id);
@@ -94,7 +96,7 @@ public class IronJacamarSupport {
         } catch (ResourceException re) {
             throw QuarkusIronJacamarLogger.log.cannotDeployResourceAdapter(re);
         }
-        return new IronJacamarContainer(resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
+        return new IronJacamarContainer(vertx, resourceAdapterFactory, resourceAdapter, managedConnectionFactory,
                 connectionManager, transactionRecoveryManager);
     }
 

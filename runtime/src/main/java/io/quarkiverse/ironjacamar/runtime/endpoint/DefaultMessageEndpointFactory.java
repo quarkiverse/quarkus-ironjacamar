@@ -16,12 +16,14 @@ import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 import io.quarkus.runtime.LaunchMode;
 import io.smallrye.common.annotation.Identifier;
+import io.vertx.core.Vertx;
 
 /**
  * Default implementation of {@link MessageEndpointFactory}.
  */
 public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
 
+    private final Vertx vertx;
     private final Class<?> endpointClass;
     private final String identifier;
     private final ResourceAdapterFactory resourceAdapterSupport;
@@ -35,7 +37,9 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
      * @param identifier The identifier
      * @param adapterFactory The resource adapter factory
      */
-    public DefaultMessageEndpointFactory(Class<?> endpointClass, String identifier, ResourceAdapterFactory adapterFactory) {
+    public DefaultMessageEndpointFactory(Vertx vertx, Class<?> endpointClass, String identifier,
+            ResourceAdapterFactory adapterFactory) {
+        this.vertx = vertx;
         this.endpointClass = endpointClass;
         this.identifier = identifier;
         this.resourceAdapterSupport = adapterFactory;
@@ -75,6 +79,8 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
         if (LaunchMode.current() != LaunchMode.NORMAL) {
             endpoint = new ClassLoaderMessageEndpoint(endpoint, classLoader);
         }
+        // Duplicate context
+        endpoint = new DuplicatedContextMessageEndpoint(endpoint, vertx.getOrCreateContext());
         return resourceAdapterSupport.wrap(endpoint, getEndpointInstance());
     }
 
