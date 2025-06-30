@@ -44,7 +44,7 @@ public class MissingResourceAdapterTypesTest {
 
     @Test
     public void shouldStartResource() {
-        TestResourceAdapter testResourceAdapter = (TestResourceAdapter) ironJacamarContainer.getResourceAdapter();
+        TestResourceAdapter testResourceAdapter = (TestResourceAdapter) ironJacamarContainer.resourceAdapter();
         assertTrue(testResourceAdapter.isStarted());
     }
 

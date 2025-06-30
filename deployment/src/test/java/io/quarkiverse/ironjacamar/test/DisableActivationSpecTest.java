@@ -46,8 +46,8 @@ public class DisableActivationSpecTest {
     @Test
     public void shouldStartResource() {
         TestResourceAdapterFactory resourceAdapterFactory = (TestResourceAdapterFactory) ironJacamarContainer
-                .getResourceAdapterFactory();
-        TestResourceAdapter testResourceAdapter = (TestResourceAdapter) ironJacamarContainer.getResourceAdapter();
+                .resourceAdapterFactory();
+        TestResourceAdapter testResourceAdapter = (TestResourceAdapter) ironJacamarContainer.resourceAdapter();
         assertTrue(testResourceAdapter.isStarted());
         assertThat(resourceAdapterFactory.getActivationCount()).isEqualTo(0);
     }

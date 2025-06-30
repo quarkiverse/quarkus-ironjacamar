@@ -17,64 +17,12 @@ import io.vertx.core.Vertx;
 /**
  * A managed bean that holds the resource adapter, managed connection factory and connection manager.
  */
-public class IronJacamarContainer implements Closeable {
-
-    private final Vertx vertx;
-    private final ResourceAdapterFactory resourceAdapterFactory;
-    private final ResourceAdapter resourceAdapter;
-    private final ManagedConnectionFactory managedConnectionFactory;
-    private final ConnectionManager connectionManager;
-    private final TransactionRecoveryManager transactionRecoveryManager;
-
-    /**
-     * Constructor
-     *
-     * @param vertx
-     * @param resourceAdapterFactory The resource adapter factory
-     * @param resourceAdapter The resource adapter
-     * @param managedConnectionFactory The managed connection factory
-     * @param connectionManager The connection manager
-     * @param transactionRecoveryManager The transaction recovery manager
-     */
-    public IronJacamarContainer(Vertx vertx, ResourceAdapterFactory resourceAdapterFactory,
-            ResourceAdapter resourceAdapter,
-            ManagedConnectionFactory managedConnectionFactory,
-            ConnectionManager connectionManager,
-            TransactionRecoveryManager transactionRecoveryManager) {
-        this.vertx = vertx;
-        this.resourceAdapterFactory = resourceAdapterFactory;
-        this.resourceAdapter = resourceAdapter;
-        this.managedConnectionFactory = managedConnectionFactory;
-        this.connectionManager = connectionManager;
-        this.transactionRecoveryManager = transactionRecoveryManager;
-    }
-
-    /**
-     * Get the resource adapter
-     *
-     * @return The resource adapter
-     */
-    public ResourceAdapter getResourceAdapter() {
-        return resourceAdapter;
-    }
-
-    /**
-     * Get the managed connection factory
-     *
-     * @return The {@link ResourceAdapterFactory}
-     */
-    public ResourceAdapterFactory getResourceAdapterFactory() {
-        return resourceAdapterFactory;
-    }
-
-    /**
-     * Get the connection manager
-     *
-     * @return The {@link ConnectionManager} instance
-     */
-    public ConnectionManager getConnectionManager() {
-        return connectionManager;
-    }
+public record IronJacamarContainer(Vertx vertx,
+        ResourceAdapterFactory resourceAdapterFactory,
+        ResourceAdapter resourceAdapter,
+        ManagedConnectionFactory managedConnectionFactory,
+        ConnectionManager connectionManager,
+        TransactionRecoveryManager transactionRecoveryManager) implements Closeable {
 
     /**
      * Create a connection factory. It will be managed by the connection manager.

@@ -34,7 +34,7 @@ public class IronJacamarMetricsRecorder {
         return metricsFactory -> {
             IronJacamarContainer container = beanContainer.beanInstance(IronJacamarContainer.class,
                     Identifier.Literal.of(resourceAdapterId));
-            ConnectionManager connectionManager = container.getConnectionManager();
+            ConnectionManager connectionManager = container.connectionManager();
 
             PoolStatistics statistics = connectionManager.getPool().getStatistics();
 

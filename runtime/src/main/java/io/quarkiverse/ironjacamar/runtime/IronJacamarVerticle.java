@@ -32,8 +32,8 @@ final class IronJacamarVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         QuarkusIronJacamarLogger.log.startingResourceAdapter(id,
-                ironJacamarContainer.getResourceAdapterFactory().getDescription());
-        ResourceAdapter resourceAdapter = ironJacamarContainer.getResourceAdapter();
+                ironJacamarContainer.resourceAdapterFactory().getDescription());
+        ResourceAdapter resourceAdapter = ironJacamarContainer.resourceAdapter();
         for (ResourceAdapterLifecycleListener listener : listeners) {
             listener.preStartup(id, resourceAdapter);
         }
@@ -46,7 +46,7 @@ final class IronJacamarVerticle extends AbstractVerticle {
     @Override
     public void stop() {
         QuarkusIronJacamarLogger.log.stoppingResourceAdapter(id);
-        ResourceAdapter resourceAdapter = ironJacamarContainer.getResourceAdapter();
+        ResourceAdapter resourceAdapter = ironJacamarContainer.resourceAdapter();
         for (ResourceAdapterLifecycleListener listener : listeners) {
             listener.preShutdown(id, resourceAdapter);
         }
