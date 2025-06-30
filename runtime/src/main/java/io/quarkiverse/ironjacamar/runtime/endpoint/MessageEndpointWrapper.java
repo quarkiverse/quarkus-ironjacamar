@@ -10,7 +10,7 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
  */
 public abstract class MessageEndpointWrapper implements MessageEndpoint {
 
-    private final MessageEndpoint delegate;
+    protected final MessageEndpoint delegate;
 
     /**
      * Constructor
