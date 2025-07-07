@@ -48,10 +48,13 @@ import io.vertx.core.Vertx;
 @Recorder
 public class IronJacamarRecorder {
 
+    private final RuntimeValue<IronJacamarRuntimeConfig> runtimeConfig;
+
     /**
      * Constructor
      */
-    public IronJacamarRecorder() {
+    public IronJacamarRecorder(RuntimeValue<IronJacamarRuntimeConfig> runtimeConfig) {
+        this.runtimeConfig = runtimeConfig;
     }
 
     /**
@@ -176,15 +179,14 @@ public class IronJacamarRecorder {
     public RuntimeValue<Future<String>> initResourceAdapter(
             BeanContainer beanContainer,
             String key,
-            Supplier<Vertx> vertxSupplier,
-            IronJacamarRuntimeConfig config) {
+            Supplier<Vertx> vertxSupplier) {
         Vertx vertx = vertxSupplier.get();
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
         List<ResourceAdapterLifecycleListener> listeners = Arc.container().select(ResourceAdapterLifecycleListener.class)
                 .stream().toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
-        Duration maxWorkerExecuteTime = config.maxWorkerExecuteTime();
+        Duration maxWorkerExecuteTime = runtimeConfig.getValue().maxWorkerExecuteTime();
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)
