@@ -76,7 +76,9 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
-    void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    void additionalBeans(BuildProducer<AdditionalBeanBuildItem> additionalBeans,
+            Optional<DisableIdleRemoverServiceBuildItem> item) {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(TransactionIntegrationImpl.class, DefaultRecoveryPlugin.class)
                 .setUnremovable()
@@ -85,10 +87,14 @@ class IronJacamarProcessor {
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(
                         ConnectionValidatorManager.class,
-                        IdleRemoverManager.class,
                         ConnectionManagerFactory.class,
                         IronJacamarSupport.class)
                 .build());
+        if (item.isEmpty()) {
+            additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                    .addBeanClass(IdleRemoverManager.class)
+                    .build());
+        }
     }
 
     @BuildStep
