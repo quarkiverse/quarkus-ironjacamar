@@ -29,7 +29,7 @@ defaults:
 jobs:
   build:
     name: "Build against latest Quarkus snapshot"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Set up Java
@@ -46,7 +46,6 @@ jobs:
       - name: Checkout Ecosystem
         uses: actions/checkout@v4
         with:
-          ref: fix_script 
           repository: ${{ env.ECOSYSTEM_CI_REPO }}
           path: ecosystem-ci
 
