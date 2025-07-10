@@ -18,6 +18,7 @@ the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/conn
 - Integrates with the Quarkus transaction manager
 - Native mode is supported (Resource Adapter implementations may require the creation of a separate extension)
 - Pool metrics are exposed as Prometheus metrics
+- Message Endpoints work under a duplicated Vert.x Context
 
 ## Limitations
 
@@ -27,7 +28,7 @@ the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/conn
 
 ## Documentation
 
-The documentation is available [here](https://docs.quarkiverse.io/quarkus-ironjacamar/dev/index.html).
+The full documentation is available [here](https://docs.quarkiverse.io/quarkus-ironjacamar/dev/index.html).
 
 ## Contributors ✨
 

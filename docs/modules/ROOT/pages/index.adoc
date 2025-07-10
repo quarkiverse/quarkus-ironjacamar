@@ -7,6 +7,43 @@ include::./includes/attributes.adoc[]
 This extension allows you to deploy JCA Resource Adapters in Quarkus.
 IronJacamar is a Jakarta Connector Architecture (JCA) implementation.
 
+
+== What is Quarkus IronJacamar?
+
+*Quarkus IronJacamar* is the extension that integrates the *IronJacamar* project into the Quarkus ecosystem.
+
+To break it down:
+
+* *IronJacamar*: An open-source implementation of the *Java Connector Architecture (JCA)*. The JCA specification provides a standardized way to connect a Java application server to external Enterprise Information Systems (EIS), such as databases, ERPs (like SAP), legacy systems, or mainframes. Think of it as "JDBC for everything else," creating a standard contract for connectivity.
+
+* *Quarkus*: A modern, Kubernetes-native Java framework designed for high performance, low memory usage, and fast startup times, making it ideal for microservices and cloud environments.
+
+Essentially, *Quarkus IronJacamar* allows you to use standard JCA *Resource Adapters* within a lightweight and high-performance Quarkus application. It acts as the bridge connecting the speed and agility of Quarkus with the standardized, robust connectivity of the JCA world.
+
+'''
+
+=== Key Features
+
+* *Legacy System Connectivity*: The primary goal is to enable Quarkus applications to communicate with any EIS that provides a JCA-compliant resource adapter. This is crucial for modernizing applications that still rely on critical backend systems.
+
+* *Connection Pooling*: IronJacamar manages a pool of connections to the external system, improving performance and scalability by reusing connections instead of creating new ones for each request.
+
+* *Transaction Management*: It integrates with the Quarkus transaction manager, allowing interactions with the external system to participate in distributed (XA) transactions. This ensures data consistency across multiple resources (e.g., updating a database and an ERP system in the same transaction).
+
+* *Security Context*: Supports the propagation of security contexts from the application to the EIS, as defined by the JCA specification.
+
+'''
+
+=== Use Case Example 💡
+
+Imagine you are building a new e-commerce platform using Quarkus microservices. Your company's product inventory is managed by a legacy mainframe system that doesn't have a modern REST API but provides a *JCA resource adapter*.
+
+Instead of developing a complex, custom integration, your "Product" microservice can use the *Quarkus IronJacamar* extension:
+
+. Configure the mainframe's resource adapter in your Quarkus application.
+. Use the standard JCA API to get a connection from the pool managed by IronJacamar.
+. Your microservice can now query the mainframe for real-time stock levels, and this interaction can be part of a larger transaction that also updates your order database, ensuring everything stays consistent.
+
 == Installation
 
 If you want to use this extension, you need to add the `io.quarkiverse.ironjacamar:quarkus-ironjacamar` extension first to your build file.
