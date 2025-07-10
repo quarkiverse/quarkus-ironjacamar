@@ -46,6 +46,7 @@ jobs:
       - name: Checkout Ecosystem
         uses: actions/checkout@v4
         with:
+          ref: fix_script 
           repository: ${{ env.ECOSYSTEM_CI_REPO }}
           path: ecosystem-ci
 
