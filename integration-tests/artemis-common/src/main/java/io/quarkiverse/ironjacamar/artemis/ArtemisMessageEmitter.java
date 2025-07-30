@@ -18,6 +18,10 @@ public class ArtemisMessageEmitter implements MultiEmitterAware, MessageListener
 
     @Override
     public void onMessage(jakarta.jms.Message message) {
-        emitter.emit(Message.of(message));
+        if (!emitter.isCancelled()) {
+            emitter.emit(Message.of(message));
+        } else {
+            throw new IllegalStateException("Message emitter has been cancelled");
+        }
     }
 }
