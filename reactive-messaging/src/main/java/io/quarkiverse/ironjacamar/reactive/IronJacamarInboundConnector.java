@@ -29,6 +29,7 @@ public class IronJacamarInboundConnector implements InboundConnector {
     @Override
     @SuppressWarnings("ReactiveStreamsUnusedPublisher")
     public Flow.Publisher<? extends Message<?>> getPublisher(Config config) {
+        // Channel name must match the activation spec ID
         String channelName = config.getValue(CHANNEL_NAME_ATTRIBUTE, String.class);
         return Multi.createFrom().emitter((m) -> {
             // Create endpoint instance

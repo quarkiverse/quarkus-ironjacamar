@@ -140,7 +140,7 @@ public class IronJacamarSupport {
      *
      * @param containerId The container id
      * @param activationSpecConfigId The activation spec config id
-     * @param endpointClassName The endpoint class name
+     * @param endpointInstance The endpoint instance
      * @param buildTimeConfig The build time config
      */
     public void activateEndpoint(String containerId, String activationSpecConfigId, Object endpointInstance,
