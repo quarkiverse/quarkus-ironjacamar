@@ -15,6 +15,7 @@
         <module>artemis-jms</module>
         <module>artemis-dev-classloader</module>
         <module>multiple-artemis-jms</module>
+        <module>artemis-reactive-messaging</module>
     </modules>
     <properties>
         <quarkus.artemis.version>3.8.3</quarkus.artemis.version>

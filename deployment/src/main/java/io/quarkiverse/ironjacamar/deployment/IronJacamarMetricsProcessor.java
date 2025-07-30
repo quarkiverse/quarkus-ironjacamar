@@ -16,14 +16,8 @@ import io.quarkus.deployment.metrics.MetricsFactoryConsumerBuildItem;
 /**
  * Processor that registers metrics for IronJacamar
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class IronJacamarMetricsProcessor {
-
-    /**
-     * Constructor
-     */
-    public IronJacamarMetricsProcessor() {
-
-    }
 
     /**
      * Register metrics

@@ -14,6 +14,7 @@
   <modules>
     <module>deployment</module>
     <module>runtime</module>
+    <module>reactive-messaging</module>
   </modules>
   <scm>
     <connection>scm:git:git@github.com:quarkiverse/quarkus-ironjacamar.git</connection>
@@ -38,6 +39,21 @@
         <groupId>org.jboss.ironjacamar</groupId>
         <artifactId>ironjacamar-core-impl</artifactId>
         <version>${ironjacamar.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkiverse.ironjacamar</groupId>
+        <artifactId>quarkus-ironjacamar</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkiverse.ironjacamar</groupId>
+        <artifactId>quarkus-ironjacamar-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkiverse.ironjacamar</groupId>
+        <artifactId>quarkus-ironjacamar-reactive-messaging</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>

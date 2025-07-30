@@ -28,6 +28,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     private final String identifier;
     private final ResourceAdapterFactory resourceAdapterSupport;
     private final ClassLoader classLoader;
+    private Object endpointInstance;
     private Boolean transacted;
 
     /**
@@ -42,6 +43,23 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
         this.vertx = vertx;
         this.endpointClass = endpointClass;
         this.identifier = identifier;
+        this.resourceAdapterSupport = adapterFactory;
+        this.classLoader = Thread.currentThread().getContextClassLoader();
+    }
+
+    /**
+     * Constructor
+     *
+     * @param endpointClass The endpoint class
+     * @param identifier The identifier
+     * @param adapterFactory The resource adapter factory
+     */
+    public DefaultMessageEndpointFactory(Vertx vertx, Object endpointInstance,
+            ResourceAdapterFactory adapterFactory) {
+        this.vertx = vertx;
+        this.endpointClass = endpointInstance.getClass();
+        // Unused
+        this.identifier = null;
         this.resourceAdapterSupport = adapterFactory;
         this.classLoader = Thread.currentThread().getContextClassLoader();
     }
@@ -95,19 +113,21 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     }
 
     private Object getEndpointInstance() {
-        Object instance;
-        ArcContainer container = Arc.container();
-        if (Defaults.DEFAULT_RESOURCE_ADAPTER_NAME.equals(identifier)) {
-            // Try with default identifier and fallback to default if null
-            instance = container.select(endpointClass, Identifier.Literal.of(identifier)).orElse(null);
-            if (instance == null) {
-                instance = container.select(endpointClass).get();
+        if (endpointInstance == null) {
+            ArcContainer container = Arc.container();
+            if (Defaults.DEFAULT_RESOURCE_ADAPTER_NAME.equals(identifier)) {
+                // Try with default identifier and fallback to default if null
+                endpointInstance = container.select(endpointClass, Identifier.Literal.of(identifier)).orElse(null);
+                if (endpointInstance == null) {
+                    endpointInstance = container.select(endpointClass).get();
+                }
+            } else {
+                endpointInstance = container.select(endpointClass, Identifier.Literal.of(identifier)).get();
             }
-        } else {
-            instance = container.select(endpointClass, Identifier.Literal.of(identifier)).get();
         }
-        return Objects.requireNonNull(instance, "Unable to find endpoint instance for " + endpointClass.getName()
-                + " with identifier " + identifier + " in Arc container");
+        return Objects.requireNonNull(endpointInstance,
+                () -> "Unable to find endpoint instance for %s with identifier %s in Arc container"
+                        .formatted(endpointClass.getName(), identifier));
     }
 
 }

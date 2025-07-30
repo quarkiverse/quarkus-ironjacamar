@@ -15,12 +15,15 @@
         <dependency>
             <groupId>io.quarkiverse.ironjacamar</groupId>
             <artifactId>quarkus-ironjacamar-deployment</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.ironjacamar</groupId>
             <artifactId>quarkus-ironjacamar</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.ironjacamar</groupId>
+            <artifactId>quarkus-ironjacamar-reactive-messaging</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>

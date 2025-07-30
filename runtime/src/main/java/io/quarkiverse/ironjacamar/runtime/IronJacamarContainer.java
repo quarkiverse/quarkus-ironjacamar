@@ -109,6 +109,28 @@ public class IronJacamarContainer implements Closeable {
     }
 
     /**
+     * Activate an endpoint
+     *
+     * @param endpointClass The endpoint class
+     * @param identifier The identifier
+     * @param config The configuration
+     * @throws ResourceException if something goes wrong
+     */
+    public void endpointActivation(Object endpointInstance, String identifier, Map<String, String> config)
+            throws ResourceException {
+        Class<?> endpointClass = endpointInstance.getClass();
+        ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(identifier, resourceAdapter, endpointClass,
+                config);
+        DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(vertx, endpointInstance,
+                resourceAdapterFactory);
+        resourceAdapter.endpointActivation(messageEndpointFactory, activationSpec);
+        if (transactionRecoveryManager.isEnabled()) {
+            transactionRecoveryManager.registerForRecovery(resourceAdapter, activationSpec,
+                    resourceAdapterFactory.getProductName(), resourceAdapterFactory.getProductVersion());
+        }
+    }
+
+    /**
      * Called when the application shuts down
      */
     @Override

@@ -134,4 +134,33 @@ public class IronJacamarSupport {
             }
         }
     }
+
+    /**
+     * Activate an endpoint
+     *
+     * @param containerId The container id
+     * @param activationSpecConfigId The activation spec config id
+     * @param endpointClassName The endpoint class name
+     * @param buildTimeConfig The build time config
+     */
+    public void activateEndpoint(String containerId, String activationSpecConfigId, Object endpointInstance,
+            Map<String, String> buildTimeConfig) {
+        IronJacamarContainer ijContainer = containers.select(Identifier.Literal.of(containerId)).get();
+        boolean enabled = true;
+        Map<String, String> config = new HashMap<>(buildTimeConfig);
+        if (activationSpecConfigId != null) {
+            var activationSpecConfig = runtimeConfig.activationSpecs().map().get(activationSpecConfigId);
+            if (activationSpecConfig != null) {
+                enabled = activationSpecConfig.enabled();
+                config.putAll(activationSpecConfig.config());
+            }
+        }
+        if (enabled) {
+            try {
+                ijContainer.endpointActivation(endpointInstance, containerId, config);
+            } catch (ResourceException e) {
+                throw QuarkusIronJacamarLogger.log.cannotActivateEndpoint(e);
+            }
+        }
+    }
 }

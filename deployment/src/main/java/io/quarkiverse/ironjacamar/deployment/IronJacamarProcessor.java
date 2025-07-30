@@ -310,7 +310,8 @@ class IronJacamarProcessor {
     ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
             IronJacamarRecorder recorder,
             BeanContainerBuildItem beanContainerBuildItem,
-            List<ContainerStartedBuildItem> containers) {
+            List<ContainerStartedBuildItem> containers,
+            List<MessageEndpointActivationBuildItem> messageEndpointActivationBuildItems) {
         IndexView index = combinedIndexBuildItem.getIndex();
         boolean single = containers.size() == 1;
         if (single) {
@@ -350,6 +351,16 @@ class IronJacamarProcessor {
                     }
                 }
             }
+        }
+        // Register MessageEndpointActivationBuildItems
+        for (MessageEndpointActivationBuildItem item : messageEndpointActivationBuildItems) {
+            String resourceAdapterId = item.getResourceAdapterId();
+            ContainerStartedBuildItem container = containers.stream().filter(s -> s.identifier.equals(resourceAdapterId))
+                    .findFirst().orElseThrow();
+            recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue, container.identifier,
+                    item.getActivationSpecConfigId(),
+                    item.getEndpointClassName(),
+                    Map.of());
         }
         return new ServiceStartBuildItem(FEATURE);
     }
