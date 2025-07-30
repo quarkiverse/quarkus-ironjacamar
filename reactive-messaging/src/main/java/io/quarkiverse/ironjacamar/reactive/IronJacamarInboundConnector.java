@@ -18,12 +18,13 @@ import io.smallrye.reactive.messaging.connector.InboundConnector;
 @Connector(IronJacamarInboundConnector.CONNECTOR_NAME)
 public class IronJacamarInboundConnector implements InboundConnector {
 
-    @Inject
-    IronJacamarSupport ironJacamarSupport;
     /**
      * The name of the connector: {@code ironjacamar}
      */
     public static final String CONNECTOR_NAME = "ironjacamar";
+
+    @Inject
+    IronJacamarSupport ironJacamarSupport;
 
     @Override
     @SuppressWarnings("ReactiveStreamsUnusedPublisher")
