@@ -117,7 +117,7 @@ class IronJacamarProcessor {
             BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         IndexView index = combinedIndexBuildItem.getIndex();
 
-        var factories = index.getAllKnownImplementors(ResourceAdapterFactory.class);
+        var factories = index.getAllKnownImplementations(ResourceAdapterFactory.class);
         if (factories.isEmpty()) {
             QuarkusIronJacamarLogger.log.noDefaultResourceAdapterKindFound();
             return;
@@ -155,7 +155,7 @@ class IronJacamarProcessor {
                 .build());
 
         // Make listeners unremovable
-        List<String> listeners = index.getAllKnownImplementors(ResourceAdapterLifecycleListener.class)
+        List<String> listeners = index.getAllKnownImplementations(ResourceAdapterLifecycleListener.class)
                 .stream()
                 .map(ClassInfo::name)
                 .map(DotName::toString)
