@@ -58,6 +58,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.gizmo2.creator.BlockCreator;
 import io.quarkus.gizmo2.desc.MethodDesc;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
@@ -183,8 +184,11 @@ class IronJacamarProcessor {
                 .createWith(recorder.createCachedConnectionManager())
                 .destroyer(mc -> {
                     // Invoke CachedConnectionManager#stop()
-                    mc.destroyMethod().invokeInterface(MethodDesc.of(CachedConnectionManager.class, "stop", void.class),
+                    BlockCreator bc = mc.destroyMethod();
+                    bc.invokeInterface(MethodDesc.of(CachedConnectionManager.class, "stop", void.class),
                             mc.destroyedInstance());
+                    // return is void
+                    bc.return_();
                 })
                 .done());
 
