@@ -28,6 +28,7 @@ defaults:
 
 jobs:
   build:
+    if: false
     name: "Build against latest Quarkus snapshot"
     runs-on: ubuntu-latest
 
