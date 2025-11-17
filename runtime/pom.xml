@@ -8,7 +8,7 @@
   </parent>
   <artifactId>quarkus-ironjacamar</artifactId>
   <name>Quarkus IronJacamar - Runtime</name>
-  <description>Run Jakarta Connector (JCA) adapters in Quarkus</description>
+  <description>Run Jakarta Connectors (JCA) adapters in Quarkus</description>
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
