@@ -47,6 +47,7 @@ import io.quarkus.arc.deployment.SyntheticBeansRuntimeInitBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.arc.processor.BuiltinScope;
 import io.quarkus.arc.processor.DotNames;
+import io.quarkus.deployment.IsLocalDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Consume;
@@ -58,6 +59,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.devui.spi.page.CardPageBuildItem;
 import io.quarkus.gizmo2.creator.BlockCreator;
 import io.quarkus.gizmo2.desc.MethodDesc;
 import io.quarkus.runtime.RuntimeValue;
@@ -354,6 +356,16 @@ class IronJacamarProcessor {
             }
         }
         return new ServiceStartBuildItem(FEATURE);
+    }
+
+    @BuildStep(onlyIf = IsLocalDevelopment.class)
+    public CardPageBuildItem devUI() {
+        CardPageBuildItem card = new CardPageBuildItem();
+        card.addLibraryVersion("org.jboss.ironjacamar", "ironjacamar-core-impl", "IronJacamar",
+                "https://www.ironjacamar.org/");
+        card.addLibraryVersion("jakarta.resource", "jakarta.resource-api", "Jakarta Connectors",
+                "https://jakarta.ee/specifications/connectors/");
+        return card;
     }
 
     private static String getActivationSpecId(AnnotationInstance instance) {
