@@ -21,12 +21,14 @@ import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.runtime.endpoint.MessageEndpointWrapper;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 
 /**
  * Integration with IronJacamar for Artemis
  */
 @ResourceAdapterKind(value = "artemis")
 @ResourceAdapterTypes(connectionFactoryTypes = { jakarta.jms.ConnectionFactory.class, XAConnectionFactory.class })
+@RunOnVirtualThread
 public class ArtemisResourceAdapterFactory implements ResourceAdapterFactory {
 
     @Override

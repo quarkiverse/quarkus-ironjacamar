@@ -286,6 +286,13 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
+    @Record(value = ExecutionTime.STATIC_INIT)
+    void initVirtualThreadWorkManager(BeanContainerBuildItem beanContainerBuildItem, IronJacamarRecorder recorder) {
+        // Create the default bootstrap context
+        recorder.initVirtualThreadWorkManager(beanContainerBuildItem.getValue());
+    }
+
+    @BuildStep
     @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
     void startResourceAdapters(
