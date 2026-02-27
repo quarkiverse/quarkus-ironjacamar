@@ -7,4 +7,4 @@ metadata:
   icon-url: "https://design.jboss.org/ironjacamar/logo/finals/ironjacamar_icon_256px.png"
   categories:
     - "integration"
-  status: "preview"
+  status: "stable"
