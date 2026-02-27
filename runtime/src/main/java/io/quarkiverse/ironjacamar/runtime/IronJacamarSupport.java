@@ -1,5 +1,7 @@
 package io.quarkiverse.ironjacamar.runtime;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,7 +80,7 @@ public class IronJacamarSupport {
         ConnectionManager connectionManager;
         IronJacamarRuntimeConfig.ResourceAdapterConfig ra = adapterRuntimeConfig.ra();
         try {
-            resourceAdapter = resourceAdapterFactory.createResourceAdapter(id, ra.config());
+            resourceAdapter = resourceAdapterFactory.createResourceAdapter(id, normalize(ra.config()));
             managedConnectionFactory = resourceAdapterFactory.createManagedConnectionFactory(id, resourceAdapter);
             connectionManager = connectionManagerFactory.createConnectionManager(id, managedConnectionFactory, ra.cm());
             // Register recovery if enabled
@@ -128,10 +130,21 @@ public class IronJacamarSupport {
         }
         if (enabled) {
             try {
-                ijContainer.endpointActivation(endpointClass, containerId, config);
+                ijContainer.endpointActivation(endpointClass, containerId, normalize(config));
             } catch (ResourceException e) {
                 throw QuarkusIronJacamarLogger.log.cannotActivateEndpoint(e);
             }
         }
+    }
+
+    /**
+     * Normalize the configuration by replacing dots with dashes. This is needed to allow environment variables to be used as
+     * configuration properties.
+     *
+     * @param config The configuration to normalize
+     * @return The normalized configuration
+     */
+    private static Map<String, String> normalize(Map<String, String> config) {
+        return config.entrySet().stream().collect(toMap(e -> e.getKey().replace('.', '-'), Map.Entry::getValue));
     }
 }
