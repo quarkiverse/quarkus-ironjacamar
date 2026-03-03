@@ -1,5 +1,6 @@
 name: quarkus-ironjacamar
 title: IronJacamar
-version: true
+version:
+  main: dev
 nav:
   - modules/ROOT/nav.adoc
