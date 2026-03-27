@@ -24,7 +24,6 @@ the [Jakarta Connectors Architecture 2.1](https://jakarta.ee/specifications/conn
 
 - JNDI is not supported
 - Security work context propagation is not supported
-- Tested with the Artemis JCA resource adapter only (see [quarkus-integration-test-artemis-jms](integration-tests/artemis-jms))
 
 ## Documentation
 
