@@ -152,6 +152,7 @@ public class IronJacamarRecorder {
         workManager.setName(DEFAULT_WORK_MANAGER_NAME);
         workManager.setSpecCompliant(true);
         workManager.setSecurityIntegration(securityIntegration);
+        workManager.setXATerminator(transactionIntegration.getXATerminator());
 
         // TODO: Should we have separate thread pools for short and long running tasks?
         workManager.setShortRunningThreadPool(executorService);
