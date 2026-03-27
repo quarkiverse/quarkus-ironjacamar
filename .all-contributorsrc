@@ -55,6 +55,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "aliothe",
+      "name": "Mathias Creutz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/749366?v=4",
+      "profile": "https://github.com/aliothe",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
