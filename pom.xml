@@ -22,7 +22,7 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <quarkus.version>3.30.2</quarkus.version>
+    <quarkus.version>3.33.1</quarkus.version>
     <ironjacamar.version>3.0.19.Final</ironjacamar.version>
   </properties>
   <dependencyManagement>

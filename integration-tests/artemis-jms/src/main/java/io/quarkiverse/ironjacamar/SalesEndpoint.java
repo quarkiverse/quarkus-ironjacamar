@@ -8,6 +8,7 @@ import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
+import jakarta.transaction.Status;
 import jakarta.transaction.Transactional;
 
 import io.quarkus.logging.Log;
@@ -28,7 +29,8 @@ public class SalesEndpoint implements MessageListener {
     @Transactional
     public void onMessage(Message message) {
         try {
-            Log.info("####### QuarkusTransaction.isActive = " + QuarkusTransaction.isActive());
+            Log.info("####### QuarkusTransaction.isActive = "
+                    + (QuarkusTransaction.getStatus() != Status.STATUS_NO_TRANSACTION));
             Log.info("####### Vertx.context = " + Vertx.currentContext());
             assert VertxContext.isOnDuplicatedContext();
             String body = message.getBody(String.class);
