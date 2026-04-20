@@ -26,6 +26,10 @@
       <artifactId>quarkus-smallrye-context-propagation-deployment</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-virtual-threads-deployment</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.quarkiverse.ironjacamar</groupId>
       <artifactId>quarkus-ironjacamar</artifactId>
       <version>${project.version}</version>
