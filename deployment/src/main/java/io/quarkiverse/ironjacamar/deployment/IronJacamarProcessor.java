@@ -29,8 +29,6 @@ import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
 import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
-import io.quarkiverse.ironjacamar.runtime.ConnectionValidatorManager;
-import io.quarkiverse.ironjacamar.runtime.IdleRemoverManager;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
@@ -57,6 +55,7 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
+import io.quarkus.deployment.builditem.ShutdownContextBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.devui.spi.page.CardPageBuildItem;
@@ -87,8 +86,6 @@ class IronJacamarProcessor {
                 .build());
         additionalBeans.produce(AdditionalBeanBuildItem.builder()
                 .addBeanClasses(
-                        ConnectionValidatorManager.class,
-                        IdleRemoverManager.class,
                         ConnectionManagerFactory.class,
                         IronJacamarSupport.class)
                 .build());
@@ -356,6 +353,16 @@ class IronJacamarProcessor {
             }
         }
         return new ServiceStartBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    @Record(value = ExecutionTime.RUNTIME_INIT)
+    @Consume(IronJacamarInitBuildItem.class)
+    void startPoolServices(IronJacamarRecorder recorder,
+            BeanContainerBuildItem beanContainerBuildItem,
+            ShutdownContextBuildItem shutdownContext) {
+        recorder.startIdleRemover(beanContainerBuildItem.getValue(), shutdownContext);
+        recorder.startConnectionValidator(beanContainerBuildItem.getValue(), shutdownContext);
     }
 
     @BuildStep(onlyIf = IsLocalDevelopment.class)

@@ -23,18 +23,22 @@ import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.bootstrapcontext.BaseCloneableBootstrapContext;
 import org.jboss.jca.core.bootstrapcontext.BootstrapContextCoordinator;
 import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
+import org.jboss.jca.core.connectionmanager.pool.idle.IdleRemover;
+import org.jboss.jca.core.connectionmanager.pool.validator.ConnectionValidator;
 import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.security.SecurityIntegration;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.workmanager.WorkManagerCoordinator;
 import org.jboss.jca.core.workmanager.WorkManagerImpl;
 
+import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig.ConnectionManagerConfig.PoolConfig.PoolConfigurationConfig;
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.runtime.RuntimeValue;
+import io.quarkus.runtime.ShutdownContext;
 import io.quarkus.runtime.annotations.Recorder;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.DeploymentOptions;
@@ -218,5 +222,68 @@ public class IronJacamarRecorder {
             IronJacamarSupport producer = beanContainer.beanInstance(IronJacamarSupport.class);
             producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
         });
+    }
+
+    public void startIdleRemover(BeanContainer beanContainer, ShutdownContext shutdownContext) {
+        IronJacamarRuntimeConfig config = runtimeConfig.getValue();
+        boolean shouldStart = false;
+        for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : config.resourceAdapters().values()) {
+            if (value.ra().cm().pool().config().idleTimeoutMinutes() > 0) {
+                shouldStart = true;
+                break;
+            }
+        }
+        if (!shouldStart) {
+            return;
+        }
+        try {
+            QuarkusIronJacamarLogger.log.startIdleRemoverService();
+            ManagedExecutor managedExecutor = beanContainer.beanInstance(ManagedExecutor.class);
+            IdleRemover instance = IdleRemover.getInstance();
+            instance.setExecutorService(managedExecutor);
+            instance.start();
+            shutdownContext.addShutdownTask(() -> {
+                try {
+                    QuarkusIronJacamarLogger.log.stopIdleRemoverService();
+                    instance.stop();
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
+            });
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    public void startConnectionValidator(BeanContainer beanContainer, ShutdownContext shutdownContext) {
+        IronJacamarRuntimeConfig config = runtimeConfig.getValue();
+        boolean shouldStart = false;
+        for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : config.resourceAdapters().values()) {
+            PoolConfigurationConfig poolConfig = value.ra().cm().pool().config();
+            if (poolConfig.backgroundValidation() && poolConfig.backgroundValidationMillis().orElse(0L) > 0) {
+                shouldStart = true;
+                break;
+            }
+        }
+        if (!shouldStart) {
+            return;
+        }
+        try {
+            QuarkusIronJacamarLogger.log.startConnectionValidatorService();
+            ManagedExecutor managedExecutor = beanContainer.beanInstance(ManagedExecutor.class);
+            ConnectionValidator instance = ConnectionValidator.getInstance();
+            instance.setExecutorService(managedExecutor);
+            instance.start();
+            shutdownContext.addShutdownTask(() -> {
+                try {
+                    QuarkusIronJacamarLogger.log.stopConnectionValidatorService();
+                    instance.stop();
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
+            });
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 }
