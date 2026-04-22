@@ -38,7 +38,8 @@ public class DisableActivationSpecTest {
                             TestConnectionFactory.class,
                             TestResourceEndpoint.class))
             .overrideConfigKey("quarkus.ironjacamar.ra.kind", "test")
-            .overrideConfigKey("quarkus.ironjacamar.activation-spec.test.enabled", "false");
+            .overrideConfigKey("quarkus.ironjacamar.activation-spec.test.enabled", "false")
+            .overrideConfigKey("quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes", "0");
 
     @Inject
     IronJacamarContainer ironJacamarContainer;

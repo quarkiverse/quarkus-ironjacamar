@@ -36,7 +36,8 @@ public class LifecycleTest {
                             TestManagedConnectionFactory.class,
                             TestConnectionFactory.class,
                             TestActivationSpec.class))
-            .overrideConfigKey("quarkus.ironjacamar.ra.kind", "test");
+            .overrideConfigKey("quarkus.ironjacamar.ra.kind", "test")
+            .overrideConfigKey("quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes", "0");
 
     @Test
     void shouldInvokePrecondition() {
