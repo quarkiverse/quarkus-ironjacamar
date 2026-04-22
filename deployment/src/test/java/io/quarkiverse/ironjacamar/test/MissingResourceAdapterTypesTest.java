@@ -33,6 +33,7 @@ public class MissingResourceAdapterTypesTest {
                             TestManagedConnectionFactory.class,
                             TestActivationSpec.class))
             .overrideConfigKey("quarkus.ironjacamar.ra.kind", "test")
+            .overrideConfigKey("quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes", "0")
             .setLogRecordPredicate(record -> record.getLevel().intValue() >= Level.FINER.intValue()
                     && record.getMessage().contains("QIJ000012"))
             .assertLogRecords(records -> {
