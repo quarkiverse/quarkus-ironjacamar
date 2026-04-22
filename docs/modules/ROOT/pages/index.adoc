@@ -263,6 +263,68 @@ public class WaitUntilServiceIsReady implements ResourceAdapterLifecycleListener
 }
 ----
 
+== Connection Pool Services
+
+The extension automatically manages two background services that help maintain healthy connection pools: the *Idle Remover* and the *Connection Validator*.
+
+=== Idle Remover
+
+The Idle Remover periodically scans the connection pool and removes connections that have been idle for longer than the configured timeout.
+This helps free up resources on both the application and the external system.
+
+The Idle Remover is *enabled by default* with a 30-minute timeout.
+It will start automatically if any resource adapter has an `idle-timeout-minutes` value greater than `0`.
+
+To *disable* it, set the idle timeout to `0`:
+
+[source,properties]
+----
+quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes=0
+----
+
+To *configure* a custom timeout (e.g., 15 minutes):
+
+[source,properties]
+----
+quarkus.ironjacamar.ra.cm.pool.config.idle-timeout-minutes=15
+----
+
+=== Connection Validator
+
+The Connection Validator periodically checks the validity of connections in the pool in the background.
+Invalid connections are removed and replaced, ensuring that the application always gets working connections from the pool.
+
+The Connection Validator is *disabled by default*.
+It will start automatically when `background-validation` is set to `true` and `background-validation-millis` is set to a positive value.
+
+To *enable* it:
+
+[source,properties]
+----
+quarkus.ironjacamar.ra.cm.pool.config.background-validation=true
+quarkus.ironjacamar.ra.cm.pool.config.background-validation-millis=30000
+----
+
+To *disable* it (the default):
+
+[source,properties]
+----
+quarkus.ironjacamar.ra.cm.pool.config.background-validation=false
+----
+
+TIP: As an alternative to background validation, you can use `validate-on-match` to validate connections when they are borrowed from the pool.
+This adds latency to each connection request but guarantees a valid connection without requiring a background thread.
+
+=== Named Resource Adapters
+
+When using <<Multiple Resource Adapters>>, each resource adapter can be configured independently:
+
+[source,properties]
+----
+quarkus.ironjacamar.main.ra.cm.pool.config.idle-timeout-minutes=15
+quarkus.ironjacamar.other.ra.cm.pool.config.idle-timeout-minutes=0
+----
+
 [[extension-configuration-reference]]
 == Extension Configuration Reference
 
