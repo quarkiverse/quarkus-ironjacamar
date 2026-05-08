@@ -1,12 +1,15 @@
 package io.quarkiverse.ironjacamar.runtime;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.ManagedConnectionFactory;
 import jakarta.resource.spi.ResourceAdapter;
+import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 
 import org.jboss.jca.core.connectionmanager.ConnectionManager;
 
@@ -25,6 +28,7 @@ public class IronJacamarContainer implements Closeable {
     private final ManagedConnectionFactory managedConnectionFactory;
     private final ConnectionManager connectionManager;
     private final TransactionRecoveryManager transactionRecoveryManager;
+    private final List<ActivatedEndpoint> activatedEndpoints = new ArrayList<>();
 
     /**
      * Constructor
@@ -101,7 +105,9 @@ public class IronJacamarContainer implements Closeable {
         DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(vertx, endpointClass,
                 identifier,
                 resourceAdapterFactory);
+        QuarkusIronJacamarLogger.log.activatingEndpoint(endpointClass.getName());
         resourceAdapter.endpointActivation(messageEndpointFactory, activationSpec);
+        activatedEndpoints.add(new ActivatedEndpoint(messageEndpointFactory, activationSpec));
         if (transactionRecoveryManager.isEnabled()) {
             transactionRecoveryManager.registerForRecovery(resourceAdapter, activationSpec,
                     resourceAdapterFactory.getProductName(), resourceAdapterFactory.getProductVersion());
@@ -113,7 +119,25 @@ public class IronJacamarContainer implements Closeable {
      */
     @Override
     public void close() {
+        for (ActivatedEndpoint endpoint : activatedEndpoints) {
+            QuarkusIronJacamarLogger.log.deactivatingEndpoint(endpoint.factory().getEndpointClass().getName());
+            if (transactionRecoveryManager.isEnabled()) {
+                transactionRecoveryManager.unregisterRecovery(endpoint.spec());
+            }
+            resourceAdapter.endpointDeactivation(endpoint.factory(), endpoint.spec());
+        }
+        activatedEndpoints.clear();
         connectionManager.prepareShutdown();
         connectionManager.shutdown();
+    }
+
+    /**
+     * Holds a {@link MessageEndpointFactory} and its corresponding {@link ActivationSpec} for an activated endpoint,
+     * so that {@link ResourceAdapter#endpointDeactivation} can be called with the same pair during shutdown.
+     *
+     * @param factory the message endpoint factory used during activation
+     * @param spec the activation spec used during activation
+     */
+    private record ActivatedEndpoint(MessageEndpointFactory factory, ActivationSpec spec) {
     }
 }

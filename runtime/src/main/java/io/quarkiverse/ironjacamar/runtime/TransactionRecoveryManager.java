@@ -1,7 +1,9 @@
 package io.quarkiverse.ironjacamar.runtime;
 
 import java.io.Closeable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import jakarta.resource.ResourceException;
@@ -25,6 +27,7 @@ public class TransactionRecoveryManager implements Closeable {
     private final RecoveryPlugin recoveryPlugin;
 
     private final Set<XAResourceRecovery> recoverySet = new HashSet<>();
+    private final Map<ActivationSpec, XAResourceRecovery> endpointRecoveryMap = new HashMap<>();
 
     private final boolean enabled;
 
@@ -92,6 +95,28 @@ public class TransactionRecoveryManager implements Closeable {
         XAResourceRecovery xrr = transactionIntegration.createXAResourceRecovery(resourceAdapter, activationSpec, productName,
                 productVersion);
         initialize(xrr);
+        endpointRecoveryMap.put(activationSpec, xrr);
+        QuarkusIronJacamarLogger.log.registeredXAResourceRecovery(activationSpec.toString());
+    }
+
+    /**
+     * Unregister recovery for a specific activation spec. Called during endpoint deactivation.
+     *
+     * @param activationSpec The activation spec to unregister recovery for
+     */
+    public void unregisterRecovery(ActivationSpec activationSpec) {
+        XAResourceRecovery xrr = endpointRecoveryMap.remove(activationSpec);
+        if (xrr != null) {
+            try {
+                xrr.shutdown();
+            } catch (Exception e) {
+                QuarkusIronJacamarLogger.log.errorDuringRecoveryShutdown(e);
+            } finally {
+                transactionIntegration.getRecoveryRegistry().removeXAResourceRecovery(xrr);
+                recoverySet.remove(xrr);
+                QuarkusIronJacamarLogger.log.unregisteredXAResourceRecovery(activationSpec.toString());
+            }
+        }
     }
 
     /**

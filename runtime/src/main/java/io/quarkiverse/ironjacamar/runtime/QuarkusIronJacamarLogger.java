@@ -1,6 +1,7 @@
 package io.quarkiverse.ironjacamar.runtime;
 
 import static org.jboss.logging.Logger.Level.INFO;
+import static org.jboss.logging.Logger.Level.TRACE;
 import static org.jboss.logging.Logger.Level.WARN;
 
 import java.lang.invoke.MethodHandles;
@@ -170,5 +171,41 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     @LogMessage(level = INFO)
     @Message(id = 16, value = "Stopping JCA Pool Idle Remover service")
     void stopIdleRemoverService();
+
+    /**
+     * Logs a message indicating that an endpoint is being activated.
+     *
+     * @param endpointClass the endpoint class name
+     */
+    @LogMessage(level = INFO)
+    @Message(id = 17, value = "Activating endpoint %s")
+    void activatingEndpoint(String endpointClass);
+
+    /**
+     * Logs a message indicating that an endpoint is being deactivated.
+     *
+     * @param endpointClass the endpoint class name
+     */
+    @LogMessage(level = INFO)
+    @Message(id = 18, value = "Deactivating endpoint %s")
+    void deactivatingEndpoint(String endpointClass);
+
+    /**
+     * Logs a trace message indicating that an XAResourceRecovery has been registered.
+     *
+     * @param activationSpec the activation spec associated with the recovery
+     */
+    @LogMessage(level = TRACE)
+    @Message(id = 19, value = "Registered XAResourceRecovery for %s")
+    void registeredXAResourceRecovery(String activationSpec);
+
+    /**
+     * Logs a trace message indicating that an XAResourceRecovery has been unregistered.
+     *
+     * @param activationSpec the activation spec associated with the recovery
+     */
+    @LogMessage(level = TRACE)
+    @Message(id = 20, value = "Unregistered XAResourceRecovery for %s")
+    void unregisteredXAResourceRecovery(String activationSpec);
 
 }
