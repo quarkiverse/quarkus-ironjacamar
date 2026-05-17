@@ -36,11 +36,6 @@ public class ArtemisReactiveMessagingSupport
     }
 
     @Override
-    public Message<?> wrapMessage(Object rawMessage) {
-        return Message.of(rawMessage);
-    }
-
-    @Override
     public Map<String, String> mapToActivationSpecConfig(Map<String, String> channelConfig) {
         Map<String, String> config = new HashMap<>();
         config.put("destination-type", channelConfig.getOrDefault("destination-type", "jakarta.jms.Queue"));

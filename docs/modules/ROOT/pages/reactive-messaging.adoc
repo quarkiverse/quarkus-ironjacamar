@@ -58,12 +58,7 @@ public class ArtemisIncomingSupport implements IncomingResourceAdapterSupport<Me
     }
 
     @Override
-    public Message<?> wrapMessage(Object rawMessage) { // <4>
-        return Message.of(rawMessage);
-    }
-
-    @Override
-    public Map<String, String> mapToActivationSpecConfig(Map<String, String> channelConfig) { // <5>
+    public Map<String, String> mapToActivationSpecConfig(Map<String, String> channelConfig) { // <4>
         Map<String, String> config = new HashMap<>();
         config.put("destination-type",
                 channelConfig.getOrDefault("destination-type", "jakarta.jms.Queue"));
@@ -77,8 +72,9 @@ public class ArtemisIncomingSupport implements IncomingResourceAdapterSupport<Me
 <1> Must match the `@ResourceAdapterKind` on your `ResourceAdapterFactory`.
 <2> The listener interface the resource adapter expects for endpoint activation.
 <3> Creates a listener that forwards raw transport messages to the connector. The `consumer` accepts the raw transport object (e.g., `jakarta.jms.Message`).
-<4> Wraps the raw transport message into a Reactive Messaging `Message`. This controls what payload type `@Incoming` consumers see.
-<5> Maps Reactive Messaging channel properties (from `mp.messaging.incoming.<channel>.*`) into activation spec configuration entries.
+<4> Maps Reactive Messaging channel properties (from `mp.messaging.incoming.<channel>.*`) into activation spec configuration entries.
+
+TIP: The `wrapMessage(Object)` method has a default implementation that wraps the raw message with `Message.of(rawMessage)`. Override it only if you need custom wrapping (e.g., adding metadata or lazy payload conversion).
 
 === Outbound: `OutgoingResourceAdapterSupport`
 
@@ -258,11 +254,6 @@ public class ArtemisReactiveMessagingSupport
     @Override
     public MessageListener createListener(Consumer<Object> consumer) {
         return consumer::accept;
-    }
-
-    @Override
-    public Message<?> wrapMessage(Object rawMessage) {
-        return Message.of(rawMessage);
     }
 
     @Override

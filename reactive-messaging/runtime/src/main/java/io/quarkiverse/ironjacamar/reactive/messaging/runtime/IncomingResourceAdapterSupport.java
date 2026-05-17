@@ -52,7 +52,9 @@ public interface IncomingResourceAdapterSupport<T> {
      * @param rawMessage the raw transport message received by the listener
      * @return a Reactive Messaging message wrapping the transport payload
      */
-    Message<?> wrapMessage(Object rawMessage);
+    default Message<?> wrapMessage(Object rawMessage) {
+        return Message.of(rawMessage);
+    }
 
     /**
      * Map the Reactive Messaging channel configuration into activation spec config entries
