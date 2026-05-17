@@ -1,8 +1,9 @@
-package io.quarkiverse.ironjacamar.reactive.messaging;
+package io.quarkiverse.ironjacamar.reactive.messaging.runtime.impl;
 
 import java.util.Map;
 import java.util.concurrent.Flow;
 
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.smallrye.mutiny.Uni;

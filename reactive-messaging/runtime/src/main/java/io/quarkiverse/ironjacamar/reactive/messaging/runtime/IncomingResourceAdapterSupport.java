@@ -1,4 +1,4 @@
-package io.quarkiverse.ironjacamar.reactive.messaging;
+package io.quarkiverse.ironjacamar.reactive.messaging.runtime;
 
 import java.util.Map;
 import java.util.function.Consumer;

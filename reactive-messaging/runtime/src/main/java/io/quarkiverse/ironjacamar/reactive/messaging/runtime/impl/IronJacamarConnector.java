@@ -1,4 +1,4 @@
-package io.quarkiverse.ironjacamar.reactive.messaging;
+package io.quarkiverse.ironjacamar.reactive.messaging.runtime.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Flow;
 
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;

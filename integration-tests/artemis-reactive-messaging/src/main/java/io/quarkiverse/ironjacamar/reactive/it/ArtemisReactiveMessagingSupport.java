@@ -14,8 +14,8 @@ import jakarta.jms.Queue;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
-import io.quarkiverse.ironjacamar.reactive.messaging.IncomingResourceAdapterSupport;
-import io.quarkiverse.ironjacamar.reactive.messaging.OutgoingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
 
 @ApplicationScoped
 @ResourceAdapterKind("artemis")

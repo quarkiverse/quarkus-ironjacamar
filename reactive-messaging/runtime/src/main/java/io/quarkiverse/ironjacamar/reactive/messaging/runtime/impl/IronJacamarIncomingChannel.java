@@ -1,8 +1,9 @@
-package io.quarkiverse.ironjacamar.reactive.messaging;
+package io.quarkiverse.ironjacamar.reactive.messaging.runtime.impl;
 
 import java.util.Map;
 import java.util.concurrent.Flow;
 
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
 import jakarta.resource.ResourceException;
 
 import org.eclipse.microprofile.reactive.messaging.Message;

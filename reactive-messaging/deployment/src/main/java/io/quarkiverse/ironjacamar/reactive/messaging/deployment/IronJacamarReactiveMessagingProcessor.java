@@ -1,8 +1,8 @@
 package io.quarkiverse.ironjacamar.reactive.messaging.deployment;
 
-import io.quarkiverse.ironjacamar.reactive.messaging.IncomingResourceAdapterSupport;
-import io.quarkiverse.ironjacamar.reactive.messaging.IronJacamarConnector;
-import io.quarkiverse.ironjacamar.reactive.messaging.OutgoingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.impl.IronJacamarConnector;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
