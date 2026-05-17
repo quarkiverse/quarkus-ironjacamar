@@ -28,6 +28,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     private final String identifier;
     private final ResourceAdapterFactory resourceAdapterSupport;
     private final ClassLoader classLoader;
+    private final Object listenerInstance;
     private Boolean transacted;
 
     /**
@@ -39,15 +40,35 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
      */
     public DefaultMessageEndpointFactory(Vertx vertx, Class<?> endpointClass, String identifier,
             ResourceAdapterFactory adapterFactory) {
+        this(vertx, endpointClass, identifier, adapterFactory, null);
+    }
+
+    /**
+     * Constructor with a pre-created listener instance.
+     * <p>
+     * When {@code listenerInstance} is non-null, CDI lookup is skipped and the provided
+     * instance is used directly. Delivery is always non-transacted in this mode.
+     *
+     * @param endpointClass The endpoint class
+     * @param identifier The identifier
+     * @param adapterFactory The resource adapter factory
+     * @param listenerInstance The pre-created listener instance, or {@code null} for CDI lookup
+     */
+    public DefaultMessageEndpointFactory(Vertx vertx, Class<?> endpointClass, String identifier,
+            ResourceAdapterFactory adapterFactory, Object listenerInstance) {
         this.vertx = vertx;
         this.endpointClass = endpointClass;
         this.identifier = identifier;
         this.resourceAdapterSupport = adapterFactory;
+        this.listenerInstance = listenerInstance;
         this.classLoader = Thread.currentThread().getContextClassLoader();
     }
 
     @Override
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
+        if (listenerInstance != null) {
+            return false;
+        }
         if (transacted == null) {
             Method endpointClassMethod = endpointClass.getMethod(method.getName(), method.getParameterTypes());
             Transactional annotation = endpointClassMethod.getAnnotation(Transactional.class);
@@ -81,7 +102,8 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
         }
         // Duplicate context
         endpoint = new DuplicatedContextMessageEndpoint(endpoint, vertx.getOrCreateContext());
-        return resourceAdapterSupport.wrap(endpoint, getEndpointInstance());
+        Object instance = listenerInstance != null ? listenerInstance : getEndpointInstance();
+        return resourceAdapterSupport.wrap(endpoint, instance);
     }
 
     @Override

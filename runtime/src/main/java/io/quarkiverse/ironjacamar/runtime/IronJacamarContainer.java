@@ -115,6 +115,37 @@ public class IronJacamarContainer implements Closeable {
     }
 
     /**
+     * Activate an endpoint with a pre-created listener instance.
+     * <p>
+     * Unlike {@link #endpointActivation(Class, String, Map)}, this method does not look up a CDI bean.
+     * Instead, it uses the provided {@code listenerInstance} directly, making it suitable for
+     * programmatic activation (e.g., from a Reactive Messaging connector).
+     *
+     * @param endpointClass The endpoint/listener interface class (e.g., {@code jakarta.jms.MessageListener})
+     * @param identifier The resource adapter identifier
+     * @param config The activation spec configuration
+     * @param listenerInstance The listener instance that will receive messages from the resource adapter
+     * @return A handle that can be used to deactivate the endpoint
+     * @throws ResourceException if something goes wrong
+     */
+    public EndpointHandle endpointActivation(Class<?> endpointClass, String identifier,
+            Map<String, String> config, Object listenerInstance) throws ResourceException {
+        ActivationSpec activationSpec = resourceAdapterFactory.createActivationSpec(identifier, resourceAdapter, endpointClass,
+                config);
+        DefaultMessageEndpointFactory messageEndpointFactory = new DefaultMessageEndpointFactory(vertx, endpointClass,
+                identifier, resourceAdapterFactory, listenerInstance);
+        QuarkusIronJacamarLogger.log.activatingEndpoint(endpointClass.getName());
+        resourceAdapter.endpointActivation(messageEndpointFactory, activationSpec);
+        ActivatedEndpoint activated = new ActivatedEndpoint(messageEndpointFactory, activationSpec);
+        activatedEndpoints.add(activated);
+        return () -> {
+            QuarkusIronJacamarLogger.log.deactivatingEndpoint(endpointClass.getName());
+            resourceAdapter.endpointDeactivation(messageEndpointFactory, activationSpec);
+            activatedEndpoints.remove(activated);
+        };
+    }
+
+    /**
      * Called when the application shuts down
      */
     @Override
