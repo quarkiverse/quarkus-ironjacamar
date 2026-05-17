@@ -29,16 +29,30 @@ public interface IncomingResourceAdapterSupport<T> {
     Class<T> getEndpointClass();
 
     /**
-     * Create a listener instance that, when the RA delivers a message, converts it
-     * to a {@link Message} and passes it to the given consumer.
+     * Create a listener instance that forwards raw transport messages to the given consumer.
      * <p>
      * The returned object must implement the interface returned by {@link #getEndpointClass()}.
+     * The consumer receives the raw transport-specific message object (e.g., {@code jakarta.jms.Message}).
+     * The connector will then call {@link #wrapMessage(Object)} to convert it into a
+     * Reactive Messaging {@link Message}.
      *
      * @param consumer the downstream consumer; each call to {@code accept()} pushes
-     *        one message into the Reactive Messaging channel
+     *        one raw transport message for wrapping
      * @return the listener instance (e.g., a {@code MessageListener} for JMS)
      */
-    T createListener(Consumer<Message<?>> consumer);
+    T createListener(Consumer<Object> consumer);
+
+    /**
+     * Wrap a raw transport message into a Reactive Messaging {@link Message}.
+     * <p>
+     * Implementations control how the transport-specific payload is exposed to
+     * {@code @Incoming} consumers. For JMS, this would typically wrap the
+     * {@code jakarta.jms.Message} as the payload.
+     *
+     * @param rawMessage the raw transport message received by the listener
+     * @return a Reactive Messaging message wrapping the transport payload
+     */
+    Message<?> wrapMessage(Object rawMessage);
 
     /**
      * Map the Reactive Messaging channel configuration into activation spec config entries

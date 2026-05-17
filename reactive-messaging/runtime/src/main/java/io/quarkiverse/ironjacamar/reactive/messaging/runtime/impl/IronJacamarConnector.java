@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Flow;
 
-import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
-import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
@@ -23,6 +21,8 @@ import org.eclipse.microprofile.reactive.messaging.spi.ConnectorFactory;
 
 import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.smallrye.common.annotation.Identifier;
 import io.smallrye.reactive.messaging.connector.InboundConnector;

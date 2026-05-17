@@ -3,11 +3,11 @@ package io.quarkiverse.ironjacamar.reactive.messaging.runtime.impl;
 import java.util.Map;
 import java.util.concurrent.Flow;
 
-import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
 import jakarta.resource.ResourceException;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
 import io.quarkiverse.ironjacamar.runtime.EndpointHandle;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.smallrye.mutiny.Multi;
@@ -29,7 +29,7 @@ class IronJacamarIncomingChannel {
 
         this.processor = UnicastProcessor.create();
 
-        Object listener = support.createListener(processor::onNext);
+        Object listener = support.createListener(raw -> processor.onNext(support.wrapMessage(raw)));
 
         try {
             this.endpointHandle = container.endpointActivation(

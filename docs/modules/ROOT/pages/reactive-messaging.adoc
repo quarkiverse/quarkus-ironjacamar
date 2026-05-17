@@ -1,0 +1,299 @@
+= Reactive Messaging Integration
+
+include::./includes/attributes.adoc[]
+
+The `quarkus-ironjacamar-reactive-messaging` extension bridges JCA resource adapters into https://smallrye.io/smallrye-reactive-messaging[SmallRye Reactive Messaging], letting you use `@Incoming` and `@Outgoing` annotations with any JCA-connected system.
+
+== Installation
+
+Add the following dependency to your project:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.quarkiverse.ironjacamar</groupId>
+    <artifactId>quarkus-ironjacamar-reactive-messaging</artifactId>
+    <version>{project-version}</version>
+</dependency>
+----
+
+This pulls in the core `quarkus-ironjacamar` extension and SmallRye Reactive Messaging automatically.
+
+== How It Works
+
+The extension provides a Reactive Messaging connector named `ironjacamar`.
+This connector delegates to two SPI interfaces that you implement for your specific resource adapter:
+
+* `IncomingResourceAdapterSupport<T>` -- bridges inbound messages from the RA into `@Incoming` channels
+* `OutgoingResourceAdapterSupport` -- bridges `@Outgoing` channels to the RA via a managed connection factory
+
+Not all resource adapters support both directions.
+A batch scheduler RA might be inbound-only, while a notification RA might be outbound-only.
+You only need to implement the interface(s) that match your RA's capabilities.
+
+== Implementing the SPI
+
+=== Inbound: `IncomingResourceAdapterSupport<T>`
+
+Implement this interface to receive messages from a resource adapter.
+The type parameter `T` is the listener interface your RA expects (e.g., `jakarta.jms.MessageListener`).
+
+[source,java]
+----
+import io.quarkiverse.ironjacamar.ResourceAdapterKind;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
+
+@ApplicationScoped
+@ResourceAdapterKind("artemis") // <1>
+public class ArtemisIncomingSupport implements IncomingResourceAdapterSupport<MessageListener> {
+
+    @Override
+    public Class<MessageListener> getEndpointClass() { // <2>
+        return MessageListener.class;
+    }
+
+    @Override
+    public MessageListener createListener(Consumer<Object> consumer) { // <3>
+        return consumer::accept;
+    }
+
+    @Override
+    public Message<?> wrapMessage(Object rawMessage) { // <4>
+        return Message.of(rawMessage);
+    }
+
+    @Override
+    public Map<String, String> mapToActivationSpecConfig(Map<String, String> channelConfig) { // <5>
+        Map<String, String> config = new HashMap<>();
+        config.put("destination-type",
+                channelConfig.getOrDefault("destination-type", "jakarta.jms.Queue"));
+        config.put("destination",
+                channelConfig.getOrDefault("destination", channelConfig.get("channel-name")));
+        return config;
+    }
+}
+----
+
+<1> Must match the `@ResourceAdapterKind` on your `ResourceAdapterFactory`.
+<2> The listener interface the resource adapter expects for endpoint activation.
+<3> Creates a listener that forwards raw transport messages to the connector. The `consumer` accepts the raw transport object (e.g., `jakarta.jms.Message`).
+<4> Wraps the raw transport message into a Reactive Messaging `Message`. This controls what payload type `@Incoming` consumers see.
+<5> Maps Reactive Messaging channel properties (from `mp.messaging.incoming.<channel>.*`) into activation spec configuration entries.
+
+=== Outbound: `OutgoingResourceAdapterSupport`
+
+Implement this interface to send messages through a resource adapter's managed connection factory.
+
+[source,java]
+----
+import io.quarkiverse.ironjacamar.ResourceAdapterKind;
+import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
+
+@ApplicationScoped
+@ResourceAdapterKind("artemis")
+public class ArtemisOutgoingSupport implements OutgoingResourceAdapterSupport {
+
+    @Override
+    public Map<String, String> mapToOutgoingConfig(Map<String, String> channelConfig) { // <1>
+        Map<String, String> config = new HashMap<>();
+        config.put("destination-type",
+                channelConfig.getOrDefault("destination-type", "jakarta.jms.Queue"));
+        config.put("destination",
+                channelConfig.getOrDefault("destination", channelConfig.get("channel-name")));
+        return config;
+    }
+
+    @Override
+    public void send(Object connectionFactory, Message<?> message, Map<String, String> config) { // <2>
+        try (JMSContext context = ((ConnectionFactory) connectionFactory).createContext()) {
+            Queue queue = context.createQueue(config.get("destination"));
+            context.createProducer().send(queue, (String) message.getPayload());
+        }
+    }
+}
+----
+
+<1> Maps Reactive Messaging channel properties (from `mp.messaging.outgoing.<channel>.*`) into transport-specific configuration.
+<2> Sends the message payload using the JCA-managed connection factory. The connector handles acknowledgement automatically.
+
+TIP: If your RA supports both directions, a single class can implement both interfaces:
+`implements IncomingResourceAdapterSupport<MessageListener>, OutgoingResourceAdapterSupport`.
+
+== Using the Connector
+
+=== Consuming messages (`@Incoming`)
+
+The payload type depends on what the SPI's `createListener` wraps.
+For JMS, the payload is a `jakarta.jms.Message`:
+
+[source,java]
+----
+@ApplicationScoped
+public class MyConsumer {
+
+    @Incoming("orders")
+    public void process(jakarta.jms.Message message) throws JMSException {
+        String body = message.getBody(String.class);
+        // Process the incoming message
+    }
+}
+----
+
+=== Producing messages (`@Outgoing` / `Emitter`)
+
+[source,java]
+----
+@ApplicationScoped
+public class MyProducer {
+
+    @Inject
+    @Channel("notifications")
+    Emitter<String> emitter;
+
+    public void send(String text) {
+        emitter.send(text);
+    }
+}
+----
+
+== Configuration
+
+Configure channels using standard MicroProfile Reactive Messaging properties, plus the connector-specific properties listed below.
+
+=== Incoming channel
+
+[source,properties]
+----
+mp.messaging.incoming.orders.connector=ironjacamar <1>
+mp.messaging.incoming.orders.resource-adapter-kind=artemis <2>
+mp.messaging.incoming.orders.destination=OrderQueue <3>
+mp.messaging.incoming.orders.destination-type=jakarta.jms.Queue
+----
+
+<1> Selects the IronJacamar connector.
+<2> Must match the `@ResourceAdapterKind` value on your SPI implementation.
+<3> All properties other than the reserved ones below are passed to your `mapToActivationSpecConfig` method.
+
+=== Outgoing channel
+
+[source,properties]
+----
+mp.messaging.outgoing.notifications.connector=ironjacamar
+mp.messaging.outgoing.notifications.resource-adapter-kind=artemis
+mp.messaging.outgoing.notifications.destination=NotificationQueue
+mp.messaging.outgoing.notifications.destination-type=jakarta.jms.Queue
+----
+
+=== Reserved connector properties
+
+The following properties are consumed by the connector itself and are *not* passed to your SPI mapping methods:
+
+[cols="1,3"]
+|===
+|Property |Description
+
+|`connector`
+|Must be `ironjacamar`.
+
+|`resource-adapter-kind`
+|Selects the `@ResourceAdapterKind`-qualified SPI bean.
+
+|`resource-adapter-name`
+|Selects a named resource adapter instance (defaults to `<default>`). Use this when running <<index.adoc#_multiple_resource_adapters,multiple resource adapters>>.
+|===
+
+=== Using a named resource adapter
+
+When your application configures <<index.adoc#_multiple_resource_adapters,multiple resource adapters>>, specify which one a channel should use:
+
+[source,properties]
+----
+mp.messaging.incoming.orders.connector=ironjacamar
+mp.messaging.incoming.orders.resource-adapter-kind=artemis
+mp.messaging.incoming.orders.resource-adapter-name=main
+----
+
+== Full Example
+
+Below is a complete example using Apache Artemis JMS.
+
+=== application.properties
+
+[source,properties]
+----
+# Resource Adapter
+quarkus.ironjacamar.ra.kind=artemis
+quarkus.ironjacamar.ra.config.connection-parameters=host=localhost;port=61616;protocols=AMQP
+quarkus.ironjacamar.ra.config.user=guest
+quarkus.ironjacamar.ra.config.password=guest
+
+# Incoming channel
+mp.messaging.incoming.test-queue.connector=ironjacamar
+mp.messaging.incoming.test-queue.resource-adapter-kind=artemis
+mp.messaging.incoming.test-queue.destination=TestQueue
+mp.messaging.incoming.test-queue.destination-type=jakarta.jms.Queue
+mp.messaging.incoming.test-queue.max-session=2
+
+# Outgoing channel
+mp.messaging.outgoing.out-queue.connector=ironjacamar
+mp.messaging.outgoing.out-queue.resource-adapter-kind=artemis
+mp.messaging.outgoing.out-queue.destination=OutQueue
+mp.messaging.outgoing.out-queue.destination-type=jakarta.jms.Queue
+----
+
+=== SPI implementation
+
+[source,java]
+----
+@ApplicationScoped
+@ResourceAdapterKind("artemis")
+public class ArtemisReactiveMessagingSupport
+        implements IncomingResourceAdapterSupport<MessageListener>, OutgoingResourceAdapterSupport {
+
+    @Override
+    public Class<MessageListener> getEndpointClass() {
+        return MessageListener.class;
+    }
+
+    @Override
+    public MessageListener createListener(Consumer<Object> consumer) {
+        return consumer::accept;
+    }
+
+    @Override
+    public Message<?> wrapMessage(Object rawMessage) {
+        return Message.of(rawMessage);
+    }
+
+    @Override
+    public Map<String, String> mapToActivationSpecConfig(Map<String, String> channelConfig) {
+        Map<String, String> config = new HashMap<>();
+        config.put("destination-type",
+                channelConfig.getOrDefault("destination-type", "jakarta.jms.Queue"));
+        config.put("destination",
+                channelConfig.getOrDefault("destination", channelConfig.get("channel-name")));
+        if (channelConfig.containsKey("max-session")) {
+            config.put("max-session", channelConfig.get("max-session"));
+        }
+        return config;
+    }
+
+    @Override
+    public Map<String, String> mapToOutgoingConfig(Map<String, String> channelConfig) {
+        Map<String, String> config = new HashMap<>();
+        config.put("destination-type",
+                channelConfig.getOrDefault("destination-type", "jakarta.jms.Queue"));
+        config.put("destination",
+                channelConfig.getOrDefault("destination", channelConfig.get("channel-name")));
+        return config;
+    }
+
+    @Override
+    public void send(Object connectionFactory, Message<?> message, Map<String, String> config) {
+        try (JMSContext context = ((ConnectionFactory) connectionFactory).createContext()) {
+            Queue queue = context.createQueue(config.get("destination"));
+            context.createProducer().send(queue, (String) message.getPayload());
+        }
+    }
+}
+----

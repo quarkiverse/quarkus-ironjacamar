@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.artemis.test.ArtemisTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 
 @QuarkusTest
 @QuarkusTestResource(value = ArtemisTestResource.class, restrictToAnnotatedClass = true)
@@ -63,6 +64,21 @@ public class ReactiveMessagingTest {
         await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
             given().when().get("/messages/outgoing")
                     .then().statusCode(200).body(is("Hello Outgoing"));
+        });
+    }
+
+    @Test
+    public void shouldSendAndReceiveJsonPayload() {
+        given().queryParam("orderId", "ORD-42").queryParam("quantity", 5)
+                .post("/messages/outgoing/order")
+                .then().statusCode(204);
+
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+            given().when().get("/messages/outgoing/order")
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("orderId", is("ORD-42"))
+                    .body("quantity", is(5));
         });
     }
 }

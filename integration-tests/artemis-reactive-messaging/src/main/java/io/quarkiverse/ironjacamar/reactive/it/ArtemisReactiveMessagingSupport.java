@@ -5,8 +5,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.jms.BytesMessage;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
+import jakarta.jms.JMSException;
 import jakarta.jms.JMSProducer;
 import jakarta.jms.MessageListener;
 import jakarta.jms.Queue;
@@ -16,6 +18,7 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.reactive.messaging.runtime.IncomingResourceAdapterSupport;
 import io.quarkiverse.ironjacamar.reactive.messaging.runtime.OutgoingResourceAdapterSupport;
+import io.vertx.core.json.Json;
 
 @ApplicationScoped
 @ResourceAdapterKind("artemis")
@@ -28,15 +31,13 @@ public class ArtemisReactiveMessagingSupport
     }
 
     @Override
-    public MessageListener createListener(Consumer<Message<?>> consumer) {
-        return message -> {
-            try {
-                String body = message.getBody(String.class);
-                consumer.accept(Message.of(body));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
+    public MessageListener createListener(Consumer<Object> consumer) {
+        return consumer::accept;
+    }
+
+    @Override
+    public Message<?> wrapMessage(Object rawMessage) {
+        return Message.of(rawMessage);
     }
 
     @Override
@@ -63,10 +64,36 @@ public class ArtemisReactiveMessagingSupport
 
     @Override
     public void send(Object connectionFactory, Message<?> message, Map<String, String> config) {
+        Object payload = message.getPayload();
         try (JMSContext context = ((ConnectionFactory) connectionFactory).createContext()) {
             Queue queue = context.createQueue(config.get("destination"));
             JMSProducer producer = context.createProducer();
-            producer.send(queue, (String) message.getPayload());
+
+            if (payload instanceof jakarta.jms.Message) {
+                producer.send(queue, (jakarta.jms.Message) payload);
+            } else {
+                jakarta.jms.Message outgoing;
+                if (payload instanceof String || payload.getClass().isPrimitive() || isPrimitiveBoxed(payload.getClass())) {
+                    outgoing = context.createTextMessage(payload.toString());
+                } else if (payload instanceof byte[]) {
+                    BytesMessage bytesMessage = context.createBytesMessage();
+                    bytesMessage.writeBytes((byte[]) payload);
+                    outgoing = bytesMessage;
+                } else {
+                    outgoing = context.createTextMessage(Json.encode(payload));
+                }
+                outgoing.setStringProperty("_classname", payload.getClass().getName());
+                outgoing.setJMSType(payload.getClass().getName());
+                producer.send(queue, outgoing);
+            }
+        } catch (JMSException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isPrimitiveBoxed(Class<?> c) {
+        return c == Boolean.class || c == Integer.class || c == Byte.class
+                || c == Double.class || c == Float.class || c == Short.class
+                || c == Character.class || c == Long.class;
     }
 }
