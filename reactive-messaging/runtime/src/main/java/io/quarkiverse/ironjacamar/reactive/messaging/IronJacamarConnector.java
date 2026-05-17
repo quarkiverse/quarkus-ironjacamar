@@ -29,9 +29,9 @@ import io.smallrye.reactive.messaging.connector.OutboundConnector;
 /**
  * SmallRye Reactive Messaging connector backed by IronJacamar JCA resource adapters.
  * <p>
- * This connector delegates to {@link ReactiveMessagingResourceAdapterSupport} SPI implementations
- * (qualified with {@link ResourceAdapterKind}) to bridge transport-specific listener interfaces
- * into Reactive Messaging channels.
+ * This connector delegates to {@link IncomingResourceAdapterSupport} and {@link OutgoingResourceAdapterSupport}
+ * SPI implementations (qualified with {@link ResourceAdapterKind}) to bridge transport-specific
+ * listener interfaces into Reactive Messaging channels.
  */
 @ApplicationScoped
 @Connector(IronJacamarConnector.CONNECTOR_NAME)
@@ -56,19 +56,21 @@ public class IronJacamarConnector implements InboundConnector, OutboundConnector
 
     @Inject
     @Any
-    Instance<ReactiveMessagingResourceAdapterSupport> supportInstances;
+    Instance<IncomingResourceAdapterSupport<?>> incomingSupport;
+
+    @Inject
+    @Any
+    Instance<OutgoingResourceAdapterSupport> outgoingSupport;
 
     private final List<IronJacamarIncomingChannel> channels = new CopyOnWriteArrayList<>();
 
     @Override
     public Flow.Publisher<? extends Message<?>> getPublisher(Config config) {
-        String channelName = config.getValue(ConnectorFactory.CHANNEL_NAME_ATTRIBUTE, String.class);
-
         String kind = config.getValue(RESOURCE_ADAPTER_KIND, String.class);
         String raName = config.getOptionalValue(RESOURCE_ADAPTER_NAME, String.class)
                 .orElse(Defaults.DEFAULT_RESOURCE_ADAPTER_NAME);
 
-        ReactiveMessagingResourceAdapterSupport support = supportInstances
+        IncomingResourceAdapterSupport<?> support = incomingSupport
                 .select(ResourceAdapterKind.Literal.of(kind))
                 .get();
 
@@ -80,7 +82,7 @@ public class IronJacamarConnector implements InboundConnector, OutboundConnector
         Map<String, String> activationSpecConfig = support.mapToActivationSpecConfig(channelConfig);
 
         IronJacamarIncomingChannel channel = new IronJacamarIncomingChannel(
-                channelName, kind, raName, container, support, activationSpecConfig);
+                raName, container, support, activationSpecConfig);
         channels.add(channel);
 
         return channel.getPublisher();
@@ -94,7 +96,7 @@ public class IronJacamarConnector implements InboundConnector, OutboundConnector
         String raName = config.getOptionalValue(RESOURCE_ADAPTER_NAME, String.class)
                 .orElse(Defaults.DEFAULT_RESOURCE_ADAPTER_NAME);
 
-        ReactiveMessagingResourceAdapterSupport support = supportInstances
+        OutgoingResourceAdapterSupport support = outgoingSupport
                 .select(ResourceAdapterKind.Literal.of(kind))
                 .get();
 

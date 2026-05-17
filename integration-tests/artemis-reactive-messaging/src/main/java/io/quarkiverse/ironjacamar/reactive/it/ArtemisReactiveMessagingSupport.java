@@ -14,20 +14,22 @@ import jakarta.jms.Queue;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
-import io.quarkiverse.ironjacamar.reactive.messaging.ReactiveMessagingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.IncomingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.OutgoingResourceAdapterSupport;
 
 @ApplicationScoped
 @ResourceAdapterKind("artemis")
-public class ArtemisReactiveMessagingSupport implements ReactiveMessagingResourceAdapterSupport {
+public class ArtemisReactiveMessagingSupport
+        implements IncomingResourceAdapterSupport<MessageListener>, OutgoingResourceAdapterSupport {
 
     @Override
-    public Class<?> getEndpointClass() {
+    public Class<MessageListener> getEndpointClass() {
         return MessageListener.class;
     }
 
     @Override
-    public Object createListener(Consumer<Message<?>> consumer) {
-        return (MessageListener) message -> {
+    public MessageListener createListener(Consumer<Message<?>> consumer) {
+        return message -> {
             try {
                 String body = message.getBody(String.class);
                 consumer.accept(Message.of(body));

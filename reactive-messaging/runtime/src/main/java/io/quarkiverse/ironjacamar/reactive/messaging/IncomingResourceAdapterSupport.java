@@ -6,10 +6,9 @@ import java.util.function.Consumer;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
 /**
- * SPI for bridging a JCA resource adapter into SmallRye Reactive Messaging.
+ * SPI for bridging inbound JCA resource adapter messages into SmallRye Reactive Messaging.
  * <p>
- * Extensions that wrap a specific resource adapter (e.g., Artemis JMS) implement
- * this interface to tell the generic {@code ironjacamar} connector how to:
+ * Implementations tell the {@code ironjacamar} connector how to:
  * <ul>
  * <li>Determine the listener interface class the RA expects
  * (e.g., {@code jakarta.jms.MessageListener})</li>
@@ -19,7 +18,7 @@ import org.eclipse.microprofile.reactive.messaging.Message;
  * Implementations must be CDI beans annotated with
  * {@link io.quarkiverse.ironjacamar.ResourceAdapterKind @ResourceAdapterKind}.
  */
-public interface ReactiveMessagingResourceAdapterSupport {
+public interface IncomingResourceAdapterSupport<T> {
 
     /**
      * The listener interface class that the resource adapter expects the endpoint to implement.
@@ -27,7 +26,7 @@ public interface ReactiveMessagingResourceAdapterSupport {
      *
      * @return the endpoint/listener class
      */
-    Class<?> getEndpointClass();
+    Class<T> getEndpointClass();
 
     /**
      * Create a listener instance that, when the RA delivers a message, converts it
@@ -39,7 +38,7 @@ public interface ReactiveMessagingResourceAdapterSupport {
      *        one message into the Reactive Messaging channel
      * @return the listener instance (e.g., a {@code MessageListener} for JMS)
      */
-    Object createListener(Consumer<Message<?>> consumer);
+    T createListener(Consumer<Message<?>> consumer);
 
     /**
      * Map the Reactive Messaging channel configuration into activation spec config entries
@@ -54,29 +53,4 @@ public interface ReactiveMessagingResourceAdapterSupport {
      * @return the activation spec config map
      */
     Map<String, String> mapToActivationSpecConfig(Map<String, String> channelConfig);
-
-    /**
-     * Map outgoing channel configuration to transport-specific properties.
-     * <p>
-     * The {@code channelConfig} contains all properties from
-     * {@code mp.messaging.outgoing.<channel>.*} with prefixes removed,
-     * excluding reserved connector properties.
-     *
-     * @param channelConfig the raw channel configuration properties
-     * @return the outgoing config map
-     */
-    Map<String, String> mapToOutgoingConfig(Map<String, String> channelConfig);
-
-    /**
-     * Send a message using the given connection factory.
-     * <p>
-     * Implementations should create a connection/session from the factory, send the message payload,
-     * and clean up resources. For JMS this would create a {@code JMSContext}, produce to the
-     * configured destination, and close the context.
-     *
-     * @param connectionFactory the JCA-managed connection factory (e.g., {@code jakarta.jms.ConnectionFactory})
-     * @param message the Reactive Messaging message to send
-     * @param config the outgoing channel configuration (as returned by {@link #mapToOutgoingConfig})
-     */
-    void send(Object connectionFactory, Message<?> message, Map<String, String> config);
 }

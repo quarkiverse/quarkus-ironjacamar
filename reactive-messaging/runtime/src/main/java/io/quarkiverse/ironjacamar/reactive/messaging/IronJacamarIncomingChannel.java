@@ -17,17 +17,15 @@ import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor;
  */
 class IronJacamarIncomingChannel {
 
-    private final String channelName;
     private final UnicastProcessor<Message<?>> processor;
     private final Multi<Message<?>> stream;
     private final EndpointHandle endpointHandle;
 
-    IronJacamarIncomingChannel(String channelName, String resourceAdapterKind, String resourceAdapterName,
+    IronJacamarIncomingChannel(String resourceAdapterName,
             IronJacamarContainer container,
-            ReactiveMessagingResourceAdapterSupport support,
+            IncomingResourceAdapterSupport<?> support,
             Map<String, String> activationSpecConfig) {
 
-        this.channelName = channelName;
         this.processor = UnicastProcessor.create();
 
         Object listener = support.createListener(processor::onNext);
@@ -40,7 +38,7 @@ class IronJacamarIncomingChannel {
                     listener);
         } catch (ResourceException e) {
             throw new IllegalStateException(
-                    "Failed to activate JCA endpoint for channel '" + channelName + "'", e);
+                    "Failed to activate JCA endpoint for resource adapter '" + resourceAdapterName + "'", e);
         }
 
         this.stream = processor

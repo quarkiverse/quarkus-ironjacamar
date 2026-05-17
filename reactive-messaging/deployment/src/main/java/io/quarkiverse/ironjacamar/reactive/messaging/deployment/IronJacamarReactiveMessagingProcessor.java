@@ -1,7 +1,8 @@
 package io.quarkiverse.ironjacamar.reactive.messaging.deployment;
 
+import io.quarkiverse.ironjacamar.reactive.messaging.IncomingResourceAdapterSupport;
 import io.quarkiverse.ironjacamar.reactive.messaging.IronJacamarConnector;
-import io.quarkiverse.ironjacamar.reactive.messaging.ReactiveMessagingResourceAdapterSupport;
+import io.quarkiverse.ironjacamar.reactive.messaging.OutgoingResourceAdapterSupport;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -26,6 +27,7 @@ class IronJacamarReactiveMessagingProcessor {
 
     @BuildStep
     UnremovableBeanBuildItem markSpiImplementationsUnremovable() {
-        return UnremovableBeanBuildItem.beanTypes(ReactiveMessagingResourceAdapterSupport.class);
+        return UnremovableBeanBuildItem.beanTypes(IncomingResourceAdapterSupport.class,
+                OutgoingResourceAdapterSupport.class);
     }
 }

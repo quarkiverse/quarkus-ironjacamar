@@ -13,7 +13,7 @@ class IronJacamarOutgoingChannel {
     private final Flow.Subscriber<Message<?>> subscriber;
 
     IronJacamarOutgoingChannel(Object connectionFactory,
-            ReactiveMessagingResourceAdapterSupport support,
+            OutgoingResourceAdapterSupport support,
             Map<String, String> outgoingConfig) {
 
         this.subscriber = MultiUtils.via(multi -> multi.call(message -> Uni.createFrom().completionStage(() -> {
