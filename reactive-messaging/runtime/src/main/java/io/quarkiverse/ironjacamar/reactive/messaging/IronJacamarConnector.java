@@ -12,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import jakarta.resource.ResourceException;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -23,6 +24,7 @@ import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.smallrye.common.annotation.Identifier;
 import io.smallrye.reactive.messaging.connector.InboundConnector;
+import io.smallrye.reactive.messaging.connector.OutboundConnector;
 
 /**
  * SmallRye Reactive Messaging connector backed by IronJacamar JCA resource adapters.
@@ -33,7 +35,7 @@ import io.smallrye.reactive.messaging.connector.InboundConnector;
  */
 @ApplicationScoped
 @Connector(IronJacamarConnector.CONNECTOR_NAME)
-public class IronJacamarConnector implements InboundConnector {
+public class IronJacamarConnector implements InboundConnector, OutboundConnector {
 
     static final String CONNECTOR_NAME = "ironjacamar";
 
@@ -82,6 +84,39 @@ public class IronJacamarConnector implements InboundConnector {
         channels.add(channel);
 
         return channel.getPublisher();
+    }
+
+    @Override
+    public Flow.Subscriber<? extends Message<?>> getSubscriber(Config config) {
+        String channelName = config.getValue(ConnectorFactory.CHANNEL_NAME_ATTRIBUTE, String.class);
+
+        String kind = config.getValue(RESOURCE_ADAPTER_KIND, String.class);
+        String raName = config.getOptionalValue(RESOURCE_ADAPTER_NAME, String.class)
+                .orElse(Defaults.DEFAULT_RESOURCE_ADAPTER_NAME);
+
+        ReactiveMessagingResourceAdapterSupport support = supportInstances
+                .select(ResourceAdapterKind.Literal.of(kind))
+                .get();
+
+        IronJacamarContainer container = containers
+                .select(Identifier.Literal.of(raName))
+                .get();
+
+        Map<String, String> channelConfig = extractChannelConfig(config);
+        Map<String, String> outgoingConfig = support.mapToOutgoingConfig(channelConfig);
+
+        Object connectionFactory;
+        try {
+            connectionFactory = container.createConnectionFactory();
+        } catch (ResourceException e) {
+            throw new IllegalStateException(
+                    "Failed to create connection factory for outgoing channel '" + channelName + "'", e);
+        }
+
+        IronJacamarOutgoingChannel channel = new IronJacamarOutgoingChannel(
+                connectionFactory, support, outgoingConfig);
+
+        return channel.getSubscriber();
     }
 
     @PreDestroy
