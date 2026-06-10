@@ -1,8 +1,7 @@
 # Quarkus IronJacamar
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=for-the-badge)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 [![Version](https://img.shields.io/maven-central/v/io.quarkiverse.ironjacamar/quarkus-ironjacamar?logo=apache-maven&style=for-the-badge)](https://search.maven.org/artifact/io.quarkiverse.ironjacamar/quarkus-ironjacamar)
 
 ## Overview
