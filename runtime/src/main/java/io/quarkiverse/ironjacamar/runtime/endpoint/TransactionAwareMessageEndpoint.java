@@ -35,6 +35,15 @@ public class TransactionAwareMessageEndpoint implements MessageEndpoint {
     }
 
     /**
+     * Get the XA resource
+     *
+     * @return The XA resource
+     */
+    public XAResource getXAResource() {
+        return xaResource;
+    }
+
+    /**
      * Initiate a transaction and enlist the XA Resource only if @Transactional is present on the endpoint method
      *
      * @param method The method
