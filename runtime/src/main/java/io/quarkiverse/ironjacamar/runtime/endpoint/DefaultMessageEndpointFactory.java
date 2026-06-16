@@ -10,6 +10,8 @@ import jakarta.resource.spi.endpoint.MessageEndpoint;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import jakarta.transaction.Transactional;
 
+import org.jboss.jca.core.tx.jbossts.XAResourceWrapperImpl;
+
 import io.quarkiverse.ironjacamar.Defaults;
 import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkus.arc.Arc;
@@ -33,6 +35,7 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
     /**
      * Constructor
      *
+     * @param vertx The Vert.x instance
      * @param endpointClass The endpoint class
      * @param identifier The identifier
      * @param adapterFactory The resource adapter factory
@@ -73,7 +76,10 @@ public class DefaultMessageEndpointFactory implements MessageEndpointFactory {
         if (xaResource == null) {
             endpoint = NoopMessageEndpoint.INSTANCE;
         } else {
-            endpoint = new TransactionAwareMessageEndpoint(xaResource);
+            // Wrap to prevent Narayana from attempting to serialize the RA's XAResource during 2PC prepare
+            XAResource wrappedXaResource = new XAResourceWrapperImpl(xaResource,
+                    resourceAdapterSupport.getProductName(), resourceAdapterSupport.getProductVersion());
+            endpoint = new TransactionAwareMessageEndpoint(wrappedXaResource);
         }
         // When running in dev mode, we don't want to wrap the endpoint
         if (LaunchMode.current() != LaunchMode.NORMAL) {

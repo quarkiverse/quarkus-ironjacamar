@@ -22,6 +22,19 @@ public abstract class MessageEndpointWrapper implements MessageEndpoint {
     }
 
     /**
+     * Unwrap the endpoint wrapper chain and return the underlying implementation.
+     *
+     * @return The innermost message endpoint
+     */
+    public MessageEndpoint unwrap() {
+        MessageEndpoint current = delegate;
+        while (current instanceof MessageEndpointWrapper wrapper) {
+            current = wrapper.delegate;
+        }
+        return current;
+    }
+
+    /**
      * Calls the delegate {@link MessageEndpoint#beforeDelivery(Method)} method.
      */
     @Override
