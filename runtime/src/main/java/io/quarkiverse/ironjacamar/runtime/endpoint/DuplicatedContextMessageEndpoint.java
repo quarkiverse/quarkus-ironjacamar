@@ -63,7 +63,12 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
         try {
             super.afterDelivery();
         } finally {
-            duplicatedContext.endDispatch(previousContext);
+            try {
+                duplicatedContext.endDispatch(previousContext);
+            } finally {
+                duplicatedContext = null;
+                previousContext = null;
+            }
         }
     }
 }
