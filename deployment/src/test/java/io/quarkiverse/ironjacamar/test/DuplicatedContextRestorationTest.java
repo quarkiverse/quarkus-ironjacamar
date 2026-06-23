@@ -75,6 +75,12 @@ public class DuplicatedContextRestorationTest {
                 .isSameAs(outerContext);
 
         endpoint.beforeDelivery(MessageListener.class.getMethod("onMessage", Record.class));
+
+        assertThat(Vertx.currentContext())
+                .as("during delivery, context should be a different (duplicated) instance")
+                .isNotNull()
+                .isNotSameAs(outerContext);
+
         endpoint.afterDelivery();
 
         assertThat(Vertx.currentContext())
