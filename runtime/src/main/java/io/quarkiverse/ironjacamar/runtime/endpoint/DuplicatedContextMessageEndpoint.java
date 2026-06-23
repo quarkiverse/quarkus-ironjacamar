@@ -6,7 +6,6 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 import io.vertx.core.impl.ContextInternal;
 
 /**
@@ -19,6 +18,8 @@ import io.vertx.core.impl.ContextInternal;
 public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
 
     private final Context rootContext;
+    private ContextInternal duplicatedContext;
+    private ContextInternal previousContext;
 
     /**
      * Constructor
@@ -32,7 +33,10 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
     }
 
     /**
-     * Prepares the delivery of a message by duplicating the execution context and beginning its dispatch.
+     * Prepares the delivery of a message by duplicating the root context and beginning its dispatch.
+     * <p>
+     * The duplicated context is stored along with the previous thread-local context so that
+     * {@link #afterDelivery()} can restore the original context after message processing completes.
      *
      * @param method The method that will handle the message delivery. This parameter represents the business
      *        method on the message endpoint class that is intended to receive the message.
@@ -42,18 +46,15 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
      */
     @Override
     public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
-        ((ContextInternal) rootContext).duplicate().beginDispatch();
+        duplicatedContext = ((ContextInternal) rootContext).duplicate();
+        previousContext = duplicatedContext.beginDispatch();
         super.beforeDelivery(method);
     }
 
     /**
-     * Completes the delivery process by performing necessary actions in the current execution context.
-     * <p>
-     * This method is invoked after a message has been delivered to the message endpoint. It ensures
-     * the proper management of the execution context by calling the superclass implementation
-     * to trigger any delegate-specific actions and by signaling the end of the dispatch in the
-     * current Vert.x context. This is critical to clean up and conclude the message processing cycle
-     * for the current context.
+     * Completes the delivery process by ending the dispatch on the duplicated context
+     * and restoring the previous thread-local context that was active before
+     * {@link #beforeDelivery(Method)} was called.
      *
      * @throws ResourceException if an error occurs while completing the delivery process
      */
@@ -62,10 +63,7 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
         try {
             super.afterDelivery();
         } finally {
-            ContextInternal currentContext = (ContextInternal) Vertx.currentContext();
-            if (currentContext != null) {
-                currentContext.endDispatch(null);
-            }
+            duplicatedContext.endDispatch(previousContext);
         }
     }
 }
