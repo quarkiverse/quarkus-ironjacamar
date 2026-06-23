@@ -69,25 +69,15 @@ public class DuplicatedContextRestorationTest {
         // Simulate a pre-existing Vert.x context on the current thread
         Context outerContext = vertx.getOrCreateContext();
         ContextInternal outerContextInternal = (ContextInternal) outerContext;
-        ContextInternal previous = outerContextInternal.beginDispatch();
-        Context afterDeliveryContext;
-        try {
-            assertThat(Vertx.currentContext())
-                    .as("outer context should be set before delivery")
-                    .isSameAs(outerContext);
+        outerContextInternal.beginDispatch();
+        assertThat(Vertx.currentContext())
+                .as("outer context should be set before delivery")
+                .isSameAs(outerContext);
 
-            endpoint.beforeDelivery(MessageListener.class.getMethod("onMessage", Record.class));
-            endpoint.afterDelivery();
+        endpoint.beforeDelivery(MessageListener.class.getMethod("onMessage", Record.class));
+        endpoint.afterDelivery();
 
-            afterDeliveryContext = Vertx.currentContext();
-        } finally {
-            // Guard cleanup: the buggy code wipes the thread-local, making endDispatch crash
-            if (Vertx.currentContext() != null) {
-                outerContextInternal.endDispatch(previous);
-            }
-        }
-
-        assertThat(afterDeliveryContext)
+        assertThat(Vertx.currentContext())
                 .as("outer context should be restored after delivery")
                 .isSameAs(outerContext);
     }
