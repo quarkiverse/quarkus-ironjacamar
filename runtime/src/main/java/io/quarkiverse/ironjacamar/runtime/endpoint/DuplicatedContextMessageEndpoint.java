@@ -6,8 +6,6 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
 import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.impl.ContextInternal;
 
 /**
  * A {@link MessageEndpointWrapper} implementation that duplicates the given {@link Context}
@@ -17,6 +15,41 @@ import io.vertx.core.impl.ContextInternal;
  * which helps in isolating and managing the lifecycle of execution contexts.
  */
 public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
+
+    /**
+     * Resolves {@code ContextInternal} from either the Vert.x 5.x package
+     * ({@code io.vertx.core.internal}) or the Vert.x 4.x package
+     * ({@code io.vertx.core.impl}), whichever is present on the classpath.
+     */
+    private static final Class<?> CONTEXT_INTERNAL_CLASS;
+    private static final Method DUPLICATE_METHOD;
+    private static final Method BEGIN_DISPATCH_METHOD;
+    private static final Method END_DISPATCH_METHOD;
+    private static final Method CURRENT_METHOD;
+
+    static {
+        Class<?> contextInternalClass;
+        try {
+            // Vert.x 5.x moved internal classes to io.vertx.core.internal
+            contextInternalClass = Class.forName("io.vertx.core.internal.ContextInternal");
+        } catch (ClassNotFoundException e) {
+            try {
+                // Vert.x 4.x internal classes are in io.vertx.core.impl
+                contextInternalClass = Class.forName("io.vertx.core.impl.ContextInternal");
+            } catch (ClassNotFoundException ex) {
+                throw new ExceptionInInitializerError(ex);
+            }
+        }
+        CONTEXT_INTERNAL_CLASS = contextInternalClass;
+        try {
+            DUPLICATE_METHOD = contextInternalClass.getMethod("duplicate");
+            BEGIN_DISPATCH_METHOD = contextInternalClass.getMethod("beginDispatch");
+            END_DISPATCH_METHOD = contextInternalClass.getMethod("endDispatch", contextInternalClass);
+            CURRENT_METHOD = contextInternalClass.getMethod("current");
+        } catch (NoSuchMethodException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final Context rootContext;
 
@@ -42,7 +75,12 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
      */
     @Override
     public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
-        ((ContextInternal) rootContext).duplicate().beginDispatch();
+        try {
+            Object duplicatedContext = DUPLICATE_METHOD.invoke(rootContext);
+            BEGIN_DISPATCH_METHOD.invoke(duplicatedContext);
+        } catch (ReflectiveOperationException e) {
+            throw new ResourceException("Failed to setup Vert.x context for message delivery", e);
+        }
         super.beforeDelivery(method);
     }
 
@@ -62,9 +100,13 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
         try {
             super.afterDelivery();
         } finally {
-            ContextInternal currentContext = (ContextInternal) Vertx.currentContext();
-            if (currentContext != null) {
-                currentContext.endDispatch(null);
+            try {
+                Object currentContext = CURRENT_METHOD.invoke(null);
+                if (currentContext != null) {
+                    END_DISPATCH_METHOD.invoke(currentContext, (Object) null);
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new ResourceException("Failed to cleanup Vert.x context after message delivery", e);
             }
         }
     }
