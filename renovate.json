@@ -8,8 +8,10 @@
   ],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["io.quarkus"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "io.quarkus{/,}**"
+      ]
     }
   ]
 }
