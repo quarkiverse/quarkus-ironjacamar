@@ -2,5 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "ignoreDeps": [
+    "io.quarkiverse.ironjacamar:quarkus-ironjacamar-integration-tests"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePrefixes": ["io.quarkus"],
+      "enabled": false
+    }
   ]
 }
