@@ -1,5 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>quarkiverse/renovate-config"
+  ],
   "ignoreDeps": [
     "io.quarkiverse.ironjacamar:quarkus-ironjacamar-integration-tests"
   ]
