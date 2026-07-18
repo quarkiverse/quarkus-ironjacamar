@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
+import io.smallrye.common.vertx.VertxContext;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.ContextInternal;
 
 /**
  * A {@link MessageEndpointWrapper} implementation that duplicates the given {@link Context}
@@ -42,7 +42,8 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
      */
     @Override
     public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
-        ((ContextInternal) rootContext).duplicate().beginDispatch();
+        Context duplicated = VertxContext.createNewDuplicatedContext(rootContext);
+        VertxContext.beginDispatch(duplicated);
         super.beforeDelivery(method);
     }
 
@@ -62,9 +63,9 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
         try {
             super.afterDelivery();
         } finally {
-            ContextInternal currentContext = (ContextInternal) Vertx.currentContext();
+            Context currentContext = Vertx.currentContext();
             if (currentContext != null) {
-                currentContext.endDispatch(null);
+                VertxContext.endDispatch(currentContext, null);
             }
         }
     }
