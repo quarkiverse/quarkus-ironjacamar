@@ -23,7 +23,7 @@
   </scm>
   <properties>
     <quarkus.version>3.33.2.1</quarkus.version>
-    <ironjacamar.version>3.0.22.Final</ironjacamar.version>
+    <ironjacamar.version>3.0.23.Final</ironjacamar.version>
   </properties>
   <dependencyManagement>
     <dependencies>
