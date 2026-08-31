@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
+import io.quarkiverse.jms.spi.deployment.JmsListenerManagedBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
@@ -290,7 +292,6 @@ class IronJacamarProcessor {
             CoreVertxBuildItem vertxBuildItem,
             BeanContainerBuildItem beanContainerBuildItem,
             BuildProducer<ContainerStartedBuildItem> startedProducer) {
-        // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
             RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
@@ -310,14 +311,22 @@ class IronJacamarProcessor {
     ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
             IronJacamarRecorder recorder,
             BeanContainerBuildItem beanContainerBuildItem,
-            List<ContainerStartedBuildItem> containers) {
+            List<ContainerStartedBuildItem> containers,
+            List<ResourceEndpointBuildItem> generatedEndpoints,
+            List<JmsListenerManagedBuildItem> jmsListenerManaged) {
         IndexView index = combinedIndexBuildItem.getIndex();
+        Set<String> managedByJmsListener = jmsListenerManaged.stream()
+                .map(JmsListenerManagedBuildItem::getBeanClassName)
+                .collect(Collectors.toSet());
         boolean single = containers.size() == 1;
         if (single) {
             ContainerStartedBuildItem container = containers.get(0);
             Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
             for (AnnotationInstance instance : annotations) {
                 ClassInfo classInfo = instance.target().asClass();
+                if (managedByJmsListener.contains(classInfo.name().toString())) {
+                    continue;
+                }
                 String activationSpecId = getActivationSpecId(instance);
                 String resourceEndpoint = classInfo.name().toString();
                 // TODO: Extract config
@@ -327,12 +336,22 @@ class IronJacamarProcessor {
                         resourceEndpoint,
                         buildTimeConfig);
             }
+            for (ResourceEndpointBuildItem ep : generatedEndpoints) {
+                recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
+                        container.identifier,
+                        ep.getActivationSpecKey(),
+                        ep.getEndpointClassName(),
+                        Map.of());
+            }
         } else {
             // More than one ResourceAdapter found. Activate the endpoints for the respective container
             for (ContainerStartedBuildItem container : containers) {
                 // Filter out the endpoints for the respective container
                 Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
                 for (AnnotationInstance instance : annotations) {
+                    if (managedByJmsListener.contains(instance.target().asClass().name().toString())) {
+                        continue;
+                    }
                     AnnotationInstance annotation = instance.target().declaredAnnotation(Identifier.class);
                     if (annotation == null) {
                         throw QuarkusIronJacamarLogger.log.useIdentifierAnnotation(instance.target().toString());
@@ -347,6 +366,15 @@ class IronJacamarProcessor {
                                 container.identifier, activationSpecId,
                                 resourceEndpoint,
                                 buildTimeConfig);
+                    }
+                }
+                for (ResourceEndpointBuildItem ep : generatedEndpoints) {
+                    if (container.identifier.equals(ep.getContainerId())) {
+                        recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
+                                container.identifier,
+                                ep.getActivationSpecKey(),
+                                ep.getEndpointClassName(),
+                                Map.of());
                     }
                 }
             }
