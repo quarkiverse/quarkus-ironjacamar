@@ -46,6 +46,7 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
         ContextInternal duplicated = ((ContextInternal) rootContext).duplicate();
         // Eagerly initialize the context local data map. In Vert.x 5 context locals start unset, and callers
         // reached from the endpoint (e.g. the REST Client) assume a duplicated context always carries one.
+        // Workaround for https://github.com/quarkusio/quarkus/issues/57131 - remove once that is fixed.
         VertxContext.localContextData(duplicated);
         duplicated.beginDispatch();
         super.beforeDelivery(method);
