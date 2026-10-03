@@ -19,3 +19,6 @@ jobs:
     secrets: inherit
     with:
       ecosystem_ci_repo_path: quarkiverse-ironjacamar
+      # Build against the Quarkus main branch. Without this the shared workflow
+      # falls back to the 3.40 branch, which no longer matches this extension.
+      alternative: main
