@@ -34,7 +34,7 @@ import io.quarkiverse.ironjacamar.test.adapter.TestActivationSpec;
 import io.quarkiverse.ironjacamar.test.adapter.TestConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestManagedConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestResourceEndpoint;
-import io.quarkus.test.QuarkusUnitTest;
+import io.quarkus.test.QuarkusExtensionTest;
 
 /**
  * Verifies that {@link io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory#createEndpoint(XAResource)}
@@ -51,7 +51,7 @@ public class XAResourceWrappingTest {
     static final AtomicReference<XAResource> capturedXAResource = new AtomicReference<>();
 
     @RegisterExtension
-    static final QuarkusUnitTest config = new QuarkusUnitTest()
+    static final QuarkusExtensionTest config = new QuarkusExtensionTest()
             .withApplicationRoot(root -> root
                     .addClasses(
                             TestResourceAdapterFactory.class,

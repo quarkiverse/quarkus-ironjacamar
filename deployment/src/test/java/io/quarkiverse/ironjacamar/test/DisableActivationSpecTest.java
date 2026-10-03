@@ -24,12 +24,12 @@ import io.quarkiverse.ironjacamar.test.adapter.TestConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestManagedConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestResourceAdapter;
 import io.quarkiverse.ironjacamar.test.adapter.TestResourceEndpoint;
-import io.quarkus.test.QuarkusUnitTest;
+import io.quarkus.test.QuarkusExtensionTest;
 
 public class DisableActivationSpecTest {
 
     @RegisterExtension
-    static final QuarkusUnitTest config = new QuarkusUnitTest()
+    static final QuarkusExtensionTest config = new QuarkusExtensionTest()
             .withApplicationRoot(root -> root
                     .addClasses(TestResourceAdapterFactory.class,
                             TestResourceAdapter.class,

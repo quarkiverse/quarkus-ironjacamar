@@ -21,12 +21,12 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
 import io.quarkiverse.ironjacamar.test.adapter.TestActivationSpec;
 import io.quarkiverse.ironjacamar.test.adapter.TestManagedConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestResourceAdapter;
-import io.quarkus.test.QuarkusUnitTest;
+import io.quarkus.test.QuarkusExtensionTest;
 
 public class MissingResourceAdapterTypesTest {
 
     @RegisterExtension
-    static final QuarkusUnitTest config = new QuarkusUnitTest()
+    static final QuarkusExtensionTest config = new QuarkusExtensionTest()
             .withApplicationRoot(root -> root
                     .addClasses(MissingResourceAdapterTypesResourceAdapterFactory.class,
                             TestResourceAdapter.class,

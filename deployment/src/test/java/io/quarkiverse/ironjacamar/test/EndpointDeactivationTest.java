@@ -28,14 +28,14 @@ import io.quarkiverse.ironjacamar.test.adapter.TestConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestManagedConnectionFactory;
 import io.quarkiverse.ironjacamar.test.adapter.TestResourceAdapter;
 import io.quarkiverse.ironjacamar.test.adapter.TestResourceEndpoint;
-import io.quarkus.test.QuarkusUnitTest;
+import io.quarkus.test.QuarkusExtensionTest;
 
 /**
  * Verifies that {@link ResourceAdapter#endpointDeactivation} is called for every activated endpoint
  * when the application shuts down, as required by the JCA specification.
  *
  * <p>
- * This test uses a custom {@link Handler} instead of {@link QuarkusUnitTest#assertLogRecords} because
+ * This test uses a custom {@link Handler} instead of {@link QuarkusExtensionTest#assertLogRecords} because
  * the deactivation log (QIJ000018) is emitted during CDI bean destruction, which happens inside
  * {@code RunningQuarkusApplication.close()}. The {@code assertLogRecords} mechanism snapshots log records
  * <em>before</em> the application is closed, so it cannot capture shutdown-time messages.
@@ -67,7 +67,7 @@ public class EndpointDeactivationTest {
     };
 
     @RegisterExtension
-    static final QuarkusUnitTest config = new QuarkusUnitTest()
+    static final QuarkusExtensionTest config = new QuarkusExtensionTest()
             .withApplicationRoot(root -> root
                     .addClasses(TestResourceAdapterFactory.class,
                             TestResourceAdapter.class,
