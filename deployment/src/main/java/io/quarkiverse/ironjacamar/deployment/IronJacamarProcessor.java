@@ -37,7 +37,6 @@ import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
-import io.quarkus.arc.BeanDestroyer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
@@ -199,7 +198,7 @@ class IronJacamarProcessor {
                 .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
                 .addInjectionPoint(ClassType.create(DotName.createSimple(RecoveryPlugin.class)))
                 .createWith(recorder.createTransactionRecoveryManager())
-                .destroyer(BeanDestroyer.CloseableDestroyer.class)
+                .autoClose(true)
                 .done());
     }
 
@@ -241,7 +240,7 @@ class IronJacamarProcessor {
                     .createWith(recorder.createContainerFunction(key, raKind.kind()))
                     .addInjectionPoint(ClassType.create(DotName.createSimple(Vertx.class)))
                     .addInjectionPoint(ClassType.create(DotName.createSimple(IronJacamarSupport.class)))
-                    .destroyer(BeanDestroyer.CloseableDestroyer.class);
+                    .autoClose(true);
             // Don't need to specify the identifier if a single Resource Adapter is deployed
             if (single) {
                 configurator.addQualifier(DEFAULT_QUALIFIER);

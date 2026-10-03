@@ -5,9 +5,10 @@ import java.lang.reflect.Method;
 import jakarta.resource.ResourceException;
 import jakarta.resource.spi.endpoint.MessageEndpoint;
 
+import io.smallrye.common.vertx.VertxContext;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.ContextInternal;
+import io.vertx.core.internal.ContextInternal;
 
 /**
  * A {@link MessageEndpointWrapper} implementation that duplicates the given {@link Context}
@@ -42,7 +43,12 @@ public class DuplicatedContextMessageEndpoint extends MessageEndpointWrapper {
      */
     @Override
     public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
-        ((ContextInternal) rootContext).duplicate().beginDispatch();
+        ContextInternal duplicated = ((ContextInternal) rootContext).duplicate();
+        // Eagerly initialize the context local data map. In Vert.x 5 context locals start unset, and callers
+        // reached from the endpoint (e.g. the REST Client) assume a duplicated context always carries one.
+        // Workaround for https://github.com/quarkusio/quarkus/issues/57131 - remove once that is fixed.
+        VertxContext.localContextData(duplicated);
+        duplicated.beginDispatch();
         super.beforeDelivery(method);
     }
 
