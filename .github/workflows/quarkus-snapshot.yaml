@@ -19,4 +19,3 @@ jobs:
     secrets: inherit
     with:
       ecosystem_ci_repo_path: quarkiverse-ironjacamar
-      java_version: 17
