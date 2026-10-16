@@ -208,4 +208,25 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
     @Message(id = 20, value = "Unregistered XAResourceRecovery for %s")
     void unregisteredXAResourceRecovery(String activationSpec);
 
+    /**
+     * Returns a {@link DeploymentException} indicating that the container id of a contributed resource endpoint must be
+     * set.
+     *
+     * @param endpointClassName the endpoint class name
+     * @return the exception
+     */
+    @Message(id = 21, value = "Because there are more than one resource adapter configured, you need to explicitly set the container id of the resource endpoint %s")
+    DeploymentException useContainerId(String endpointClassName);
+
+    /**
+     * Returns a {@link DeploymentException} indicating that the container id of a contributed resource endpoint does
+     * not match any configured resource adapter.
+     *
+     * @param endpointClassName the endpoint class name
+     * @param containerId the container id
+     * @return the exception
+     */
+    @Message(id = 22, value = "The resource endpoint %s was registered for the resource adapter %s, but no resource adapter is configured with that name")
+    DeploymentException unknownContainerId(String endpointClassName, String containerId);
+
 }

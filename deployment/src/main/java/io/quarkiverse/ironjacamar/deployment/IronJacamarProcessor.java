@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,6 @@ import io.vertx.core.Vertx;
 class IronJacamarProcessor {
 
     private static final String FEATURE = "ironjacamar";
-    private static final AnnotationInstance DEFAULT_QUALIFIER = AnnotationInstance.builder(DotNames.DEFAULT).build();
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -138,6 +138,7 @@ class IronJacamarProcessor {
 
     @BuildStep
     void registerResourceEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
+            List<ResourceEndpointBuildItem> resourceEndpoints,
             BuildProducer<AdditionalBeanBuildItem> additionalBeans,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClasses) {
         IndexView index = combinedIndexBuildItem.getIndex();
@@ -167,6 +168,14 @@ class IronJacamarProcessor {
 
         // Add reflective access to message endpoints (needed for io.quarkiverse.ironjacamar.runtime.endpoint.DefaultMessageEndpointFactory#isDeliveryTransacted)
         reflectiveClasses.produce(ReflectiveClassBuildItem.builder(endpoints).methods().build());
+
+        // Endpoints contributed by other extensions are beans already, they just need the reflective access
+        if (!resourceEndpoints.isEmpty()) {
+            String[] contributedEndpoints = resourceEndpoints.stream()
+                    .map(ResourceEndpointBuildItem::getEndpointClassName)
+                    .toArray(String[]::new);
+            reflectiveClasses.produce(ReflectiveClassBuildItem.builder(contributedEndpoints).methods().build());
+        }
     }
 
     @BuildStep
@@ -243,7 +252,7 @@ class IronJacamarProcessor {
                     .autoClose(true);
             // Don't need to specify the identifier if a single Resource Adapter is deployed
             if (single) {
-                configurator.addQualifier(DEFAULT_QUALIFIER);
+                configurator.addQualifier(DotNames.DEFAULT);
             }
             producer.produce(configurator.done());
 
@@ -263,14 +272,14 @@ class IronJacamarProcessor {
                             .unremovable()
                             .createWith(recorder.createConnectionFactory(key));
                     if (single) {
-                        cfConfigurator.addQualifier(DEFAULT_QUALIFIER);
+                        cfConfigurator.addQualifier(DotNames.DEFAULT);
                     }
                     producer.produce(cfConfigurator.done());
                 }
             } else {
                 QuarkusIronJacamarLogger.log.resourceAdapterTypesNotDefined(raf.name().toString());
             }
-            createdProducer.produce(new ContainerCreatedBuildItem(key));
+            createdProducer.produce(new ContainerCreatedBuildItem(key, raKind.kind()));
         }
     }
 
@@ -294,14 +303,17 @@ class IronJacamarProcessor {
         for (ContainerCreatedBuildItem container : containers) {
             // Start the resource adapter
             RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
-                    container.identifier,
+                    container.identifier(),
                     vertxBuildItem.getVertx());
-            startedProducer.produce(new ContainerStartedBuildItem(container.identifier, futureRuntimeValue));
+            startedProducer.produce(new ContainerStartedBuildItem(container.identifier(), futureRuntimeValue));
         }
     }
 
     /**
-     * Find all classes with @ResourceEndpoint and activate them for the respective {@link IronJacamarContainer}
+     * Find all classes with @ResourceEndpoint, as well as the endpoints contributed through
+     * {@link ResourceEndpointBuildItem}, and activate them for the respective {@link IronJacamarContainer}.
+     * <p>
+     * Endpoints listed in a {@link ResourceEndpointIgnoredBuildItem} are not activated.
      */
     @BuildStep
     @Record(value = ExecutionTime.RUNTIME_INIT)
@@ -310,14 +322,29 @@ class IronJacamarProcessor {
     ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
             IronJacamarRecorder recorder,
             BeanContainerBuildItem beanContainerBuildItem,
-            List<ContainerStartedBuildItem> containers) {
+            List<ContainerStartedBuildItem> containers,
+            List<ResourceEndpointBuildItem> resourceEndpoints,
+            List<ResourceEndpointIgnoredBuildItem> ignoredResourceEndpoints) {
+        if (containers.isEmpty()) {
+            // No resource adapter configured, there is nothing to activate
+            return new ServiceStartBuildItem(FEATURE);
+        }
         IndexView index = combinedIndexBuildItem.getIndex();
+        // Contributed endpoints may be ignored too, as long as their class is available in the index
+        List<ResourceEndpointBuildItem> endpoints = resourceEndpoints.stream()
+                .filter(endpoint -> !isIgnored(index.getClassByName(endpoint.getEndpointClassName()),
+                        ignoredResourceEndpoints))
+                .toList();
         boolean single = containers.size() == 1;
+        validateContainerIds(endpoints, containers, single);
         if (single) {
             ContainerStartedBuildItem container = containers.get(0);
             Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
             for (AnnotationInstance instance : annotations) {
                 ClassInfo classInfo = instance.target().asClass();
+                if (isIgnored(classInfo, ignoredResourceEndpoints)) {
+                    continue;
+                }
                 String activationSpecId = getActivationSpecId(instance);
                 String resourceEndpoint = classInfo.name().toString();
                 // TODO: Extract config
@@ -327,12 +354,22 @@ class IronJacamarProcessor {
                         resourceEndpoint,
                         buildTimeConfig);
             }
+            for (ResourceEndpointBuildItem endpoint : endpoints) {
+                // The container id is optional when a single resource adapter is deployed
+                recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue, container.identifier,
+                        endpoint.getActivationSpecConfigKey(),
+                        endpoint.getEndpointClassName(),
+                        Map.of());
+            }
         } else {
-            // More than one ResourceAdapter found. Activate the endpoints for the respective container
+            // Activate the endpoints for the respective container
             for (ContainerStartedBuildItem container : containers) {
                 // Filter out the endpoints for the respective container
                 Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
                 for (AnnotationInstance instance : annotations) {
+                    if (isIgnored(instance.target().asClass(), ignoredResourceEndpoints)) {
+                        continue;
+                    }
                     AnnotationInstance annotation = instance.target().declaredAnnotation(Identifier.class);
                     if (annotation == null) {
                         throw QuarkusIronJacamarLogger.log.useIdentifierAnnotation(instance.target().toString());
@@ -347,6 +384,15 @@ class IronJacamarProcessor {
                                 container.identifier, activationSpecId,
                                 resourceEndpoint,
                                 buildTimeConfig);
+                    }
+                }
+                for (ResourceEndpointBuildItem endpoint : endpoints) {
+                    if (container.identifier.equals(endpoint.getContainerId())) {
+                        recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
+                                container.identifier,
+                                endpoint.getActivationSpecConfigKey(),
+                                endpoint.getEndpointClassName(),
+                                Map.of());
                     }
                 }
             }
@@ -372,6 +418,43 @@ class IronJacamarProcessor {
         card.addLibraryVersion("jakarta.resource", "jakarta.resource-api", "Jakarta Connectors",
                 "https://jakarta.ee/specifications/connectors/");
         return card;
+    }
+
+    /**
+     * Validate the container ids of the contributed endpoints: they are required as soon as more than one resource
+     * adapter is deployed, and they must always match a deployed one.
+     */
+    private static void validateContainerIds(List<ResourceEndpointBuildItem> endpoints,
+            List<ContainerStartedBuildItem> containers, boolean single) {
+        if (endpoints.isEmpty()) {
+            return;
+        }
+        Set<String> containerIds = containers.stream()
+                .map(container -> container.identifier)
+                .collect(Collectors.toSet());
+        for (ResourceEndpointBuildItem endpoint : endpoints) {
+            String containerId = endpoint.getContainerId();
+            if (containerId == null) {
+                if (!single) {
+                    throw QuarkusIronJacamarLogger.log.useContainerId(endpoint.getEndpointClassName());
+                }
+            } else if (!containerIds.contains(containerId)) {
+                throw QuarkusIronJacamarLogger.log.unknownContainerId(endpoint.getEndpointClassName(), containerId);
+            }
+        }
+    }
+
+    private static boolean isIgnored(ClassInfo endpointClass, List<ResourceEndpointIgnoredBuildItem> ignoredResourceEndpoints) {
+        if (endpointClass == null) {
+            // Endpoints generated at build time are not in the index, there is nothing to match against
+            return false;
+        }
+        for (ResourceEndpointIgnoredBuildItem ignored : ignoredResourceEndpoints) {
+            if (ignored.test(endpointClass)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static String getActivationSpecId(AnnotationInstance instance) {

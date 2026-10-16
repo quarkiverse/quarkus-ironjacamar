@@ -325,6 +325,70 @@ quarkus.ironjacamar.main.ra.cm.pool.config.idle-timeout-minutes=15
 quarkus.ironjacamar.other.ra.cm.pool.config.idle-timeout-minutes=0
 ----
 
+== Contributing endpoints from another extension
+
+Extensions can take part in the endpoint activation at build time, typically to activate endpoints they generate themselves (for example from their own listener annotation).
+This requires a dependency on `io.quarkiverse.ironjacamar:quarkus-ironjacamar-deployment` in the `deployment` module of your extension.
+
+Three build items are involved:
+
+`ContainerCreatedBuildItem`:: Produced for each configured resource adapter. Consume it to discover the deployed resource adapters, their `identifier()` and their `kind()`.
+`ResourceEndpointBuildItem`:: Registers an endpoint to activate. Use it for endpoint classes that are not annotated with `@ResourceEndpoint`, which is the case of classes generated at build time, as those are not in the Jandex index when the endpoints are activated.
+`ResourceEndpointIgnoredBuildItem`:: Excludes endpoints from the automatic activation, for the endpoints your extension activates itself.
+
+=== Activating a generated endpoint
+
+[source,java,subs=attributes+]
+----
+@BuildStep
+void contributeEndpoints(List<ContainerCreatedBuildItem> containers, <1>
+        BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+        BuildProducer<RunTimeConfigurationDefaultBuildItem> configDefaults,
+        BuildProducer<ResourceEndpointBuildItem> resourceEndpoints) {
+    for (ContainerCreatedBuildItem container : containers) {
+        if (!"artemis".equals(container.kind())) { <2>
+            continue;
+        }
+        String endpointClassName = generateEndpoint(generatedBeans, container); <3>
+        configDefaults.produce(new RunTimeConfigurationDefaultBuildItem(
+                "quarkus.ironjacamar.activation-spec.my-activation-spec.config.destination", "MyQueue")); <4>
+        resourceEndpoints.produce(new ResourceEndpointBuildItem(endpointClassName,
+                "my-activation-spec", container.identifier())); <5>
+    }
+}
+----
+
+<1> The configured resource adapters, which is how you discover the container identifiers to activate the endpoint in.
+<2> The kind declared by the `@ResourceAdapterKind` annotation of the `ResourceAdapterFactory`, useful to only handle the resource adapters your extension supports.
+<3> Your extension owns the endpoint class and must make it an unremovable bean.
+Reflective access to its methods is registered by this extension.
+<4> (Optional) The activation spec configuration can be given defaults, so that the application only overrides what it needs.
+<5> The activation spec configuration key is the same one the `@ResourceEndpoint` annotation uses, and the container id tells which resource adapter activates the endpoint.
+
+The container id is optional when a single resource adapter is configured, but it is required as soon as there is more than one, and it must always match a configured resource adapter.
+Otherwise the build fails, instead of silently never consuming any message.
+
+=== Taking over an annotated endpoint
+
+An extension that activates `@ResourceEndpoint` annotated classes itself tells this extension to leave them alone with a `Predicate<ClassInfo>`:
+
+[source,java,subs=attributes+]
+----
+private static final DotName MY_LISTENER = DotName.createSimple(MyListener.class);
+
+@BuildStep
+void ignoreEndpointsHandledByThisExtension(BuildProducer<ResourceEndpointIgnoredBuildItem> ignoredEndpoints) {
+    ignoredEndpoints.produce(new ResourceEndpointIgnoredBuildItem(
+            classInfo -> classInfo.hasAnnotation(MY_LISTENER))); <1>
+}
+----
+
+<1> The predicate is evaluated against every class annotated with `@ResourceEndpoint`, here matching the ones having a `@MyListener` method.
+It is also evaluated against the endpoints contributed through a `ResourceEndpointBuildItem`, as long as their class is in the index.
+
+The ignored classes are still registered as beans, only their activation is skipped.
+They also don't need the `@Identifier` annotation required by <<Multiple Resource Adapters>>, since your extension is the one deciding where they are activated.
+
 [[extension-configuration-reference]]
 == Extension Configuration Reference
 

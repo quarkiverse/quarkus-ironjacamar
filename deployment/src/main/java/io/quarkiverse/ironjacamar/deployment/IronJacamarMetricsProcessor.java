@@ -46,13 +46,13 @@ public class IronJacamarMetricsProcessor {
         if (buildtimeConfig.metricsEnabled() && metricsCapability.isPresent()) {
             for (ContainerCreatedBuildItem container : containers) {
                 boolean poolMetricsEnabled = true;
-                var config = buildtimeConfig.resourceAdapters().get(container.identifier);
+                var config = buildtimeConfig.resourceAdapters().get(container.identifier());
                 if (config != null) {
                     poolMetricsEnabled = config.ra().cm().pool().enableMetrics().orElse(true);
                 }
                 if (poolMetricsEnabled) {
                     metrics.produce(new MetricsFactoryConsumerBuildItem(
-                            recorder.registerPoolMetrics(beanContainerBuildItem.getValue(), container.identifier)));
+                            recorder.registerPoolMetrics(beanContainerBuildItem.getValue(), container.identifier())));
                 }
             }
         }
