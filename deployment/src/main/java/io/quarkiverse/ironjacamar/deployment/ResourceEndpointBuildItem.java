@@ -75,7 +75,7 @@ public final class ResourceEndpointBuildItem extends MultiBuildItem {
      *
      * @return the endpoint class name
      */
-    public String getEndpointClassName() {
+    public String endpointClassName() {
         return endpointClassName;
     }
 
@@ -84,7 +84,7 @@ public final class ResourceEndpointBuildItem extends MultiBuildItem {
      *
      * @return the activation spec configuration key, may be {@code null}
      */
-    public String getActivationSpecConfigKey() {
+    public String activationSpecConfigKey() {
         return activationSpecConfigKey;
     }
 
@@ -93,7 +93,7 @@ public final class ResourceEndpointBuildItem extends MultiBuildItem {
      *
      * @return the container identifier, may be {@code null}
      */
-    public String getContainerId() {
+    public String containerId() {
         return containerId;
     }
 }

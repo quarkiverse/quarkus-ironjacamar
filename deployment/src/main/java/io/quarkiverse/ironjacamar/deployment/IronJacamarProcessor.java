@@ -172,7 +172,7 @@ class IronJacamarProcessor {
         // Endpoints contributed by other extensions are beans already, they just need the reflective access
         if (!resourceEndpoints.isEmpty()) {
             String[] contributedEndpoints = resourceEndpoints.stream()
-                    .map(ResourceEndpointBuildItem::getEndpointClassName)
+                    .map(ResourceEndpointBuildItem::endpointClassName)
                     .toArray(String[]::new);
             reflectiveClasses.produce(ReflectiveClassBuildItem.builder(contributedEndpoints).methods().build());
         }
@@ -332,7 +332,7 @@ class IronJacamarProcessor {
         IndexView index = combinedIndexBuildItem.getIndex();
         // Contributed endpoints may be ignored too, as long as their class is available in the index
         List<ResourceEndpointBuildItem> endpoints = resourceEndpoints.stream()
-                .filter(endpoint -> !isIgnored(index.getClassByName(endpoint.getEndpointClassName()),
+                .filter(endpoint -> !isIgnored(index.getClassByName(endpoint.endpointClassName()),
                         ignoredResourceEndpoints))
                 .toList();
         boolean single = containers.size() == 1;
@@ -357,8 +357,8 @@ class IronJacamarProcessor {
             for (ResourceEndpointBuildItem endpoint : endpoints) {
                 // The container id is optional when a single resource adapter is deployed
                 recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue, container.identifier,
-                        endpoint.getActivationSpecConfigKey(),
-                        endpoint.getEndpointClassName(),
+                        endpoint.activationSpecConfigKey(),
+                        endpoint.endpointClassName(),
                         Map.of());
             }
         } else {
@@ -387,11 +387,11 @@ class IronJacamarProcessor {
                     }
                 }
                 for (ResourceEndpointBuildItem endpoint : endpoints) {
-                    if (container.identifier.equals(endpoint.getContainerId())) {
+                    if (container.identifier.equals(endpoint.containerId())) {
                         recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
                                 container.identifier,
-                                endpoint.getActivationSpecConfigKey(),
-                                endpoint.getEndpointClassName(),
+                                endpoint.activationSpecConfigKey(),
+                                endpoint.endpointClassName(),
                                 Map.of());
                     }
                 }
@@ -433,13 +433,13 @@ class IronJacamarProcessor {
                 .map(container -> container.identifier)
                 .collect(Collectors.toSet());
         for (ResourceEndpointBuildItem endpoint : endpoints) {
-            String containerId = endpoint.getContainerId();
+            String containerId = endpoint.containerId();
             if (containerId == null) {
                 if (!single) {
-                    throw QuarkusIronJacamarLogger.log.useContainerId(endpoint.getEndpointClassName());
+                    throw QuarkusIronJacamarLogger.log.useContainerId(endpoint.endpointClassName());
                 }
             } else if (!containerIds.contains(containerId)) {
-                throw QuarkusIronJacamarLogger.log.unknownContainerId(endpoint.getEndpointClassName(), containerId);
+                throw QuarkusIronJacamarLogger.log.unknownContainerId(endpoint.endpointClassName(), containerId);
             }
         }
     }
