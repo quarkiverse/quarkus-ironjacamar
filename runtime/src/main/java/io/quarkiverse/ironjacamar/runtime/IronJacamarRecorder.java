@@ -7,25 +7,13 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-import javax.naming.Reference;
-
-import jakarta.enterprise.inject.spi.DeploymentException;
-import jakarta.resource.Referenceable;
-import jakarta.resource.ResourceException;
-
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.jca.core.api.bootstrap.CloneableBootstrapContext;
-import org.jboss.jca.core.api.connectionmanager.ccm.CachedConnectionManager;
 import org.jboss.jca.core.bootstrapcontext.BaseCloneableBootstrapContext;
 import org.jboss.jca.core.bootstrapcontext.BootstrapContextCoordinator;
-import org.jboss.jca.core.connectionmanager.ccm.CachedConnectionManagerImpl;
 import org.jboss.jca.core.connectionmanager.pool.idle.IdleRemover;
 import org.jboss.jca.core.connectionmanager.pool.validator.ConnectionValidator;
-import org.jboss.jca.core.spi.recovery.RecoveryPlugin;
 import org.jboss.jca.core.spi.security.SecurityIntegration;
 import org.jboss.jca.core.spi.transaction.TransactionIntegration;
 import org.jboss.jca.core.workmanager.WorkManagerCoordinator;
@@ -35,11 +23,8 @@ import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig.ConnectionMan
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.Arc;
-import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.arc.runtime.BeanContainer;
-import io.quarkus.runtime.RuntimeValue;
-import io.quarkus.runtime.ShutdownContext;
-import io.quarkus.runtime.annotations.Recorder;
+import io.quarkus.core.StartContext;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -47,97 +32,11 @@ import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 
 /**
- * The runtime recorder for IronJacamar
+ * Runtime startup logic for IronJacamar, invoked from the service actions registered at build time.
  */
-@Recorder
-public class IronJacamarRecorder {
+public final class IronJacamarRecorder {
 
-    private final RuntimeValue<IronJacamarRuntimeConfig> runtimeConfig;
-
-    /**
-     * Constructor
-     */
-    public IronJacamarRecorder(RuntimeValue<IronJacamarRuntimeConfig> runtimeConfig) {
-        this.runtimeConfig = runtimeConfig;
-    }
-
-    /**
-     * Create an {@link IronJacamarContainer} for the given resource adapter
-     *
-     * @param id The resource adapter id
-     * @param kind The resource adapter kind
-     * @return A Function that creates an {@link IronJacamarContainer}
-     */
-    public Function<SyntheticCreationalContext<IronJacamarContainer>, IronJacamarContainer> createContainerFunction(String id,
-            String kind) {
-        return context -> {
-            IronJacamarSupport containerProducer = context
-                    .getInjectedReference(IronJacamarSupport.class);
-            Vertx vertx = context
-                    .getInjectedReference(Vertx.class);
-            return containerProducer.createContainer(vertx, id, kind);
-        };
-    }
-
-    /**
-     * Create a connection factory from the given resource adapter (implementation vendor specific)
-     *
-     * @param id The resource adapter id
-     * @return A function that creates a connection factory
-     */
-    public Function<SyntheticCreationalContext<Object>, Object> createConnectionFactory(String id) {
-        return context -> {
-            IronJacamarContainer container = context.getInjectedReference(IronJacamarContainer.class,
-                    Identifier.Literal.of(id));
-            try {
-                Object connectionFactory = container.createConnectionFactory();
-                if (connectionFactory instanceof Referenceable ref) {
-                    // Set a reference to avoid serialization and JNDI lookups. See https://issues.apache.org/jira/browse/ARTEMIS-5253
-                    ref.setReference(new Reference(connectionFactory.getClass().getCanonicalName(), null, null));
-                }
-                return connectionFactory;
-            } catch (ResourceException e) {
-                throw new DeploymentException("Cannot create connection factory", e);
-            }
-        };
-    }
-
-    /**
-     * Create a {@link CachedConnectionManager}
-     *
-     * @return A function that creates a {@link CachedConnectionManager}
-     */
-    public Function<SyntheticCreationalContext<CachedConnectionManager>, CachedConnectionManager> createCachedConnectionManager() {
-        return context -> {
-            TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
-            CachedConnectionManagerImpl cachedConnectionManager = new CachedConnectionManagerImpl(ti);
-            cachedConnectionManager.start();
-            return cachedConnectionManager;
-        };
-    }
-
-    /**
-     * Create a {@link QuarkusSecurityIntegration}
-     *
-     * @return A function that creates a {@link QuarkusSecurityIntegration}
-     */
-    public Function<SyntheticCreationalContext<QuarkusSecurityIntegration>, QuarkusSecurityIntegration> createSecurityIntegration() {
-        return context -> new QuarkusSecurityIntegration();
-    }
-
-    /**
-     * Create a {@link TransactionRecoveryManager}
-     *
-     * @return A function that creates a {@link TransactionRecoveryManager}
-     */
-    public Function<SyntheticCreationalContext<TransactionRecoveryManager>, TransactionRecoveryManager> createTransactionRecoveryManager() {
-        return context -> {
-            TransactionIntegration ti = context.getInjectedReference(TransactionIntegration.class);
-            RecoveryPlugin recoveryPlugin = context.getInjectedReference(RecoveryPlugin.class);
-            boolean enableRecovery = ConfigProvider.getConfig().getOptionalValue("quarkus.transaction-manager.enable-recovery",
-                    Boolean.class).orElse(false);
-            return new TransactionRecoveryManager(ti, recoveryPlugin, enableRecovery);
-        };
+    private IronJacamarRecorder() {
     }
 
     /**
@@ -145,7 +44,7 @@ public class IronJacamarRecorder {
      *
      * @param beanContainer The bean container
      */
-    public void initDefaultBootstrapContext(BeanContainer beanContainer) {
+    public static void initDefaultBootstrapContext(BeanContainer beanContainer) {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
         SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
         BaseCloneableBootstrapContext bootstrapContext = new BaseCloneableBootstrapContext();
@@ -178,54 +77,62 @@ public class IronJacamarRecorder {
      *
      * @param beanContainer The bean container
      * @param key The resource adapter key
-     * @param vertxSupplier The vertx supplier
-     * @return A {@link RuntimeValue} containing a {@link Future} that completes when the resource adapter is initialized
+     * @param vertx The Vert.x instance
+     * @param runtimeConfig The runtime configuration
+     * @return An {@link IronJacamarContainerStart} holding the {@link Future} that completes when the resource adapter
+     *         is initialized
      */
-    public RuntimeValue<Future<String>> initResourceAdapter(
+    public static IronJacamarContainerStart initResourceAdapter(
             BeanContainer beanContainer,
             String key,
-            Supplier<Vertx> vertxSupplier) {
-        Vertx vertx = vertxSupplier.get();
+            Vertx vertx,
+            IronJacamarRuntimeConfig runtimeConfig) {
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
         CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
         List<ResourceAdapterLifecycleListener> listeners = Arc.container().select(ResourceAdapterLifecycleListener.class)
                 .stream().toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
-        Duration maxWorkerExecuteTime = runtimeConfig.getValue().maxWorkerExecuteTime();
+        Duration maxWorkerExecuteTime = runtimeConfig.maxWorkerExecuteTime();
         Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)
                 .setThreadingModel(ThreadingModel.WORKER)
                 .setMaxWorkerExecuteTime(maxWorkerExecuteTime.toMillis())
                 .setMaxWorkerExecuteTimeUnit(TimeUnit.MILLISECONDS));
-        return new RuntimeValue<>(future);
+        return new IronJacamarContainerStart(future);
     }
 
     /**
-     * Activate an endpoint
+     * Activate an endpoint once the resource adapter has started
      *
      * @param beanContainer The bean container
-     * @param containerFuture The container future
+     * @param containerStart The container start holding the future that completes when the resource adapter is started
      * @param resourceAdapterId The resource adapter id
      * @param activationSpecConfigId The activation spec config id
      * @param endpointClassName The endpoint class name
      * @param buildTimeConfig The build time config
      */
-    public void activateEndpoint(BeanContainer beanContainer,
-            RuntimeValue<Future<String>> containerFuture,
+    public static void activateEndpoint(BeanContainer beanContainer,
+            IronJacamarContainerStart containerStart,
             String resourceAdapterId,
             String activationSpecConfigId,
             String endpointClassName,
             Map<String, String> buildTimeConfig) {
-        Future<String> future = containerFuture.getValue();
-        future.onSuccess(s -> {
+        containerStart.future().onSuccess(s -> {
             IronJacamarSupport producer = beanContainer.beanInstance(IronJacamarSupport.class);
             producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
         });
     }
 
-    public void startIdleRemover(BeanContainer beanContainer, ShutdownContext shutdownContext) {
-        IronJacamarRuntimeConfig config = runtimeConfig.getValue();
+    /**
+     * Start the {@link IdleRemover} if any resource adapter pool requires it
+     *
+     * @param startContext The service start context
+     * @param beanContainer The bean container
+     * @param config The runtime configuration
+     */
+    public static void startIdleRemover(StartContext startContext, BeanContainer beanContainer,
+            IronJacamarRuntimeConfig config) {
         boolean shouldStart = false;
         for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : config.resourceAdapters().values()) {
             if (value.ra().cm().pool().config().idleTimeoutMinutes() > 0) {
@@ -242,7 +149,7 @@ public class IronJacamarRecorder {
             IdleRemover instance = IdleRemover.getInstance();
             instance.setExecutorService(managedExecutor);
             instance.start();
-            shutdownContext.addShutdownTask(() -> {
+            startContext.onStop(() -> {
                 try {
                     QuarkusIronJacamarLogger.log.stopIdleRemoverService();
                     instance.stop();
@@ -255,8 +162,15 @@ public class IronJacamarRecorder {
         }
     }
 
-    public void startConnectionValidator(BeanContainer beanContainer, ShutdownContext shutdownContext) {
-        IronJacamarRuntimeConfig config = runtimeConfig.getValue();
+    /**
+     * Start the {@link ConnectionValidator} if any resource adapter pool requires it
+     *
+     * @param startContext The service start context
+     * @param beanContainer The bean container
+     * @param config The runtime configuration
+     */
+    public static void startConnectionValidator(StartContext startContext, BeanContainer beanContainer,
+            IronJacamarRuntimeConfig config) {
         boolean shouldStart = false;
         for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : config.resourceAdapters().values()) {
             PoolConfigurationConfig poolConfig = value.ra().cm().pool().config();
@@ -274,7 +188,7 @@ public class IronJacamarRecorder {
             ConnectionValidator instance = ConnectionValidator.getInstance();
             instance.setExecutorService(managedExecutor);
             instance.start();
-            shutdownContext.addShutdownTask(() -> {
+            startContext.onStop(() -> {
                 try {
                     QuarkusIronJacamarLogger.log.stopConnectionValidatorService();
                     instance.stop();
