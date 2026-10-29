@@ -1,22 +1,35 @@
 package io.quarkiverse.ironjacamar.deployment;
 
 import io.quarkus.builder.item.MultiBuildItem;
-import io.quarkus.runtime.RuntimeValue;
-import io.vertx.core.Future;
 
 /**
  * This build item is created once the IronJacamar container is started.
  */
 final class ContainerStartedBuildItem extends MultiBuildItem {
-    /**
-     * The key of the synthetic bean.
-     */
-    public final String identifier;
 
-    public final RuntimeValue<Future<String>> futureRuntimeValue;
+    private final String identifier;
+    private final String startServiceName;
 
-    public ContainerStartedBuildItem(String identifier, RuntimeValue<Future<String>> futureRuntimeValue) {
+    ContainerStartedBuildItem(String identifier, String startServiceName) {
         this.identifier = identifier;
-        this.futureRuntimeValue = futureRuntimeValue;
+        this.startServiceName = startServiceName;
+    }
+
+    /**
+     * Get the identifier of the resource adapter, which is also the key of the synthetic bean
+     *
+     * @return the identifier
+     */
+    String identifier() {
+        return identifier;
+    }
+
+    /**
+     * Get the name of the service that deploys the resource adapter and completes with its deployment future
+     *
+     * @return the start service name
+     */
+    String startServiceName() {
+        return startServiceName;
     }
 }

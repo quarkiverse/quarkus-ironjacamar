@@ -29,47 +29,56 @@ import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
+import io.quarkiverse.ironjacamar.runtime.CachedConnectionManagerBeanCreator;
+import io.quarkiverse.ironjacamar.runtime.ConnectionFactoryBeanCreator;
 import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarContainerBeanCreator;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarContainerStart;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
+import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManagerBeanCreator;
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
+import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegrationBeanCreator;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeansRuntimeInitBuildItem;
 import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.arc.processor.BuiltinScope;
 import io.quarkus.arc.processor.DotNames;
+import io.quarkus.arc.runtime.BeanContainer;
+import io.quarkus.core.Phase;
+import io.quarkus.core.deployment.service.ServiceRegistrar;
 import io.quarkus.deployment.IsLocalDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Consume;
-import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Produce;
-import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
-import io.quarkus.deployment.builditem.ShutdownContextBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.devui.spi.page.CardPageBuildItem;
 import io.quarkus.gizmo2.creator.BlockCreator;
 import io.quarkus.gizmo2.desc.MethodDesc;
-import io.quarkus.runtime.RuntimeValue;
-import io.quarkus.vertx.core.deployment.CoreVertxBuildItem;
 import io.smallrye.common.annotation.Identifier;
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
 class IronJacamarProcessor {
 
     private static final String FEATURE = "ironjacamar";
+
+    private static final String BOOTSTRAP_CONTEXT_SERVICE_NAME = "io.quarkiverse.ironjacamar.bootstrap-context";
+    private static final String CONTAINER_START_SERVICE_PREFIX = "io.quarkiverse.ironjacamar.container-start.";
+    private static final String ENDPOINT_ACTIVATION_SERVICE_NAME = "io.quarkiverse.ironjacamar.endpoint-activation";
+    private static final String IDLE_REMOVER_SERVICE_NAME = "io.quarkiverse.ironjacamar.idle-remover";
+    private static final String CONNECTION_VALIDATOR_SERVICE_NAME = "io.quarkiverse.ironjacamar.connection-validator";
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -179,16 +188,14 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
-    @Record(value = ExecutionTime.STATIC_INIT)
-    void registerSingletonSyntheticBeans(BuildProducer<SyntheticBeanBuildItem> producer,
-            IronJacamarRecorder recorder) {
+    void registerSingletonSyntheticBeans(BuildProducer<SyntheticBeanBuildItem> producer) {
         // Register the CachedConnectionManager as a Singleton bean
         producer.produce(SyntheticBeanBuildItem.configure(CachedConnectionManager.class)
                 .scope(BuiltinScope.SINGLETON.getInfo())
                 .setRuntimeInit()
                 .unremovable()
                 .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
-                .createWith(recorder.createCachedConnectionManager())
+                .creator(CachedConnectionManagerBeanCreator.class)
                 .destroyer(mc -> {
                     // Invoke CachedConnectionManager#stop()
                     BlockCreator bc = mc.destroyMethod();
@@ -206,16 +213,14 @@ class IronJacamarProcessor {
                 .unremovable()
                 .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
                 .addInjectionPoint(ClassType.create(DotName.createSimple(RecoveryPlugin.class)))
-                .createWith(recorder.createTransactionRecoveryManager())
+                .creator(TransactionRecoveryManagerBeanCreator.class)
                 .autoClose(true)
                 .done());
     }
 
     @BuildStep
-    @Record(value = ExecutionTime.STATIC_INIT)
     void registerSyntheticBeans(
             IronJacamarBuildtimeConfig config,
-            IronJacamarRecorder recorder,
             CombinedIndexBuildItem combinedIndexBuildItem,
             List<ResourceAdapterKindBuildItem> kinds,
             BuildProducer<SyntheticBeanBuildItem> producer,
@@ -224,7 +229,7 @@ class IronJacamarProcessor {
         producer.produce(SyntheticBeanBuildItem.configure(QuarkusSecurityIntegration.class)
                 .scope(BuiltinScope.DEPENDENT.getInfo())
                 .unremovable()
-                .createWith(recorder.createSecurityIntegration())
+                .creator(QuarkusSecurityIntegrationBeanCreator.class)
                 .done());
         IndexView index = combinedIndexBuildItem.getIndex();
         Type containerType = Type.create(DotName.createSimple(IronJacamarContainer.class), Type.Kind.CLASS);
@@ -246,7 +251,9 @@ class IronJacamarProcessor {
                     .setRuntimeInit()
                     .addQualifier(qualifier)
                     .unremovable()
-                    .createWith(recorder.createContainerFunction(key, raKind.kind()))
+                    .creator(IronJacamarContainerBeanCreator.class)
+                    .param("id", key)
+                    .param("kind", raKind.kind())
                     .addInjectionPoint(ClassType.create(DotName.createSimple(Vertx.class)))
                     .addInjectionPoint(ClassType.create(DotName.createSimple(IronJacamarSupport.class)))
                     .autoClose(true);
@@ -270,7 +277,8 @@ class IronJacamarProcessor {
                             .types(type)
                             .addInjectionPoint(containerType, qualifier)
                             .unremovable()
-                            .createWith(recorder.createConnectionFactory(key));
+                            .creator(ConnectionFactoryBeanCreator.class)
+                            .param("id", key);
                     if (single) {
                         cfConfigurator.addQualifier(DotNames.DEFAULT);
                     }
@@ -284,28 +292,38 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
-    @Record(value = ExecutionTime.STATIC_INIT)
-    void initDefaultBootstrapContext(BeanContainerBuildItem beanContainerBuildItem, IronJacamarRecorder recorder) {
-        // Create the default bootstrap context
-        recorder.initDefaultBootstrapContext(beanContainerBuildItem.getValue());
+    void initDefaultBootstrapContext(ServiceRegistrar serviceRegistrar) {
+        // Create the default bootstrap context during static initialization
+        serviceRegistrar
+                .forService(BOOTSTRAP_CONTEXT_SERVICE_NAME)
+                .atPhase(Phase.STATIC_INIT)
+                .require(BeanContainer.class)
+                .onStart((ctx, beanContainer) -> IronJacamarRecorder.initDefaultBootstrapContext(beanContainer));
     }
 
     @BuildStep
-    @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
+    // afterBuildItem() is a transitional API, required until the synthetic beans accessed by the container start
+    // service are initialized by the service graph instead of a bytecode recorder
+    @SuppressWarnings("deprecation")
     void startResourceAdapters(
             List<ContainerCreatedBuildItem> containers,
-            IronJacamarRecorder recorder,
-            CoreVertxBuildItem vertxBuildItem,
-            BeanContainerBuildItem beanContainerBuildItem,
+            ServiceRegistrar serviceRegistrar,
             BuildProducer<ContainerStartedBuildItem> startedProducer) {
         // Iterate through all resource adapters configured
         for (ContainerCreatedBuildItem container : containers) {
+            String key = container.identifier();
+            String startServiceName = CONTAINER_START_SERVICE_PREFIX + key;
             // Start the resource adapter
-            RuntimeValue<Future<String>> futureRuntimeValue = recorder.initResourceAdapter(beanContainerBuildItem.getValue(),
-                    container.identifier(),
-                    vertxBuildItem.getVertx());
-            startedProducer.produce(new ContainerStartedBuildItem(container.identifier(), futureRuntimeValue));
+            serviceRegistrar
+                    .forService(IronJacamarContainerStart.class, startServiceName)
+                    .require(BeanContainer.class)
+                    .require(Vertx.class)
+                    .require(IronJacamarRuntimeConfig.class)
+                    .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
+                    .onStart((ctx, beanContainer, vertx, runtimeConfig) -> IronJacamarRecorder
+                            .initResourceAdapter(beanContainer, key, vertx, runtimeConfig));
+            startedProducer.produce(new ContainerStartedBuildItem(key, startServiceName));
         }
     }
 
@@ -316,12 +334,10 @@ class IronJacamarProcessor {
      * Endpoints listed in a {@link ResourceEndpointIgnoredBuildItem} are not activated.
      */
     @BuildStep
-    @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(SyntheticBeansRuntimeInitBuildItem.class)
     @Produce(IronJacamarInitBuildItem.class)
     ServiceStartBuildItem activateEndpoints(CombinedIndexBuildItem combinedIndexBuildItem,
-            IronJacamarRecorder recorder,
-            BeanContainerBuildItem beanContainerBuildItem,
+            ServiceRegistrar serviceRegistrar,
             List<ContainerStartedBuildItem> containers,
             List<ResourceEndpointBuildItem> resourceEndpoints,
             List<ResourceEndpointIgnoredBuildItem> ignoredResourceEndpoints) {
@@ -347,19 +363,12 @@ class IronJacamarProcessor {
                 }
                 String activationSpecId = getActivationSpecId(instance);
                 String resourceEndpoint = classInfo.name().toString();
-                // TODO: Extract config
-                Map<String, String> buildTimeConfig = Map.of();
-                recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue, container.identifier,
-                        activationSpecId,
-                        resourceEndpoint,
-                        buildTimeConfig);
+                activateEndpoint(serviceRegistrar, container, activationSpecId, resourceEndpoint);
             }
             for (ResourceEndpointBuildItem endpoint : endpoints) {
                 // The container id is optional when a single resource adapter is deployed
-                recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue, container.identifier,
-                        endpoint.activationSpecConfigKey(),
-                        endpoint.endpointClassName(),
-                        Map.of());
+                activateEndpoint(serviceRegistrar, container, endpoint.activationSpecConfigKey(),
+                        endpoint.endpointClassName());
             }
         } else {
             // Activate the endpoints for the respective container
@@ -375,24 +384,16 @@ class IronJacamarProcessor {
                         throw QuarkusIronJacamarLogger.log.useIdentifierAnnotation(instance.target().toString());
                     }
                     // Test if the identifier matches the container
-                    if (container.identifier.equals(annotation.value().asString())) {
+                    if (container.identifier().equals(annotation.value().asString())) {
                         String activationSpecId = getActivationSpecId(instance);
                         String resourceEndpoint = instance.target().asClass().name().toString();
-                        // TODO: Extract config
-                        Map<String, String> buildTimeConfig = Map.of();
-                        recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
-                                container.identifier, activationSpecId,
-                                resourceEndpoint,
-                                buildTimeConfig);
+                        activateEndpoint(serviceRegistrar, container, activationSpecId, resourceEndpoint);
                     }
                 }
                 for (ResourceEndpointBuildItem endpoint : endpoints) {
-                    if (container.identifier.equals(endpoint.containerId())) {
-                        recorder.activateEndpoint(beanContainerBuildItem.getValue(), container.futureRuntimeValue,
-                                container.identifier,
-                                endpoint.activationSpecConfigKey(),
-                                endpoint.endpointClassName(),
-                                Map.of());
+                    if (container.identifier().equals(endpoint.containerId())) {
+                        activateEndpoint(serviceRegistrar, container, endpoint.activationSpecConfigKey(),
+                                endpoint.endpointClassName());
                     }
                 }
             }
@@ -401,13 +402,25 @@ class IronJacamarProcessor {
     }
 
     @BuildStep
-    @Record(value = ExecutionTime.RUNTIME_INIT)
     @Consume(IronJacamarInitBuildItem.class)
-    void startPoolServices(IronJacamarRecorder recorder,
-            BeanContainerBuildItem beanContainerBuildItem,
-            ShutdownContextBuildItem shutdownContext) {
-        recorder.startIdleRemover(beanContainerBuildItem.getValue(), shutdownContext);
-        recorder.startConnectionValidator(beanContainerBuildItem.getValue(), shutdownContext);
+    // afterBuildItem() is a transitional API, required until the synthetic beans accessed by the pool services
+    // (such as ManagedExecutor) are initialized by the service graph instead of a bytecode recorder
+    @SuppressWarnings("deprecation")
+    void startPoolServices(ServiceRegistrar serviceRegistrar) {
+        serviceRegistrar
+                .forService(IDLE_REMOVER_SERVICE_NAME)
+                .require(BeanContainer.class)
+                .require(IronJacamarRuntimeConfig.class)
+                .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
+                .onStart((ctx, beanContainer, runtimeConfig) -> IronJacamarRecorder.startIdleRemover(ctx, beanContainer,
+                        runtimeConfig));
+        serviceRegistrar
+                .forService(CONNECTION_VALIDATOR_SERVICE_NAME)
+                .require(BeanContainer.class)
+                .require(IronJacamarRuntimeConfig.class)
+                .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
+                .onStart((ctx, beanContainer, runtimeConfig) -> IronJacamarRecorder.startConnectionValidator(ctx,
+                        beanContainer, runtimeConfig));
     }
 
     @BuildStep(onlyIf = IsLocalDevelopment.class)
@@ -421,6 +434,22 @@ class IronJacamarProcessor {
     }
 
     /**
+     * Register a service that activates the given endpoint once the respective resource adapter is started.
+     */
+    private static void activateEndpoint(ServiceRegistrar serviceRegistrar, ContainerStartedBuildItem container,
+            String activationSpecConfigId, String endpointClassName) {
+        String resourceAdapterId = container.identifier();
+        serviceRegistrar
+                .forService(List.of(ENDPOINT_ACTIVATION_SERVICE_NAME, resourceAdapterId, endpointClassName))
+                .require(BeanContainer.class)
+                .require(IronJacamarContainerStart.class, container.startServiceName())
+                .onStart((ctx, beanContainer, containerStart) -> IronJacamarRecorder.activateEndpoint(beanContainer,
+                        containerStart, resourceAdapterId, activationSpecConfigId, endpointClassName,
+                        // TODO: Extract config
+                        Map.of()));
+    }
+
+    /**
      * Validate the container ids of the contributed endpoints: they are required as soon as more than one resource
      * adapter is deployed, and they must always match a deployed one.
      */
@@ -430,7 +459,7 @@ class IronJacamarProcessor {
             return;
         }
         Set<String> containerIds = containers.stream()
-                .map(container -> container.identifier)
+                .map(ContainerStartedBuildItem::identifier)
                 .collect(Collectors.toSet());
         for (ResourceEndpointBuildItem endpoint : endpoints) {
             String containerId = endpoint.containerId();

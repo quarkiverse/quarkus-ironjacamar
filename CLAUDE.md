@@ -24,7 +24,8 @@ Standard Quarkus extension layout:
 - `ResourceAdapterKind` — Annotation on `ResourceAdapterFactory` implementations identifying the RA kind
 - `ResourceAdapterTypes` — Annotation declaring connection factory types provided by the RA
 - `IronJacamarContainer` — Core bean holding ResourceAdapter, ManagedConnectionFactory, ConnectionManager lifecycle
-- `IronJacamarRecorder` — Build-time recorder wiring the container, pool services, and endpoint activation
+- `IronJacamarRecorder` — Static runtime startup logic (RA deployment, endpoint activation, pool services) invoked from `ServiceRegistrar` service actions registered at build time
+- `*BeanCreator` — `BeanCreator` implementations backing the synthetic beans (container, connection factory, CCM, security integration, transaction recovery)
 - `IronJacamarSupport` — Runtime helper creating containers and activating endpoints
 - `IronJacamarRuntimeConfig` — SmallRye Config mapping (`quarkus.ironjacamar.*`)
 - `IronJacamarBuildtimeConfig` — Build-time configuration
