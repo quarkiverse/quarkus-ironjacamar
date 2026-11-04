@@ -399,21 +399,16 @@ class IronJacamarProcessor {
 
     @BuildStep
     @Consume(IronJacamarInitBuildItem.class)
-    // afterBuildItem() is a transitional API, required until the synthetic beans accessed by the pool services
-    // (such as ManagedExecutor) are initialized by the service graph instead of a bytecode recorder
-    @SuppressWarnings("deprecation")
     void startPoolServices(ServiceRegistrar serviceRegistrar) {
         serviceRegistrar
                 .forService(IDLE_REMOVER_SERVICE_NAME)
                 .require(BeanContainer.class)
                 .require(IronJacamarRuntimeConfig.class)
-                .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
                 .onStart(IronJacamarRecorder::startIdleRemover);
         serviceRegistrar
                 .forService(CONNECTION_VALIDATOR_SERVICE_NAME)
                 .require(BeanContainer.class)
                 .require(IronJacamarRuntimeConfig.class)
-                .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
                 .onStart(IronJacamarRecorder::startConnectionValidator);
     }
 
