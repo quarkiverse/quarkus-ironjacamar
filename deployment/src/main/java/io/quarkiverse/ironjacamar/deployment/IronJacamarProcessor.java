@@ -354,7 +354,7 @@ class IronJacamarProcessor {
         boolean single = containers.size() == 1;
         validateContainerIds(endpoints, containers, single);
         if (single) {
-            ContainerStartedBuildItem container = containers.get(0);
+            ContainerStartedBuildItem container = containers.getFirst();
             Collection<AnnotationInstance> annotations = index.getAnnotations(ResourceEndpoint.class);
             for (AnnotationInstance instance : annotations) {
                 ClassInfo classInfo = instance.target().asClass();
@@ -412,15 +412,13 @@ class IronJacamarProcessor {
                 .require(BeanContainer.class)
                 .require(IronJacamarRuntimeConfig.class)
                 .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
-                .onStart((ctx, beanContainer, runtimeConfig) -> IronJacamarRecorder.startIdleRemover(ctx, beanContainer,
-                        runtimeConfig));
+                .onStart(IronJacamarRecorder::startIdleRemover);
         serviceRegistrar
                 .forService(CONNECTION_VALIDATOR_SERVICE_NAME)
                 .require(BeanContainer.class)
                 .require(IronJacamarRuntimeConfig.class)
                 .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
-                .onStart((ctx, beanContainer, runtimeConfig) -> IronJacamarRecorder.startConnectionValidator(ctx,
-                        beanContainer, runtimeConfig));
+                .onStart(IronJacamarRecorder::startConnectionValidator);
     }
 
     @BuildStep(onlyIf = IsLocalDevelopment.class)
