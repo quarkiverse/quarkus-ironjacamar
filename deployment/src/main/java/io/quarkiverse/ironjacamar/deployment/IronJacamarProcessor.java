@@ -29,22 +29,18 @@ import io.quarkiverse.ironjacamar.ResourceAdapterFactory;
 import io.quarkiverse.ironjacamar.ResourceAdapterKind;
 import io.quarkiverse.ironjacamar.ResourceAdapterTypes;
 import io.quarkiverse.ironjacamar.ResourceEndpoint;
-import io.quarkiverse.ironjacamar.runtime.CachedConnectionManagerBeanCreator;
-import io.quarkiverse.ironjacamar.runtime.ConnectionFactoryBeanCreator;
 import io.quarkiverse.ironjacamar.runtime.ConnectionManagerFactory;
+import io.quarkiverse.ironjacamar.runtime.IronJacamarBeanCreators;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarBuildtimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainer;
-import io.quarkiverse.ironjacamar.runtime.IronJacamarContainerBeanCreator;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarContainerStart;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRecorder;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarRuntimeConfig;
 import io.quarkiverse.ironjacamar.runtime.IronJacamarSupport;
 import io.quarkiverse.ironjacamar.runtime.QuarkusIronJacamarLogger;
 import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManager;
-import io.quarkiverse.ironjacamar.runtime.TransactionRecoveryManagerBeanCreator;
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
-import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegrationBeanCreator;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeansRuntimeInitBuildItem;
@@ -195,7 +191,7 @@ class IronJacamarProcessor {
                 .setRuntimeInit()
                 .unremovable()
                 .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
-                .creator(CachedConnectionManagerBeanCreator.class)
+                .creator(IronJacamarBeanCreators.CachedConnectionManagerCreator.class)
                 .destroyer(mc -> {
                     // Invoke CachedConnectionManager#stop()
                     BlockCreator bc = mc.destroyMethod();
@@ -213,7 +209,7 @@ class IronJacamarProcessor {
                 .unremovable()
                 .addInjectionPoint(ClassType.create(DotName.createSimple(TransactionIntegration.class)))
                 .addInjectionPoint(ClassType.create(DotName.createSimple(RecoveryPlugin.class)))
-                .creator(TransactionRecoveryManagerBeanCreator.class)
+                .creator(IronJacamarBeanCreators.TransactionRecoveryManagerCreator.class)
                 .autoClose(true)
                 .done());
     }
@@ -229,7 +225,7 @@ class IronJacamarProcessor {
         producer.produce(SyntheticBeanBuildItem.configure(QuarkusSecurityIntegration.class)
                 .scope(BuiltinScope.DEPENDENT.getInfo())
                 .unremovable()
-                .creator(QuarkusSecurityIntegrationBeanCreator.class)
+                .creator(IronJacamarBeanCreators.SecurityIntegrationCreator.class)
                 .done());
         IndexView index = combinedIndexBuildItem.getIndex();
         Type containerType = Type.create(DotName.createSimple(IronJacamarContainer.class), Type.Kind.CLASS);
@@ -251,7 +247,7 @@ class IronJacamarProcessor {
                     .setRuntimeInit()
                     .addQualifier(qualifier)
                     .unremovable()
-                    .creator(IronJacamarContainerBeanCreator.class)
+                    .creator(IronJacamarBeanCreators.ContainerCreator.class)
                     .param("id", key)
                     .param("kind", raKind.kind())
                     .addInjectionPoint(ClassType.create(DotName.createSimple(Vertx.class)))
@@ -277,7 +273,7 @@ class IronJacamarProcessor {
                             .types(type)
                             .addInjectionPoint(containerType, qualifier)
                             .unremovable()
-                            .creator(ConnectionFactoryBeanCreator.class)
+                            .creator(IronJacamarBeanCreators.ConnectionFactoryCreator.class)
                             .param("id", key);
                     if (single) {
                         cfConfigurator.addQualifier(DotNames.DEFAULT);
