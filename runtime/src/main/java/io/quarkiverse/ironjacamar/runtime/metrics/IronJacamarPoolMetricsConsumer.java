@@ -15,16 +15,11 @@ import io.smallrye.common.annotation.Identifier;
  */
 public class IronJacamarPoolMetricsConsumer implements Consumer<MetricsFactory> {
 
-    private String resourceAdapterId;
+    private final String resourceAdapterId;
 
     /**
-     * Constructor used by the bytecode recorder.
-     */
-    public IronJacamarPoolMetricsConsumer() {
-    }
-
-    /**
-     * Constructor
+     * Constructor. As the single public constructor, it is also used by the bytecode recorder,
+     * which matches the parameter by name against {@link #getResourceAdapterId()}.
      *
      * @param resourceAdapterId The resource adapter id
      */
@@ -39,15 +34,6 @@ public class IronJacamarPoolMetricsConsumer implements Consumer<MetricsFactory> 
      */
     public String getResourceAdapterId() {
         return resourceAdapterId;
-    }
-
-    /**
-     * Set the resource adapter id
-     *
-     * @param resourceAdapterId the resource adapter id
-     */
-    public void setResourceAdapterId(String resourceAdapterId) {
-        this.resourceAdapterId = resourceAdapterId;
     }
 
     @Override
