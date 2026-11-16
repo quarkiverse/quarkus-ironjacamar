@@ -13,9 +13,12 @@ public class TestResourceAdapter implements ResourceAdapter {
 
     private boolean started;
 
+    private volatile BootstrapContext bootstrapContext;
+
     @Override
     public void start(BootstrapContext ctx) throws ResourceAdapterInternalException {
         started = true;
+        bootstrapContext = ctx;
     }
 
     @Override
@@ -40,5 +43,14 @@ public class TestResourceAdapter implements ResourceAdapter {
 
     public boolean isStarted() {
         return started;
+    }
+
+    /**
+     * Get the bootstrap context this resource adapter was started with
+     *
+     * @return the bootstrap context, or {@code null} if the resource adapter was never started
+     */
+    public BootstrapContext getBootstrapContext() {
+        return bootstrapContext;
     }
 }
