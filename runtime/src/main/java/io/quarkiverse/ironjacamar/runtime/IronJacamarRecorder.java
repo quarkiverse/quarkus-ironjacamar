@@ -25,10 +25,10 @@ import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListe
 import io.quarkiverse.ironjacamar.runtime.security.QuarkusSecurityIntegration;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.runtime.BeanContainer;
+import io.quarkus.core.AsyncStartContext;
 import io.quarkus.core.StartContext;
 import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
 import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 
@@ -92,15 +92,18 @@ public final class IronJacamarRecorder {
 
     /**
      * Initialize the resource adapter
+     * <p>
+     * The service completes once the verticle running the resource adapter is deployed, and fails when the
+     * resource adapter fails to start, so that the application does not start without it.
      *
+     * @param startContext The context of the asynchronous service start
      * @param beanContainer The bean container
      * @param key The resource adapter key
      * @param vertx The Vert.x instance
      * @param runtimeConfig The runtime configuration
-     * @return An {@link IronJacamarContainerStart} holding the {@link Future} that completes when the resource adapter
-     *         is initialized
      */
-    public static IronJacamarContainerStart initResourceAdapter(
+    public static void initResourceAdapter(
+            AsyncStartContext<IronJacamarContainerStart> startContext,
             BeanContainer beanContainer,
             String key,
             Vertx vertx,
@@ -117,35 +120,70 @@ public final class IronJacamarRecorder {
                 .stream().toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
         Duration maxWorkerExecuteTime = runtimeConfig.maxWorkerExecuteTime();
-        Future<String> future = vertx.deployVerticle(verticle, new DeploymentOptions()
+        vertx.deployVerticle(verticle, new DeploymentOptions()
                 .setWorkerPoolName("jca-worker-pool-" + key)
                 .setWorkerPoolSize(1)
                 .setThreadingModel(ThreadingModel.WORKER)
                 .setMaxWorkerExecuteTime(maxWorkerExecuteTime.toMillis())
-                .setMaxWorkerExecuteTimeUnit(TimeUnit.MILLISECONDS));
-        return new IronJacamarContainerStart(future);
+                .setMaxWorkerExecuteTimeUnit(TimeUnit.MILLISECONDS))
+                .onSuccess(deploymentId -> startContext.startComplete(new IronJacamarContainerStart(deploymentId)))
+                .onFailure(throwable -> {
+                    if (failOnStartError(runtimeConfig, key)) {
+                        startContext.startFailed(QuarkusIronJacamarLogger.log.cannotStartResourceAdapter(key, throwable));
+                    } else {
+                        // the service is canceled rather than failed: the application still starts, and the
+                        // services activating the endpoints of this resource adapter are canceled with it
+                        QuarkusIronJacamarLogger.log.resourceAdapterNotStarted(key, throwable);
+                        startContext.startCanceled();
+                    }
+                });
     }
 
     /**
-     * Activate an endpoint once the resource adapter has started
+     * Whether a resource adapter failing to start fails the startup of the application
+     *
+     * @param runtimeConfig The runtime configuration
+     * @param key The resource adapter key
+     * @return the value configured for this resource adapter, defaulting to the global one
+     */
+    public static boolean failOnStartError(IronJacamarRuntimeConfig runtimeConfig, String key) {
+        IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig config = runtimeConfig.resourceAdapters().get(key);
+        if (config == null) {
+            return runtimeConfig.failOnStartError();
+        }
+        return config.ra().failOnStartError().orElseGet(runtimeConfig::failOnStartError);
+    }
+
+    /**
+     * Activate an endpoint
+     * <p>
+     * The service requires the start of the resource adapter, which only completes once it is started, so the
+     * endpoint is activated synchronously and a failure fails the startup of the application, unless
+     * <code>fail-on-start-error</code> is disabled for this resource adapter. When the resource adapter did not
+     * start at all, this service is canceled along with the start it requires, and the endpoint is not activated.
      *
      * @param beanContainer The bean container
-     * @param containerStart The container start holding the future that completes when the resource adapter is started
+     * @param runtimeConfig The runtime configuration
      * @param resourceAdapterId The resource adapter id
      * @param activationSpecConfigId The activation spec config id
      * @param endpointClassName The endpoint class name
      * @param buildTimeConfig The build time config
      */
     public static void activateEndpoint(BeanContainer beanContainer,
-            IronJacamarContainerStart containerStart,
+            IronJacamarRuntimeConfig runtimeConfig,
             String resourceAdapterId,
             String activationSpecConfigId,
             String endpointClassName,
             Map<String, String> buildTimeConfig) {
-        containerStart.future().onSuccess(s -> {
-            IronJacamarSupport producer = beanContainer.beanInstance(IronJacamarSupport.class);
-            producer.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
-        });
+        IronJacamarSupport ijSupport = beanContainer.beanInstance(IronJacamarSupport.class);
+        try {
+            ijSupport.activateEndpoint(resourceAdapterId, activationSpecConfigId, endpointClassName, buildTimeConfig);
+        } catch (RuntimeException e) {
+            if (failOnStartError(runtimeConfig, resourceAdapterId)) {
+                throw e;
+            }
+            QuarkusIronJacamarLogger.log.endpointActivationFailed(endpointClassName, e);
+        }
     }
 
     /**

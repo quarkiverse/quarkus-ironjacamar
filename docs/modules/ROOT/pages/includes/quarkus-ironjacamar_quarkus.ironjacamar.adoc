@@ -51,6 +51,31 @@ endif::add-copy-button-to-env-var[]
 |link:https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html[Duration] link:#duration-note-anchor-quarkus-ironjacamar_quarkus-ironjacamar[icon:question-circle[title=More information about the Duration format]]
 |`+++${QUARKUS.VERTX.MAX-WORKER-EXECUTE-TIME:60}+++`
 
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-fail-on-start-error]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-fail-on-start-error[`+++quarkus.ironjacamar.fail-on-start-error+++`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++quarkus.ironjacamar.fail-on-start-error+++[]
+endif::add-copy-button-to-config-props[]
+
+
+[.description]
+--
+Whether a resource adapter that fails to start, or an endpoint that cannot be activated, fails the startup of the application.
+
+When set to `false`, the failure is logged, the endpoints of that resource adapter are not activated, and the application starts without it.
+
+It can be overridden for a given resource adapter with `quarkus.ironjacamar."resource-adapter-name".ra.fail-on-start-error`.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_FAIL_ON_START_ERROR+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_FAIL_ON_START_ERROR+++`
+endif::add-copy-button-to-env-var[]
+--
+|boolean
+|`+++true+++`
+
 a|icon:lock[title=Fixed at build time] [[quarkus-ironjacamar_quarkus-ironjacamar-ra-kind]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-kind[`+++quarkus.ironjacamar.ra.kind+++`]##
 ifdef::add-copy-button-to-config-props[]
 config_property_copy_button:+++quarkus.ironjacamar.ra.kind+++[]
@@ -962,6 +987,34 @@ endif::add-copy-button-to-env-var[]
 --
 |boolean
 |`+++false+++`
+
+a| [[quarkus-ironjacamar_quarkus-ironjacamar-ra-fail-on-start-error]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-ra-fail-on-start-error[`+++quarkus.ironjacamar.ra.fail-on-start-error+++`]##
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++quarkus.ironjacamar.ra.fail-on-start-error+++[]
+endif::add-copy-button-to-config-props[]
+
+
+`+++quarkus.ironjacamar."resource-adapter-name".ra.fail-on-start-error+++`
+ifdef::add-copy-button-to-config-props[]
+config_property_copy_button:+++quarkus.ironjacamar."resource-adapter-name".ra.fail-on-start-error+++[]
+endif::add-copy-button-to-config-props[]
+
+[.description]
+--
+Whether this resource adapter failing to start, or one of its endpoints failing to be activated, fails the startup of the application.
+
+Defaults to `quarkus.ironjacamar.fail-on-start-error`.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_IRONJACAMAR_RA_FAIL_ON_START_ERROR+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_IRONJACAMAR_RA_FAIL_ON_START_ERROR+++`
+endif::add-copy-button-to-env-var[]
+--
+|boolean
+|
 
 a| [[quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-enabled]] [.property-path]##link:#quarkus-ironjacamar_quarkus-ironjacamar-activation-spec-enabled[`+++quarkus.ironjacamar.activation-spec.enabled+++`]##
 ifdef::add-copy-button-to-config-props[]

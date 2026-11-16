@@ -322,8 +322,13 @@ class IronJacamarProcessor {
                     // thread pool: the ordering is only implied by the Vert.x service today
                     .after(ScheduledExecutorService.class)
                     .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
-                    .onStart((ctx, beanContainer, vertx, runtimeConfig) -> IronJacamarRecorder
-                            .initResourceAdapter(beanContainer, key, vertx, runtimeConfig));
+                    // the service completes once the verticle running the resource adapter is deployed, so that a
+                    // resource adapter failing to start fails the startup of the application. It is canceled when
+                    // the resource adapter failed to start and fail-on-start-error is disabled for it
+                    .onStartAsync((ctx, beanContainer, vertx, runtimeConfig) -> {
+                        IronJacamarRecorder.initResourceAdapter(ctx, beanContainer, key, vertx, runtimeConfig);
+                        return null;
+                    });
             startedProducer.produce(new ContainerStartedBuildItem(key, startServiceName));
         }
     }
@@ -446,9 +451,13 @@ class IronJacamarProcessor {
         serviceRegistrar
                 .forService(List.of(ENDPOINT_ACTIVATION_SERVICE_NAME, resourceAdapterId, endpointClassName))
                 .require(BeanContainer.class)
+                // the start service of the resource adapter only completes once it is started. A resource adapter
+                // that failed to start cancels it, which cancels this service too: the endpoint is not activated
                 .require(IronJacamarContainerStart.class, container.startServiceName())
-                .onStart((ctx, beanContainer, containerStart) -> IronJacamarRecorder.activateEndpoint(beanContainer,
-                        containerStart, resourceAdapterId, activationSpecConfigId, endpointClassName,
+                .require(IronJacamarRuntimeConfig.class)
+                .onStart((ctx, beanContainer, containerStart, runtimeConfig) -> IronJacamarRecorder.activateEndpoint(
+                        beanContainer, runtimeConfig,
+                        resourceAdapterId, activationSpecConfigId, endpointClassName,
                         // TODO: Extract config
                         Map.of()));
     }

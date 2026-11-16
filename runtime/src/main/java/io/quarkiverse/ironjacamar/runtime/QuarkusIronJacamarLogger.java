@@ -1,5 +1,6 @@
 package io.quarkiverse.ironjacamar.runtime;
 
+import static org.jboss.logging.Logger.Level.ERROR;
 import static org.jboss.logging.Logger.Level.INFO;
 import static org.jboss.logging.Logger.Level.TRACE;
 import static org.jboss.logging.Logger.Level.WARN;
@@ -228,5 +229,37 @@ public interface QuarkusIronJacamarLogger extends BasicLogger {
      */
     @Message(id = 22, value = "The resource endpoint %s was registered for the resource adapter %s, but no resource adapter is configured with that name")
     DeploymentException unknownContainerId(String endpointClassName, String containerId);
+
+    /**
+     * Returns a {@link DeploymentException} indicating that the resource adapter failed to start.
+     *
+     * @param id the resource adapter id
+     * @param cause the cause
+     * @return the exception
+     */
+    @Message(id = 23, value = "The resource adapter %s failed to start")
+    DeploymentException cannotStartResourceAdapter(String id, @Cause Throwable cause);
+
+    /**
+     * Logs a message indicating that the resource adapter failed to start, and that the application starts anyway
+     * because {@code fail-on-start-error} is disabled for it.
+     *
+     * @param id the resource adapter id
+     * @param cause the cause
+     */
+    @LogMessage(level = ERROR)
+    @Message(id = 24, value = "The resource adapter %s failed to start, its endpoints are not activated and the application starts without it because fail-on-start-error is disabled")
+    void resourceAdapterNotStarted(String id, @Cause Throwable cause);
+
+    /**
+     * Logs a message indicating that an endpoint failed to be activated, and that the application starts anyway
+     * because {@code fail-on-start-error} is disabled for its resource adapter.
+     *
+     * @param endpointClassName the endpoint class name
+     * @param cause the cause
+     */
+    @LogMessage(level = ERROR)
+    @Message(id = 25, value = "The endpoint %s failed to be activated, the application starts anyway because fail-on-start-error is disabled")
+    void endpointActivationFailed(String endpointClassName, @Cause Throwable cause);
 
 }
