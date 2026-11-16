@@ -7,6 +7,7 @@ import jakarta.resource.spi.ResourceAdapter;
 
 import org.jboss.jca.core.api.bootstrap.CloneableBootstrapContext;
 import org.jboss.jca.core.api.workmanager.WorkManager;
+import org.jboss.jca.core.bootstrapcontext.BootstrapContextCoordinator;
 
 import io.quarkiverse.ironjacamar.runtime.listener.ResourceAdapterLifecycleListener;
 import io.vertx.core.AbstractVerticle;
@@ -54,8 +55,9 @@ final class IronJacamarVerticle extends AbstractVerticle {
         for (ResourceAdapterLifecycleListener listener : listeners) {
             listener.postShutdown(id, resourceAdapter);
         }
-        // Shutdown the work manager
+        // Shutdown the work manager of this resource adapter, then release its bootstrap context: the coordinator
+        // shuts it down and unregisters its work manager once no resource adapter uses it anymore
         ((WorkManager) bootstrapContext.getWorkManager()).shutdown();
-        bootstrapContext.shutdown();
+        BootstrapContextCoordinator.getInstance().removeBootstrapContext(id);
     }
 }

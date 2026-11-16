@@ -47,20 +47,10 @@ public final class IronJacamarRecorder {
      */
     public static void initDefaultBootstrapContext(BeanContainer beanContainer) {
         TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
-        SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
         BaseCloneableBootstrapContext bootstrapContext = new BaseCloneableBootstrapContext();
-        ManagedExecutor executorService = beanContainer.beanInstance(ManagedExecutor.class);
 
         // Create WorkManagerImpl
-        WorkManagerImpl workManager = new WorkManagerImpl();
-        workManager.setName(DEFAULT_WORK_MANAGER_NAME);
-        workManager.setSpecCompliant(true);
-        workManager.setSecurityIntegration(securityIntegration);
-        workManager.setXATerminator(transactionIntegration.getXATerminator());
-
-        // TODO: Should we have separate thread pools for short and long running tasks?
-        workManager.setShortRunningThreadPool(executorService);
-        workManager.setLongRunningThreadPool(executorService);
+        WorkManagerImpl workManager = createWorkManager(beanContainer, null);
 
         bootstrapContext.setName(DEFAULT_BOOTSTRAP_CONTEXT_NAME);
         bootstrapContext.setWorkManager(workManager);
@@ -71,6 +61,33 @@ public final class IronJacamarRecorder {
         // Register the default in the coordinator
         WorkManagerCoordinator.getInstance().setDefaultWorkManager(workManager);
         BootstrapContextCoordinator.getInstance().setDefaultBootstrapContext(bootstrapContext);
+    }
+
+    /**
+     * Create a {@link WorkManagerImpl} running its work on the Quarkus {@link ManagedExecutor}
+     *
+     * @param beanContainer The bean container
+     * @param id The id of the work manager, {@code null} for the default one
+     * @return The work manager
+     */
+    private static WorkManagerImpl createWorkManager(BeanContainer beanContainer, String id) {
+        TransactionIntegration transactionIntegration = beanContainer.beanInstance(TransactionIntegration.class);
+        SecurityIntegration securityIntegration = beanContainer.beanInstance(QuarkusSecurityIntegration.class);
+        ManagedExecutor executorService = beanContainer.beanInstance(ManagedExecutor.class);
+
+        WorkManagerImpl workManager = new WorkManagerImpl();
+        workManager.setName(DEFAULT_WORK_MANAGER_NAME);
+        if (id != null) {
+            workManager.setId(id);
+        }
+        workManager.setSpecCompliant(true);
+        workManager.setSecurityIntegration(securityIntegration);
+        workManager.setXATerminator(transactionIntegration.getXATerminator());
+
+        // TODO: Should we have separate thread pools for short and long running tasks?
+        workManager.setShortRunningThreadPool(executorService);
+        workManager.setLongRunningThreadPool(executorService);
+        return workManager;
     }
 
     /**
@@ -89,7 +106,13 @@ public final class IronJacamarRecorder {
             Vertx vertx,
             IronJacamarRuntimeConfig runtimeConfig) {
         IronJacamarContainer ijContainer = beanContainer.beanInstance(IronJacamarContainer.class, Identifier.Literal.of(key));
-        CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().getDefaultBootstrapContext();
+        // Each resource adapter gets its own bootstrap context, cloned from the default one, because it is shut
+        // down when the resource adapter stops
+        CloneableBootstrapContext bootstrapContext = BootstrapContextCoordinator.getInstance().createBootstrapContext(key);
+        // The work manager the coordinator cloned shares the shutdown state and the set of active work of the
+        // default one, so stopping a resource adapter would shut the work manager of the others down: give this
+        // resource adapter a work manager of its own instead
+        bootstrapContext.setWorkManager(createWorkManager(beanContainer, key));
         List<ResourceAdapterLifecycleListener> listeners = Arc.container().select(ResourceAdapterLifecycleListener.class)
                 .stream().toList();
         IronJacamarVerticle verticle = new IronJacamarVerticle(key, ijContainer, bootstrapContext, listeners);
