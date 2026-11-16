@@ -23,7 +23,7 @@ import io.quarkus.test.QuarkusExtensionTest;
  * The application side ({@link ShutdownObserver}) and the JUnit side (the after undeploy listener) are loaded by
  * different class loaders, hence the system property used to share the instant the stop began.
  * <p>
- * The pool services (IdleRemover, ConnectionValidator) run on the Quarkus {@code ManagedExecutor}. Their
+ * The pool services (IdleRemover, ConnectionValidator) run on the Quarkus thread pool. Their
  * {@code stop()} never wakes up their runner, so its thread stays in {@code Condition.await} until the Quarkus thread
  * pool interrupts it, after {@code quarkus.thread-pool.shutdown-interrupt} (10 s by default).
  */

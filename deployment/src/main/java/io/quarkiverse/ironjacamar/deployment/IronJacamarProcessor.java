@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,7 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Consume;
 import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import io.quarkus.deployment.builditem.ExecutorBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
@@ -316,6 +318,9 @@ class IronJacamarProcessor {
                     .require(BeanContainer.class)
                     .require(Vertx.class)
                     .require(IronJacamarRuntimeConfig.class)
+                    // starting a resource adapter schedules work on the work manager, which runs on the Quarkus
+                    // thread pool: the ordering is only implied by the Vert.x service today
+                    .after(ScheduledExecutorService.class)
                     .afterBuildItem(SyntheticBeansRuntimeInitBuildItem.class)
                     .onStart((ctx, beanContainer, vertx, runtimeConfig) -> IronJacamarRecorder
                             .initResourceAdapter(beanContainer, key, vertx, runtimeConfig));
@@ -397,18 +402,28 @@ class IronJacamarProcessor {
         return new ServiceStartBuildItem(FEATURE);
     }
 
+    /**
+     * The pool services run their background task on the Quarkus thread pool, hence the dependency on its
+     * {@link ScheduledExecutorService} service: the phases are not barriers in the runtime service graph, so a
+     * service of the {@link io.quarkus.core.Phase#APPLICATION} phase that does not require it may be started
+     * before the thread pool.
+     * <p>
+     * The {@link ExecutorBuildItem} is consumed so that the build step registering the thread pool service has run
+     * when this one requires it, as the Quarkus extensions consuming the thread pool do.
+     */
     @BuildStep
     @Consume(IronJacamarInitBuildItem.class)
+    @Consume(ExecutorBuildItem.class)
     void startPoolServices(ServiceRegistrar serviceRegistrar) {
         serviceRegistrar
                 .forService(IDLE_REMOVER_SERVICE_NAME)
-                .require(BeanContainer.class)
                 .require(IronJacamarRuntimeConfig.class)
+                .require(ScheduledExecutorService.class)
                 .onStart(IronJacamarRecorder::startIdleRemover);
         serviceRegistrar
                 .forService(CONNECTION_VALIDATOR_SERVICE_NAME)
-                .require(BeanContainer.class)
                 .require(IronJacamarRuntimeConfig.class)
+                .require(ScheduledExecutorService.class)
                 .onStart(IronJacamarRecorder::startConnectionValidator);
     }
 
