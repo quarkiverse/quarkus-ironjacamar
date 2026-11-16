@@ -6,6 +6,7 @@ import static io.quarkiverse.ironjacamar.Defaults.DEFAULT_WORK_MANAGER_NAME;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -128,11 +129,11 @@ public final class IronJacamarRecorder {
      * Start the {@link IdleRemover} if any resource adapter pool requires it
      *
      * @param startContext The service start context
-     * @param beanContainer The bean container
      * @param config The runtime configuration
+     * @param executorService The Quarkus thread pool, which runs the idle remover task
      */
-    public static void startIdleRemover(StartContext startContext, BeanContainer beanContainer,
-            IronJacamarRuntimeConfig config) {
+    public static void startIdleRemover(StartContext startContext, IronJacamarRuntimeConfig config,
+            ScheduledExecutorService executorService) {
         boolean shouldStart = false;
         for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : config.resourceAdapters().values()) {
             if (value.ra().cm().pool().config().idleTimeoutMinutes() > 0) {
@@ -145,9 +146,8 @@ public final class IronJacamarRecorder {
         }
         try {
             QuarkusIronJacamarLogger.log.startIdleRemoverService();
-            ManagedExecutor managedExecutor = beanContainer.beanInstance(ManagedExecutor.class);
             IdleRemover instance = IdleRemover.getInstance();
-            instance.setExecutorService(managedExecutor);
+            instance.setExecutorService(executorService);
             instance.start();
             startContext.onStop(() -> {
                 try {
@@ -166,11 +166,11 @@ public final class IronJacamarRecorder {
      * Start the {@link ConnectionValidator} if any resource adapter pool requires it
      *
      * @param startContext The service start context
-     * @param beanContainer The bean container
      * @param config The runtime configuration
+     * @param executorService The Quarkus thread pool, which runs the connection validator task
      */
-    public static void startConnectionValidator(StartContext startContext, BeanContainer beanContainer,
-            IronJacamarRuntimeConfig config) {
+    public static void startConnectionValidator(StartContext startContext, IronJacamarRuntimeConfig config,
+            ScheduledExecutorService executorService) {
         boolean shouldStart = false;
         for (IronJacamarRuntimeConfig.ResourceAdapterOuterNamedConfig value : config.resourceAdapters().values()) {
             PoolConfigurationConfig poolConfig = value.ra().cm().pool().config();
@@ -184,9 +184,8 @@ public final class IronJacamarRecorder {
         }
         try {
             QuarkusIronJacamarLogger.log.startConnectionValidatorService();
-            ManagedExecutor managedExecutor = beanContainer.beanInstance(ManagedExecutor.class);
             ConnectionValidator instance = ConnectionValidator.getInstance();
-            instance.setExecutorService(managedExecutor);
+            instance.setExecutorService(executorService);
             instance.start();
             startContext.onStop(() -> {
                 try {
