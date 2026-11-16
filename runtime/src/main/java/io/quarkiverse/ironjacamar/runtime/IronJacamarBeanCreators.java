@@ -35,9 +35,9 @@ public final class IronJacamarBeanCreators {
         public IronJacamarContainer create(SyntheticCreationalContext<IronJacamarContainer> context) {
             String id = (String) context.getParams().get("id");
             String kind = (String) context.getParams().get("kind");
-            IronJacamarSupport containerProducer = context.getInjectedReference(IronJacamarSupport.class);
+            IronJacamarSupport ijSupport = context.getInjectedReference(IronJacamarSupport.class);
             Vertx vertx = context.getInjectedReference(Vertx.class);
-            return containerProducer.createContainer(vertx, id, kind);
+            return ijSupport.createContainer(vertx, id, kind);
         }
     }
 

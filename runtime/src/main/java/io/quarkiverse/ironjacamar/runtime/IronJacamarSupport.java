@@ -23,7 +23,8 @@ import io.smallrye.common.annotation.Identifier;
 import io.vertx.core.Vertx;
 
 /**
- * This class is a producer for {@link IronJacamarContainer} used in the {@link IronJacamarRecorder}
+ * Creates the {@link IronJacamarContainer} instances and activates the endpoints, for the
+ * {@link IronJacamarRecorder} and the bean creators.
  * <p>
  * It is separated from the recorder because there are runtime configuration that are not available at build time.
  */

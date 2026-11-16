@@ -42,6 +42,21 @@ public interface IronJacamarRuntimeConfig {
     Duration maxWorkerExecuteTime();
 
     /**
+     * Whether a resource adapter that fails to start, or an endpoint that cannot be activated, fails the startup
+     * of the application.
+     * <p>
+     * When set to <code>false</code>, the failure is logged, the endpoints of that resource adapter are not
+     * activated, and the application starts without it.
+     * <p>
+     * It can be overridden for a given resource adapter with
+     * <code>quarkus.ironjacamar."resource-adapter-name".ra.fail-on-start-error</code>.
+     *
+     * @return true if a resource adapter failing to start fails the startup of the application
+     */
+    @WithDefault("true")
+    boolean failOnStartError();
+
+    /**
      * Resource Adapters
      *
      * @return the resource adapters
@@ -91,6 +106,16 @@ public interface IronJacamarRuntimeConfig {
          * @return the connection manager configuration
          */
         ConnectionManagerConfig cm();
+
+        /**
+         * Whether this resource adapter failing to start, or one of its endpoints failing to be activated, fails
+         * the startup of the application.
+         * <p>
+         * Defaults to <code>quarkus.ironjacamar.fail-on-start-error</code>.
+         *
+         * @return true if this resource adapter failing to start fails the startup of the application
+         */
+        Optional<Boolean> failOnStartError();
     }
 
     /**

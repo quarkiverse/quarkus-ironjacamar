@@ -263,6 +263,84 @@ public class WaitUntilServiceIsReady implements ResourceAdapterLifecycleListener
 }
 ----
 
+== Startup
+
+The startup of the application waits for the resource adapters: it is only complete once every resource adapter is started and every endpoint is activated.
+
+=== The startup sequence
+
+For each configured resource adapter, in order:
+
+. The `ResourceAdapterFactory` of its <<Configuration,kind>> creates the `ResourceAdapter`, the `ManagedConnectionFactory` and the connection manager of its pool.
+. The resource adapter gets its own bootstrap context, cloned from the default one, and its own work manager, which runs its work on the Quarkus thread pool.
+Both are shut down when the resource adapter stops, which is why they are not shared.
+. A Vert.x worker verticle, named `jca-worker-pool-<name>` and with a single thread, is deployed for the resource adapter.
+It invokes `preStartup` on the <<Listening to lifecycle events,lifecycle listeners>>, then `ResourceAdapter.start(BootstrapContext)` (`QIJ000001`), then `postStartup`.
+. Once that verticle is deployed, each endpoint of this resource adapter is activated (`QIJ000017`), unless its activation spec is disabled with `quarkus.ironjacamar.activation-spec."key".enabled=false`.
+
+The <<Connection Pool Services,pool services>> are started along the way, independently of the resource adapters (`QIJ000013`, `QIJ000015`).
+
+The shutdown is the mirror image: the endpoints are deactivated (`QIJ000018`), the resource adapter is stopped (`QIJ000002`) with `preShutdown` and `postShutdown` invoked around it, and its work manager and bootstrap context are released.
+
+Because the startup waits for step 3, a resource adapter that is slow to start delays the startup of the whole application.
+Vert.x logs a blocked thread warning when it takes longer than `quarkus.ironjacamar.max-worker-execute-time`, but it does not abort the start.
+
+=== Failing fast, or starting degraded
+
+By default, a resource adapter that fails to start, or an endpoint that cannot be activated, *fails the startup of the application* (`QIJ000023`, `QIJ000011`), rather than leaving it running without a working resource adapter.
+
+Set `quarkus.ironjacamar.fail-on-start-error` to `false` for an application that must start anyway:
+
+[source,properties]
+----
+quarkus.ironjacamar.fail-on-start-error=false
+----
+
+The failure is then logged (`QIJ000024`), the endpoints of that resource adapter are not activated, and the application starts without it.
+An endpoint that fails to be activated is logged too (`QIJ000025`), and does not fail the startup either.
+
+The setting can be overridden per resource adapter, so that a critical resource adapter still fails the startup while an optional one does not:
+
+[source,properties]
+----
+quarkus.ironjacamar.fail-on-start-error=false <1>
+quarkus.ironjacamar.critical.ra.fail-on-start-error=true <2>
+----
+
+<1> The application starts even when a resource adapter fails to start.
+<2> Except for the `critical` resource adapter, which must start.
+
+Which one to choose depends on what the application can still do without that resource adapter:
+
+Keep the default when the application is useless without it.
+The failure then surfaces at deployment time, and an orchestrator restarts the pod rather than routing traffic to an application that cannot work.
+
+Disable it when the resource adapter is optional, for instance one of several, or when serving the rest of the application matters more than consuming messages.
+
+IMPORTANT: A resource adapter that failed to start is *not* retried.
+The application runs without it until it is restarted, its endpoints stay inactive, and its connection factory, while still injectable, cannot be used.
+
+When the external system is merely slow to come up, waiting is usually better than either option: a `ResourceAdapterLifecycleListener` waiting for it in its `preStartup`, as in <<Listening to lifecycle events>>, delays the startup until the system is ready.
+
+=== Startup and shutdown log messages
+
+[cols="1,1,4"]
+|===
+|Id |Level |Meaning
+
+|`QIJ000001` |INFO |The resource adapter is starting.
+|`QIJ000017` |INFO |An endpoint is being activated.
+|`QIJ000013`, `QIJ000015` |INFO |The Connection Validator, or the Idle Remover, is starting.
+|`QIJ000023` |exception |The resource adapter failed to start, and failed the startup of the application.
+|`QIJ000011` |exception |An endpoint could not be activated, and failed the startup of the application.
+|`QIJ000024` |ERROR |The resource adapter failed to start, and the application started without it, as `fail-on-start-error` is disabled for it.
+|`QIJ000025` |ERROR |An endpoint could not be activated, and the application started anyway, as `fail-on-start-error` is disabled for its resource adapter.
+|`QIJ000003` |WARN |No resource adapter kind is configured, the extension is disabled.
+|`QIJ000018` |INFO |An endpoint is being deactivated.
+|`QIJ000002` |INFO |The resource adapter is stopping.
+|`QIJ000014`, `QIJ000016` |INFO |The Connection Validator, or the Idle Remover, is stopping.
+|===
+
 == Connection Pool Services
 
 The extension automatically manages two background services that help maintain healthy connection pools: the *Idle Remover* and the *Connection Validator*.

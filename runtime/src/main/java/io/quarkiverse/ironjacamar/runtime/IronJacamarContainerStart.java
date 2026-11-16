@@ -1,13 +1,12 @@
 package io.quarkiverse.ironjacamar.runtime;
 
-import io.vertx.core.Future;
-
 /**
- * Holds the deployment {@link Future} of a started IronJacamar container.
+ * Holds the id of the deployment of the verticle running a started resource adapter.
  * <p>
- * Used as a service value, since generic types such as {@link Future} cannot be registered as services.
+ * The service holding it completes once the resource adapter is started, so requiring it guarantees that the
+ * resource adapter is running.
  *
- * @param future the future that completes when the resource adapter verticle is deployed
+ * @param deploymentId the id of the deployment of the resource adapter verticle
  */
-public record IronJacamarContainerStart(Future<String> future) {
+public record IronJacamarContainerStart(String deploymentId) {
 }
